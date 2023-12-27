@@ -1,7 +1,6 @@
-from sqlalchemy import Column, Integer, Double, String, Float, ForeignKey, Enum, DateTime, Boolean
+from sqlalchemy import Column, Integer, Double, String, ForeignKey, Enum, DateTime, Boolean
 from sqlalchemy.orm import relationship
-from app import db
-from flask_login import UserMixin
+from web import db
 import enum
 
 
@@ -57,7 +56,7 @@ class Semester(db.Model):
     score_boards = relationship('Score_board', backref='semester', lazy=True)
 
 
-class Score_board(db.Model):
+class ScoreBoard(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     scores = relationship('Score', backref='score_board', lazy=True)
     student_id = Column(Integer, ForeignKey(User.id))
@@ -69,12 +68,11 @@ class Score(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     value = Column(Double)
     type = Column(String(20), nullable=False)
-    score_board_id = Column(Integer, ForeignKey(Score_board.id))
-
+    score_board_id = Column(Integer, ForeignKey(ScoreBoard.id))
 
 
 if __name__ == '__main__':
-    from app import app
+    from web import app
 
     with app.app_context():
         db.create_all()
