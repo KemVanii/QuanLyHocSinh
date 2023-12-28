@@ -9,6 +9,7 @@ app.secret_key = '18sdjksdgjs&%^&^(*@@*#&@#^@DGGHJHG'
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:%s@localhost/quanlyhocsinh?charset=utf8mb4" % quote(
     'Admin@123')
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
+app.config["SQLALCHEMY_RECORD_QUERIES"] = True
 app.config["PAGE_SIZE"] = 6
 
 db = SQLAlchemy(app=app)

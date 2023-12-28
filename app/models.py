@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, Double, String, ForeignKey, Enum, DateTime, Boolean
 from sqlalchemy.orm import relationship
-from web import db
+from app import db
 import enum
 
 
@@ -72,7 +72,7 @@ class Score(db.Model):
 
 
 if __name__ == '__main__':
-    from web import app
+    from app import app
 
     with app.app_context():
         db.create_all()
