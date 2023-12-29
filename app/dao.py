@@ -9,3 +9,5 @@ def load_categories():
             'name': 'Chỉnh sửa danh sách lớp'
         }
     ]
+
+#read json and write json

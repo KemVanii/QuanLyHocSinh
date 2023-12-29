@@ -10,7 +10,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:%s@localhost/quanl
     'Admin@123')
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 app.config["SQLALCHEMY_RECORD_QUERIES"] = True
-app.config["PAGE_SIZE"] = 6
+# app.config["maxClassSize"] = int(dao.readjson()['maxClassSize'])
 
 db = SQLAlchemy(app=app)
 login = LoginManager()
