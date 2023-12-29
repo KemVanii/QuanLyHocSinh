@@ -13,4 +13,6 @@ app.config["SQLALCHEMY_RECORD_QUERIES"] = True
 app.config["PAGE_SIZE"] = 6
 
 db = SQLAlchemy(app=app)
-login = LoginManager(app=app)
+login = LoginManager()
+login.init_app(app)
+

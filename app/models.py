@@ -6,10 +6,9 @@ import enum
 
 
 class UserRoleEnum(enum.Enum):
-    Student = 1
-    Teacher = 2
-    Employee = 3
-    Admin = 4
+    Teacher = 1
+    Employee = 2
+    Admin = 3
 
 
 class Person(db.Model):
@@ -18,7 +17,9 @@ class Person(db.Model):
     gender = Column(Boolean, nullable=False)
     dob = Column(DateTime, nullable=False)
     address = Column(String(100), nullable=False)
-    phones = relationship('Phone', backref='person', lazy=True)
+    phones = relationship('Phone', foreign_keys='Phone.person_id',backref='person', lazy=True)
+    user = relationship('User', foreign_keys='User.person_id', backref='person', lazy=True)
+    classes = relationship('Class', foreign_keys='Class.teacher_id', backref='user', lazy=True)
 
 
 class User(db.Model, UserMixin):
@@ -27,6 +28,7 @@ class User(db.Model, UserMixin):
     username = Column(String(50), nullable=False, unique=True)
     password = Column(String(100), nullable=False)
     user_role = Column(Enum(UserRoleEnum))
+    person_id = Column(Integer, ForeignKey(Person.id))
 
 
 class Khoi(db.Model):
@@ -44,10 +46,6 @@ class Class(db.Model):
     students = relationship('Student', foreign_keys='Student.class_id', backref='class', lazy=True)
 
 
-class Teacher(Person):
-    classes = relationship('Class', foreign_keys='Class.teacher_id', backref='teacher', lazy=True)
-
-
 class Phone(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     number = Column(String(10), nullable=False)
@@ -57,7 +55,7 @@ class Phone(db.Model):
 class Subject(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(10), nullable=False)
-    score_boards = relationship('ScoreBoard',  backref='subject', lazy=True)
+    score_boards = relationship('ScoreBoard', backref='subject', lazy=True)
 
 
 class Semester(db.Model):
@@ -89,7 +87,7 @@ class Score(db.Model):
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
+        # db.create_all()
 
         import hashlib
 
