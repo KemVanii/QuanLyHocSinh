@@ -5,7 +5,7 @@ def load_function(user_role):
         return [
             {
                 'name': 'Tiếp nhận học sinh',
-                'url': '/tiepnhanhocsinh'
+                'url': '/admin'
             },
             {
                 'name': 'Lập danh sach',

@@ -12,6 +12,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 app.config["SQLALCHEMY_RECORD_QUERIES"] = True
 # app.config["maxClassSize"] = int(dao.readjson()['maxClassSize'])
 
+
+
 db = SQLAlchemy(app=app)
 login = LoginManager()
 login.init_app(app)

@@ -87,26 +87,26 @@ class Score(db.Model):
 
 if __name__ == '__main__':
     with app.app_context():
-        # db.create_all()
+        db.create_all()
 
         import hashlib
 
-        # u = User(name='Admin', username='admin',
-        #          password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
-        #          user_role=UserRoleEnum.Admin)
-        #
-        # db.session.add(u)
-        # db.session.commit()
-        # u = User(name='NhanVien', username='nhanvien',
-        #          password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
-        #          user_role=UserRoleEnum.Employee)
-        #
-        # db.session.add(u)
-        # db.session.commit()
-        # u = User(name='GiaoVien', username='giaovien',
-        #          password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
-        #          user_role=UserRoleEnum.Teacher)
-        #
-        # db.session.add(u)
-        # db.session.commit()
+        u = User(name='Admin', username='admin',
+                 password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+                 user_role=UserRoleEnum.Admin)
+
+        db.session.add(u)
+        db.session.commit()
+        u = User(name='NhanVien', username='nhanvien',
+                 password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+                 user_role=UserRoleEnum.Employee)
+
+        db.session.add(u)
+        db.session.commit()
+        u = User(name='GiaoVien', username='giaovien',
+                 password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+                 user_role=UserRoleEnum.Teacher)
+
+        db.session.add(u)
+        db.session.commit()
 
