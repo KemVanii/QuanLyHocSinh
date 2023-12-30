@@ -91,9 +91,22 @@ if __name__ == '__main__':
 
         import hashlib
 
-        u = User(name='Admin', username='admin',
-                 password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
-                 user_role=UserRoleEnum.Admin)
+        # u = User(name='Admin', username='admin',
+        #          password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+        #          user_role=UserRoleEnum.Admin)
+        #
+        # db.session.add(u)
+        # db.session.commit()
+        # u = User(name='NhanVien', username='nhanvien',
+        #          password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+        #          user_role=UserRoleEnum.Employee)
+        #
+        # db.session.add(u)
+        # db.session.commit()
+        # u = User(name='GiaoVien', username='giaovien',
+        #          password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+        #          user_role=UserRoleEnum.Teacher)
+        #
+        # db.session.add(u)
+        # db.session.commit()
 
-        db.session.add(u)
-        db.session.commit()
