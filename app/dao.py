@@ -8,7 +8,7 @@ def load_function(user_role):
                 'url': '/tiepnhanhocsinh'
             },
             {
-                'name': 'Lập danh sach',
+                'name': 'Lập danh sách',
                 'url': '/lapdanhsach'
             },
             {
