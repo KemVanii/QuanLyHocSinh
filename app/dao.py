@@ -8,7 +8,7 @@ def load_function(user_role):
                 'url': '/admin'
             },
             {
-                'name': 'Lập danh sach',
+                'name': 'Lập danh sách',
                 'url': '/lapdanhsach'
             },
             {

@@ -16,8 +16,9 @@
     <link rel="stylesheet" href="static/css/login.css">
 </head>
 <body>
+
+{% include 'layout/header.html' %}
 <div class="container">
-    {% include 'layout/header.html' %}
     {% block content %}{% endblock %}
 </div>
 </body>
