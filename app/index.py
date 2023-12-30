@@ -1,7 +1,7 @@
 import hashlib
 
 from flask import Flask, render_template, request, redirect, url_for
-from flask_login import login_user, logout_user
+from flask_login import login_user, logout_user, current_user
 from app import app, login
 from app.models import *
 import dao
@@ -13,8 +13,12 @@ def loader_user(user_id):
 
 @app.route('/')
 def index():
-    cates = dao.load_categories()
-    return render_template('index.html', categories=cates)
+    funcs = []
+    if current_user.is_authenticated:
+        funcs = dao.load_function(current_user.user_role)
+
+    print(funcs)
+    return render_template('index.html', funcs=funcs)
 
 
 @app.route("/login", methods=["GET", "POST"])
