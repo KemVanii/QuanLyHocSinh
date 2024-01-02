@@ -47,11 +47,19 @@ def tiepNhanHocSinh():
     return render_template("tiepNhanHocSinh.html", funcs=funcs)
 
 
-@app.route('/lapdanhsach')
+
+@app.route('/lapdanhsach', methods=["GET", "POST"])
 def lapDanhSach():
     funcs = []
     if current_user.is_authenticated:
         funcs = dao.load_function(current_user.user_role)
+    if request.method == "POST":
+        print(request.form.get("inputSiSo"))
+        print(request.form.get("inputLop"))
+        data = dao.getStudents()
+        print(len(data))
+        print(data[0])
+
     return render_template("lapDanhSach.html", funcs=funcs)
 
 

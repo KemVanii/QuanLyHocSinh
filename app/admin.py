@@ -3,7 +3,7 @@ from app import app, db
 from flask_admin.contrib.sqla import ModelView
 from app.models import Student, UserRoleEnum
 
-admin = Admin(app=app, name='Tiếp nhận Học Sinh', template_mode='bootstrap4')
+admin = Admin(app=app, name='Tiếp nhận Học Sinh', template_mode='bootstrap4',url="/")
 
 
 class MyStudent(ModelView):
