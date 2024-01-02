@@ -40,11 +40,11 @@ def load_function(user_role):
     return []
 
 
-def getStudents():
-    students_with_score_boards = db.session.query(Student).filter(Student.score_boards).all()
+def getStudentsNotInClass(limit):
+    students_with_score_boards = (db.session.query(Student)
+                                  .filter(Student.score_boards == None)
+                                  .limit(limit).all())
 
     return students_with_score_boards
 
-
 # read json and write json
-

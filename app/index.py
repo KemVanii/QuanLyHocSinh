@@ -47,20 +47,28 @@ def tiepNhanHocSinh():
     return render_template("tiepNhanHocSinh.html", funcs=funcs)
 
 
-
 @app.route('/lapdanhsach', methods=["GET", "POST"])
 def lapDanhSach():
     funcs = []
+    students = []
+    size = ""
+    grade = 10
+    maxSize = 40
     if current_user.is_authenticated:
         funcs = dao.load_function(current_user.user_role)
     if request.method == "POST":
-        print(request.form.get("inputSiSo"))
-        print(request.form.get("inputLop"))
-        data = dao.getStudents()
-        print(len(data))
-        print(data[0])
+        action = request.form.get("action")
+        size = int(request.form.get("inputSize"))
+        grade = int(request.form.get("inputGrade"))
+        if (action == 'xacnhanlap'):
+            # luu csdl
+            return redirect(url_for('lapDanhSach'))
+        else:
+            if grade == 10:
+                students = dao.getStudentsNotInClass(size)
 
-    return render_template("lapDanhSach.html", funcs=funcs)
+    return render_template("lapDanhSach.html",
+                           funcs=funcs, students=students, size=size, grade=grade, maxSize=maxSize)
 
 
 @app.route('/dieuchinhdanhsach')

@@ -3,26 +3,71 @@
 {% block title %}Lap danh sach{% endblock %}
 
 {% block content %}
-<h1>Lập danh sách</h1>
-<form action="/lapdanhsach" method="POST" class="row row-cols-lg-auto g-3 align-items-center">
-  <div class="col-18">
-    <label class="visually-hidden" for="inputSiSo"></label>
-    <div class="input-group">
-      <div class="input-group-text">Sỉ số</div>
-      <input type="text" name="inputSiSo" class="form-control" id="inputSiSo" placeholder="Max size is 40">
-    </div>
-  </div>
 
-  <div class="col-15">
-    <label class="visually-hidden" for="inputLop">Preference</label>
-    <select class="form-select" name="inputLop" id="inputLop">
-      <option value="10">Lớp 10</option>
-      <option value="11">Lớp 11</option>
-      <option value="12">Lớp 12</option>
-    </select>
-  </div>
-  <div class="col-15">
-    <button type="submit" class="btn btn-primary">Submit</button>
-  </div>
+<h1 class="text-center mt-2">Lập danh sách</h1>
+<form action="/lapdanhsach" method="POST" class="row row-cols-lg-auto g-3 align-items-center">
+    <div class="col-2">
+        <label class="visually-hidden" for="inputSize"></label>
+        <div class="input-group">
+            <div class="input-group-text">Sỉ số</div>
+            <input type="number" name="inputSize" class="form-control" id="inputSize"
+                   min="1" max="{{maxSize}}" placeholder="Max size is 40" value="{{size}}" required>
+        </div>
+    </div>
+
+    <div class="col-15">
+        <label class="visually-hidden" for="inputGrade">Preference</label>
+        <select class="form-select" name="inputGrade" id="inputGrade">
+            <option value="10" {% if grade== 10 %}selected{% endif %}>Lớp 10</option>
+            <option value="11" {% if grade== 11 %}selected{% endif %}>Lớp 11</option>
+            <option value="12" {% if grade== 12 %}selected{% endif %}>Lớp 12</option>
+        </select>
+    </div>
+    <div class="col-15">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
 </form>
+{% if students|length != 0 %}
+<div class="container" style="height: 60vh; overflow-y: auto;">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Gender</th>
+                <th scope="col">Date of Birth</th>
+                <th scope="col">Address</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for student in students %}
+            <tr>
+                <th scope="row">{{ loop.index }}</th>
+                <td>{{ student.name }}</td>
+                {% if student.gender == True %}
+                <td>Male</td>
+                {% else %}
+                <td>Female</td>
+                {% endif %}
+                <td>{{ student.dob.strftime('%d-%m-%Y') }}</td>
+                <td>{{ student.address }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<form action="/lapdanhsach" method="POST" class="text-center">
+    <!--hidden input-->
+    <input type="hidden" name="inputSize" value="{{size}}">
+    <input type="hidden" name="inputGrade" value="{{grade}}">
+    <input type="hidden" name="action" value="xacnhanlap">
+    <h3 class="mt-2">Xác nhận lập danh sách</h3>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% elif size != "" %}
+<h3 class="mt-2">Không tìm thấy danh sách học sinh phù hợp</h3>
+{% endif %}
+
 {% endblock %}
