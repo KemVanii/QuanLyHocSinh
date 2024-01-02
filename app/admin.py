@@ -7,9 +7,9 @@ admin = Admin(app=app, name='Tiếp nhận Học Sinh', template_mode='bootstrap
 
 
 class MyStudent(ModelView):
-    column_searchable_list = ['name','id']
-    column_editable_list = ['name','dob','address','gender']
+    column_searchable_list = ['name', 'id']
+    column_editable_list = ['name', 'dob', 'address', 'gender']
     edit_modal = True
 
-admin.add_view(MyStudent(Student, db.session))
 
+admin.add_view(MyStudent(Student, db.session))

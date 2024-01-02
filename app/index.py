@@ -1,6 +1,7 @@
 import hashlib
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+import json
 from flask_login import login_user, logout_user, current_user
 from app import app, login
 from app.models import *
@@ -86,6 +87,25 @@ def diem():
     return render_template("diem.html", funcs=funcs)
 
 
+@app.route('/api/policy', methods=['post'])
+def modify_policy():
+    data = request.json
+
+    policies = {
+        "max_class_size": data.get('max_class_size'),
+        "age_min": data.get('age_min'),
+        "age_max": data.get('age_max')
+    }
+
+    session['policies'] = policies
+
+    with open("static/policies.json", "w") as outfile:
+        json.dump(policies, outfile)
+
+    return jsonify(policies)
+
+
 if __name__ == '__main__':
     from app import admin
+
     app.run(debug=True)

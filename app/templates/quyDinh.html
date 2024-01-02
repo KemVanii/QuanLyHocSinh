@@ -3,42 +3,85 @@
 {% block title %}Quy dinh{% endblock %}
 
 {% block content %}
-<div id="accordion" class="col-sm-6">
 
-    <div class="card">
-        <div class="card-header">
-            <a class="btn" data-bs-toggle="collapse" href="#collapseClassSize">
-                Sỉ số lớp học
-            </a>
-        </div>
-        <div id="collapseClassSize" class="collapse" data-bs-parent="#accordion">
-            <div class="card-body">
-                <input type="number" class="form-range" id="ageRangeNum2">
-            </div>
-        </div>
-    </div>
+<div id="alertContainer" class="position-fixed top-0 start-50 translate-middle-x mt-3"></div>
 
-    <div class="card">
-        <div class="card-header">
-            <a class="collapsed btn" data-bs-toggle="collapse" href="#collapseAgeRange">
-                Độ tuổi
-            </a>
-        </div>
-        <div id="collapseAgeRange" class="collapse row" data-bs-parent="#accordion">
-            <div class="card-body col-sm-10">
-                <label class="form-label">Tuổi thấp nhất</label>
-                <input type="range" class="form-range" id="ageRange1" step="1" min="0" max="100">
-                <label class="form-label">Tuối lớn nhất</label>
-                <input type="range" class="form-range" id="ageRange2" step="1" min="0" max="100">
-            </div>
-            <div class="card-body col-sm-2">
-                <label class="form-label">Số tuổi</label>
-                <input type="number" class="form-range" id="ageRangeNum1">
-                <label class="form-label">Số tuổi</label>
-                <input type="number" class="form-range" id="ageRangeNum2">
-            </div>
-        </div>
-    </div>
-
+<div class="col-sm-6">
+    <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#myModalClassSize">
+        Sỉ số lớp học
+    </button>
 </div>
+
+<div class="modal fade" id="myModalClassSize">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title bg-light">Thay đổi qui định về sỉ số lớp</h4>
+                <button type="button" class="btn btn-close btn-light" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <input type="number" class="form-range" id="classSizeNum">
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" data-bs-dismiss="modal">Apply</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="col-sm-6">
+    <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#myModalAgeRange">
+        Độ tuổi tham gia lớp
+    </button>
+</div>
+
+<div class="modal fade" id="myModalAgeRange">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title bg-light">Thay đổi qui định về độ tuổi</h4>
+                <button type="button" class="btn btn-close btn-light" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body row">
+                <div class="col-sm-8">
+                    <label class="form-label">Tuổi thấp nhất</label>
+                    <input type="range" class="form-range" id="ageRange1"
+                           onchange="updateRangeValue(this)" step="1"
+                           min="0" max="100">
+                    <label class="form-label">Tuối lớn nhất</label>
+                    <input type="range" class="form-range" id="ageRange2"
+                           onchange="updateRangeValue(this)" step="1"
+                           min="0" max="100">
+                </div>
+                <div class="card-body col-sm-2">
+                    <label class="form-label">Số tuổi</label>
+                    <input type="number" class="form-range" id="ageRangeNum1" disabled>
+                    <label class="form-label"></label>
+                    <label class="form-label">Số tuổi</label>
+                    <input type="number" class="form-range" id="ageRangeNum2" disabled>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button class="btn btn-info" data-bs-dismiss="modal">Apply</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<button class="btn btn-info" data-bs-dismiss="modal" onclick="modifyPolicies()">Apply</button>
+
 {% endblock %}

@@ -10,6 +10,9 @@ class UserRoleEnum(enum.Enum):
     Employee = 2
     Admin = 3
 
+    def __str__(self):
+        return self.name
+
 
 class Person(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
