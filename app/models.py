@@ -11,50 +11,52 @@ class UserRoleEnum(enum.Enum):
     Admin = 3
 
 
-class Person(db.Model):
+class Student(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(10), nullable=False)
+    name = Column(String(50), nullable=False)
     gender = Column(Boolean, nullable=False)
     dob = Column(DateTime, nullable=False)
     address = Column(String(100), nullable=False)
-    phones = relationship('Phone', foreign_keys='Phone.person_id',backref='person', lazy=True)
-    user = relationship('User', foreign_keys='User.person_id', backref='person', lazy=True)
-    classes = relationship('Class', foreign_keys='Class.teacher_id', backref='user', lazy=True)
+    phones = relationship('Phone', foreign_keys='Phone.student_id', backref='student', lazy=True)
+    score_boards = relationship('ScoreBoard', foreign_keys='ScoreBoard.student_id', backref='student', lazy=True)
 
 
 class User(db.Model, UserMixin):
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(50), nullable=False, unique=True)
+    name = Column(String(50), nullable=False)
+    gender = Column(Boolean, nullable=False)
+    dob = Column(DateTime, nullable=False)
+    address = Column(String(100), nullable=False)
     username = Column(String(50), nullable=False, unique=True)
     password = Column(String(100), nullable=False)
     user_role = Column(Enum(UserRoleEnum))
-    person_id = Column(Integer, ForeignKey(Person.id))
+    classes = relationship('Class', foreign_keys='Class.teacher_id', backref='user', lazy=True)
 
 
-class Khoi(db.Model):
+class Grade(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False)
-    classes = relationship('Class', backref='khoi', lazy=True)
+    classes = relationship('Class', backref='grade', lazy=True)
 
 
 class Class(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(10), nullable=False)
     size = Column(Integer, nullable=False)
-    Khoi_id = Column(Integer, ForeignKey(Khoi.id), nullable=False)
-    teacher_id = Column(Integer, ForeignKey(Person.id), nullable=False)
-    students = relationship('Student', foreign_keys='Student.class_id', backref='class', lazy=True)
+    grade_id = Column(Integer, ForeignKey(Grade.id), nullable=False)
+    teacher_id = Column(Integer, ForeignKey(User.id), nullable=False)
+    score_boards = relationship('ScoreBoard', foreign_keys='ScoreBoard.class_id', backref='class', lazy=True)
 
 
 class Phone(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     number = Column(String(10), nullable=False)
-    person_id = Column(Integer, ForeignKey(Person.id), nullable=False)
+    student_id = Column(Integer, ForeignKey(Student.id), nullable=False)
 
 
 class Subject(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(10), nullable=False)
+    name = Column(String(50), nullable=False)
     score_boards = relationship('ScoreBoard', backref='subject', lazy=True)
 
 
@@ -68,14 +70,10 @@ class Semester(db.Model):
 class ScoreBoard(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     scores = relationship('Score', backref='score_board', lazy=True)
-    student_id = Column(Integer, ForeignKey(Person.id), nullable=False)
+    student_id = Column(Integer, ForeignKey(Student.id), nullable=False)
     subject_id = Column(Integer, ForeignKey(Subject.id), nullable=False)
+    class_id = Column(Integer, ForeignKey(Class.id), nullable=False)
     semester_id = Column(Integer, ForeignKey(Semester.id), nullable=False)
-
-
-class Student(Person):
-    class_id = Column(Integer, ForeignKey(Class.id))
-    score_boards = relationship('ScoreBoard', backref='student', lazy=True)
 
 
 class Score(db.Model):
@@ -91,22 +89,21 @@ if __name__ == '__main__':
 
         import hashlib
 
-        u = User(name='Admin', username='admin',
+        u = User(name='Nguyễn Văn Admin', username='admin', gender=True, dob='1991-01-01', address='TPHCM',
                  password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
                  user_role=UserRoleEnum.Admin)
 
         db.session.add(u)
         db.session.commit()
-        u = User(name='NhanVien', username='nhanvien',
+        u = User(name='Nguyễn Văn NhanVien', username='nhanVien', gender=True, dob='1991-01-01', address='TPHCM',
                  password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
                  user_role=UserRoleEnum.Employee)
 
         db.session.add(u)
         db.session.commit()
-        u = User(name='GiaoVien', username='giaovien',
+        u = User(name='Nguyễn Văn GiaoVien', username='giaoVien', gender=True, dob='1991-01-01', address='TPHCM',
                  password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
                  user_role=UserRoleEnum.Teacher)
 
         db.session.add(u)
         db.session.commit()
-

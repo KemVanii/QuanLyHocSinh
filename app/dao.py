@@ -1,11 +1,14 @@
-from app.models import UserRoleEnum
+from app.models import *
+from sqlalchemy import Column, Integer, String
+from app import db
+
 
 def load_function(user_role):
     if user_role == UserRoleEnum.Employee:
         return [
             {
                 'name': 'Tiếp nhận học sinh',
-                'url': '/admin'
+                'url': '/student'
             },
             {
                 'name': 'Lập danh sách',
@@ -36,4 +39,12 @@ def load_function(user_role):
         ]
     return []
 
+
+def getStudents():
+    students_with_score_boards = db.session.query(Student).filter(Student.score_boards).all()
+
+    return students_with_score_boards
+
+
 # read json and write json
+
