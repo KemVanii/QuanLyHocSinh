@@ -46,6 +46,7 @@ def tiepNhanHocSinh():
     return render_template("tiepNhanHocSinh.html", funcs=funcs)
 
 
+
 @app.route('/lapdanhsach', methods=["GET", "POST"])
 def lapDanhSach():
     funcs = []
