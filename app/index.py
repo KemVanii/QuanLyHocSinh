@@ -120,6 +120,33 @@ def modify_policy():
 
     return jsonify(policies)
 
+def nhap_diem():
+    tenLop=String(request.form.get("inputTenLop"))
+    maxcot15p=int(request.form.get("inputCot15p"))
+    maxcot45p = int(request.form.get("inputCot45p"))
+    tenMon = String(request.form.get("inputTenMon"))
+    Lops = db.session.query(Class).all()
+    Students = db.session.query(Student).all()
+    Hocki='nkncifiitjm'
+
+    for lop in Lops:
+        if(lop.name==tenLop):
+            for ssb in lop.score_boards:
+                # diem[ssb.student_id] ds diem cua hoc sinh
+                # diem[ssb.student_id]['15p']
+                for i in range (0,maxcot15p):
+                    u = Score(value=diem[ssb.student_id]['15p'][i],type='15p',score_boards=ssb.id)
+                    db.session.add(u)
+                for i in range(0, maxcot45p):
+                    u = Score(value=diem[ssb.student_id]['45p'][i], type='45p', score_boards=ssb.id)
+                    db.session.add(u)
+                u = Score(value=diem[ssb.student_id]['CK'], type='CK', score_boards=ssb.id)
+                db.session.add(u)
+                db.session.commit()
+
+
+
+
 
 if __name__ == '__main__':
     from app import admin
