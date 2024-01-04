@@ -24,7 +24,7 @@
         </select>
     </div>
     <div class="">
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Lọc</button>
     </div>
 </form>
 {% if students|length != 0 %}
@@ -63,8 +63,8 @@
     <input type="hidden" name="inputSize" value="{{size}}">
     <input type="hidden" name="inputGrade" value="{{grade}}">
     <input type="hidden" name="action" value="xacnhanlap">
-    <h3 class="mt-2">Xác nhận lập danh sách lớp 10/7 niên học {{currentSchoolYear}}</h3>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <h3 class="mt-2">Xác nhận lập danh sách lớp {{newNameClass}} niên học {{currentSchoolYear}}</h3>
+    <button type="submit" class="btn btn-primary">Lập</button>
 </form>
 {% elif size != "" %}
 <h3 class="mt-2">Không tìm thấy danh sách học sinh phù hợp</h3>

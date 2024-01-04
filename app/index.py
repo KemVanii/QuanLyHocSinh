@@ -57,23 +57,27 @@ def lapDanhSach():
     grade = 10
     maxSize = 40
     currentSchoolYear = '23-24'
+    newNameClass = ''
     if current_user.is_authenticated:
         funcs = dao.load_function(current_user.user_role)
     if request.method == "POST":
         action = request.form.get("action")
         size = int(request.form.get("inputSize"))
         grade = int(request.form.get("inputGrade"))
+        newNameClass = f'{grade}/{len(dao.getClassByGradeAndSchoolYear(grade, currentSchoolYear)) + 1}'
         if (action == 'xacnhanlap'):
-            # luu csdl
+            dao.createNewClassGrade10(newNameClass,size,grade,currentSchoolYear)
             return redirect(url_for('lapDanhSach'))
         else:
             if grade == 10:
                 students = dao.getStudentsNotInClass(size)
-
+            if grade == 11 or grade == 12:
+                pass
     return render_template("lapDanhSach.html",
                            funcs=funcs, students=students,
                            size=size, grade=grade,
-                           maxSize=maxSize, currentSchoolYear=currentSchoolYear)
+                           maxSize=maxSize, currentSchoolYear=currentSchoolYear,
+                           newNameClass=newNameClass)
 
 
 @app.route('/dieuchinhdanhsach')
@@ -94,10 +98,13 @@ def quyDinh():
 
 @app.route('/thongke')
 def thongKe():
+    score_min = request.args.get('filterScoreMin')
+    score_max = request.args.get('filterScoreMax')
     funcs = []
     if current_user.is_authenticated:
         funcs = dao.load_function(current_user.user_role)
-    return render_template("thongKe.html", funcs=funcs)
+    return render_template("thongKe.html", funcs=funcs,
+                           score_stats=dao.scores_stats(scoreMin=score_min, scoreMax=score_max))
 
 
 @app.route('/nhapdiem', methods=["GET", "POST"])
@@ -139,6 +146,10 @@ def nhap_diem():
     for lop in Lops:
         if (lop.name == tenLop):
             for ssb in lop.score_boards:
+                # diem[ssb.student_id] ds diem cua hoc sinh
+                # diem[ssb.student_id]['15p']
+                for i in range(0, maxcot15p):
+                    u = Score(value=diem[ssb.student_id]['15p'][i], type='15p', score_boards=ssb.id)
                 for i in range(0, maxcot15p):
                     u = Score(value=diem[ssb.student_id]['15p'][i], type='15p', score_boards=ssb.id)
                     db.session.add(u)
@@ -150,6 +161,7 @@ def nhap_diem():
                 db.session.commit()
         if request.method == "POST":
             score_boards = dao.getScoreBoard(tenLop,tenMon,Hocki)
+
 
 
 @app.route('/chinhsuadiem')

@@ -1,9 +1,9 @@
 from flask_admin import Admin
-from app import app, db
 from flask_admin.contrib.sqla import ModelView
-from app.models import Student, UserRoleEnum
+from app.models import Student
+from app import app, db
 
-admin = Admin(app=app, name='Tiếp nhận Học Sinh', template_mode='bootstrap4',url="/")
+admin = Admin(app=app, name='Tiếp nhận Học Sinh', template_mode='bootstrap4', url="/")
 
 
 class MyStudent(ModelView):
