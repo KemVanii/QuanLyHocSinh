@@ -7,6 +7,7 @@ def load_function(user_role):
     if user_role == UserRoleEnum.Employee:
         return [
             {
+
                 'name': 'Tiếp nhận học sinh',
                 'url': '/student'
             },
@@ -21,9 +22,19 @@ def load_function(user_role):
         ]
     elif user_role == UserRoleEnum.Teacher:
         return [
+
             {
-                'name': 'Điểm',
-                'url': '/diem'
+                'url': '/menu',
+                'name': 'Nhập Điểm',
+                'url': '/nhapdiem'
+            },
+            {
+                'name': 'Chỉnh sửa Điểm',
+                'url': '/chinhsuadiem'
+            },
+            {
+                'name': 'Xem Điểm',
+                'url': '/xemdiem'
             }
         ]
     elif user_role == UserRoleEnum.Admin:

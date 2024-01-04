@@ -3,6 +3,207 @@
 {% block title %}Diem{% endblock %}
 
 {% block content %}
-<h1>Day la trang diem</h1>
+<form action="/action_page.php">
+    <div class="mb-3 mt-3">
+        <label for="inputTenLop" class="form-label">Tên lớp:</label>
+        <input type="text" class="form-control" id="inputTenLop" placeholder="Tên lớp" name="inputTenLop">
+    </div>
+    <div class="mb-3">
+        <label for="inputCot15p" class="form-label">Số lượng cột 15p:</label>
+        <input type="number" class="form-control" id="inputCot15p" placeholder="Số lượng cột 15p " name="inputCot15p">
+    </div>
+
+    <div class="mb-3">
+        <label for="inputCot45p" class="form-label">Số lượng cột 45p:</label>
+        <input type="number" class="form-control" id="inputCot45p" placeholder="Số lượng cột 45p" name="inputCot45p">
+    </div>
+
+    <label for="browser" class="form-label">Chọn môn:</label>
+    <input class="form-control" list="browsers" name="inputTenMon" id="browser">
+    <datalist id="browsers">
+        <option value="Toán">
+        <option value="Lý">
+        <option value="Hóa">
+        <option value="Văn">
+        <option value="Anh">
+    </datalist>
+
+
+    <div class="form-check mb-3">
+        <label class="form-check-label">
+            <input class="form-check-input" type="checkbox" name="remember"> Remember me
+        </label>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+
+<!-- Button to Open the Modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+    Open modal
+</button>
+
+<!-- The Modal -->
+
+<div  class="modal" id="myModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content col-15">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Danh sách bản điểm của học sinh {{inputTenLop}}</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body" style="max-height:60vh; overflow-y:auto">
+                <div class="container mt-3 ">
+                    <h2>Basic Table</h2>
+                    <p>The .table class adds basic styling (light padding and horizontal dividers) to a table:</p>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Ten</th>
+                            <th>15p</th>
+                            <th>15p</th>
+                            <th>15p</th>
+                            <th>15p</th>
+                            <th>15p</th>
+                            <th>45p</th>
+                            <th>45p</th>
+                            <th>45p</th>
+                            <th>CK</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>10</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
 
 {% endblock %}

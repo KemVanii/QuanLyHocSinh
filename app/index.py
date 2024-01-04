@@ -95,7 +95,7 @@ def thongKe():
     return render_template("thongKe.html", funcs=funcs)
 
 
-@app.route('/diem')
+@app.route('/nhapdiem')
 def diem():
     funcs = []
     if current_user.is_authenticated:
@@ -132,8 +132,6 @@ def nhap_diem():
     for lop in Lops:
         if(lop.name==tenLop):
             for ssb in lop.score_boards:
-                # diem[ssb.student_id] ds diem cua hoc sinh
-                # diem[ssb.student_id]['15p']
                 for i in range (0,maxcot15p):
                     u = Score(value=diem[ssb.student_id]['15p'][i],type='15p',score_boards=ssb.id)
                     db.session.add(u)
@@ -144,8 +142,12 @@ def nhap_diem():
                 db.session.add(u)
                 db.session.commit()
 
-
-
+@app.route('/chinhsuadiem')
+def chinhsuadiem():
+    funcs = []
+    if current_user.is_authenticated:
+        funcs = dao.load_function(current_user.user_role)
+    return render_template("chinhsuadiem.html", funcs=funcs)
 
 
 if __name__ == '__main__':
