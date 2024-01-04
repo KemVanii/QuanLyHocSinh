@@ -96,10 +96,13 @@ def quyDinh():
 
 @app.route('/thongke')
 def thongKe():
+    score_min = request.args.get('filterScoreMin')
+    score_max = request.args.get('filterScoreMax')
     funcs = []
     if current_user.is_authenticated:
         funcs = dao.load_function(current_user.user_role)
-    return render_template("thongKe.html", funcs=funcs)
+    return render_template("thongKe.html", funcs=funcs,
+                           score_stats=dao.scores_stats(scoreMin=score_min, scoreMax=score_max))
 
 
 @app.route('/nhapdiem')
@@ -127,20 +130,28 @@ def modify_policy():
 
     return jsonify(policies)
 
+
 def nhap_diem():
-    tenLop=String(request.form.get("inputTenLop"))
-    maxcot15p=int(request.form.get("inputCot15p"))
+    tenLop = String(request.form.get("inputTenLop"))
+    maxcot15p = int(request.form.get("inputCot15p"))
     maxcot45p = int(request.form.get("inputCot45p"))
     tenMon = String(request.form.get("inputTenMon"))
     Lops = db.session.query(Class).all()
     Students = db.session.query(Student).all()
-    Hocki='nkncifiitjm'
+    Hocki = 'nkncifiitjm'
 
     for lop in Lops:
-        if(lop.name==tenLop):
+        if (lop.name == tenLop):
             for ssb in lop.score_boards:
+<<<<<<< HEAD
+                # diem[ssb.student_id] ds diem cua hoc sinh
+                # diem[ssb.student_id]['15p']
+                for i in range(0, maxcot15p):
+                    u = Score(value=diem[ssb.student_id]['15p'][i], type='15p', score_boards=ssb.id)
+=======
                 for i in range (0,maxcot15p):
                     u = Score(value=diem[ssb.student_id]['15p'][i],type='15p',score_boards=ssb.id)
+>>>>>>> 6f0ca50769de617d5f197579ac78c218ad9cff80
                     db.session.add(u)
                 for i in range(0, maxcot45p):
                     u = Score(value=diem[ssb.student_id]['45p'][i], type='45p', score_boards=ssb.id)
@@ -149,6 +160,8 @@ def nhap_diem():
                 db.session.add(u)
                 db.session.commit()
 
+<<<<<<< HEAD
+=======
 @app.route('/chinhsuadiem')
 def chinhsuadiem():
     funcs = []
@@ -156,6 +169,7 @@ def chinhsuadiem():
         funcs = dao.load_function(current_user.user_role)
     return render_template("chinhsuadiem.html", funcs=funcs)
 
+>>>>>>> 6f0ca50769de617d5f197579ac78c218ad9cff80
 
 if __name__ == '__main__':
     from app import admin

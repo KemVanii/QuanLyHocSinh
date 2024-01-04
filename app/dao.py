@@ -1,6 +1,7 @@
 from app.models import *
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Float, func
 from app import db
+from app.models import ScoreBoard, Score
 
 
 def load_function(user_role):
@@ -24,7 +25,6 @@ def load_function(user_role):
         return [
 
             {
-                'url': '/menu',
                 'name': 'Nhập Điểm',
                 'url': '/nhapdiem'
             },
@@ -64,3 +64,13 @@ def getClassByGradeAndSchoolYear(grade, schoolYear):
                .all())
     print(classes)
     # read json and write json
+
+def scores_stats(scoreMin=0, scoreMax=10):
+    query = db.session.query(Score.value, func.count(Score.value)).group_by(Score.value)
+    if scoreMin:
+        query = query.filter(Score.value >= scoreMin)
+    if scoreMax:
+        query = query.filter(Score.value <= scoreMax)
+
+    return query.all()
+# read json and write json
