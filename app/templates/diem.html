@@ -3,7 +3,8 @@
 {% block title %}Diem{% endblock %}
 
 {% block content %}
-<form action="/action_page.php">
+<h1 class="text-center mt-2">Nhập điểm</h1>
+<form action="/nhapdiem" method="POST">
     <div class="mb-3 mt-3">
         <label for="inputTenLop" class="form-label">Tên lớp:</label>
         <input type="text" class="form-control" id="inputTenLop" placeholder="Tên lớp" name="inputTenLop">
@@ -39,13 +40,11 @@
 
 
 <!-- Button to Open the Modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
-    Open modal
-</button>
+
 
 <!-- The Modal -->
-
-<div  class="modal" id="myModal">
+{% if score_boards|length != 0 %}
+<div class="modal" id="myModal">
     <div class="modal-dialog modal-lg">
         <div class="modal-content col-15">
 
@@ -63,136 +62,31 @@
                     <table class="table">
                         <thead>
                         <tr>
-                            <th>STT</th>
-                            <th>Ten</th>
-                            <th>15p</th>
-                            <th>15p</th>
-                            <th>15p</th>
-                            <th>15p</th>
-                            <th>15p</th>
-                            <th>45p</th>
-                            <th>45p</th>
-                            <th>45p</th>
-                            <th>CK</th>
+                            <th scope="col">#</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Date of Birth</th>
+                            {% for i in range(0, maxcot15p) %}
+                            <th scope="col">15p</th>
+                            {% endfor %}
+                            {% for i in range(0, maxcot45p) %}
+                            <th scope="col">45p</th>
+                            {% endfor %}
                         </tr>
                         </thead>
-                        <tbody>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>10</td>
-                        </tr>
                         </tbody>
+                        {% for score_board in score_boards %}
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ student.name }}</td>
+                        <td>{{ student.dob.strftime('%d-%m-%Y') }}</td>
+                        {% for i in range(0, maxcot15p) %}
+                        <th scope="col">{{}}</th>
+                        {% for i in range(0, maxcot45p) %}
+                        <th scope="col">{{}}</th>
+                        {% endfor %}
+                        {% for i in range(0, maxcot45p) %}
+                        <th scope="col">45p</th>
+                        {% endfor %}
+                        {% endfor %}
                     </table>
                 </div>
             </div>
@@ -205,5 +99,5 @@
         </div>
     </div>
 </div>
-
+{% endif %}
 {% endblock %}

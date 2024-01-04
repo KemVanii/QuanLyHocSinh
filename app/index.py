@@ -57,15 +57,16 @@ def lapDanhSach():
     grade = 10
     maxSize = 40
     currentSchoolYear = '23-24'
-    dao.getClassByGradeAndSchoolYear(grade, currentSchoolYear)
+    newNameClass = ''
     if current_user.is_authenticated:
         funcs = dao.load_function(current_user.user_role)
     if request.method == "POST":
         action = request.form.get("action")
         size = int(request.form.get("inputSize"))
         grade = int(request.form.get("inputGrade"))
+        newNameClass = f'{grade}/{len(dao.getClassByGradeAndSchoolYear(grade, currentSchoolYear)) + 1}'
         if (action == 'xacnhanlap'):
-            # luu csdl
+            dao.createNewClassGrade10(newNameClass,size,grade,currentSchoolYear)
             return redirect(url_for('lapDanhSach'))
         else:
             if grade == 10:
@@ -75,7 +76,8 @@ def lapDanhSach():
     return render_template("lapDanhSach.html",
                            funcs=funcs, students=students,
                            size=size, grade=grade,
-                           maxSize=maxSize, currentSchoolYear=currentSchoolYear)
+                           maxSize=maxSize, currentSchoolYear=currentSchoolYear,
+                           newNameClass=newNameClass)
 
 
 @app.route('/dieuchinhdanhsach')
@@ -116,7 +118,7 @@ def thongKe():
                            classrooms=dao.get_classroom())
 
 
-@app.route('/nhapdiem')
+@app.route('/nhapdiem', methods=["GET", "POST"])
 def diem():
     funcs = []
     if current_user.is_authenticated:
@@ -150,6 +152,7 @@ def nhap_diem():
     Lops = db.session.query(Class).all()
     Students = db.session.query(Student).all()
     Hocki = 'nkncifiitjm'
+    score_boards=[]
 
     for lop in Lops:
         if (lop.name == tenLop):
@@ -167,6 +170,10 @@ def nhap_diem():
                 u = Score(value=diem[ssb.student_id]['CK'], type='CK', score_boards=ssb.id)
                 db.session.add(u)
                 db.session.commit()
+        if request.method == "POST":
+            score_boards = dao.getScoreBoard(tenLop,tenMon,Hocki)
+
+
 
 
 @app.route('/chinhsuadiem')
