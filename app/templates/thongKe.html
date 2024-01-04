@@ -1,7 +1,80 @@
 {% extends 'layout/base.html' %}
 
-{% block title %}Thong ke{% endblock %}
-
 {% block content %}
-<h1>Day la thong ke</h1>
+<h1 class="text-center text-info">THỐNG KÊ BÁO CÁO</h1>
+
+<form action="/thongke" method="get">
+    <div class="row">
+        <div class="col-md-5 col-xs-12 row">
+            <div class="form-floating mb-3 mt-3 col-md-6 col-xs-6">
+                <input type="text" class="form-control" id="filterScoreMin" placeholder="Nhập điểm để lọc: "
+                       name="filterScoreMin">
+                <label for="filterScoreMin" class="form-label"> Nhập điểm thấp nhất: </label>
+            </div>
+
+            <div class="form-floating mb-3 mt-3 col-md-6 col-xs-6">
+                <input type="text" class="form-control" id="filterScoreMax" placeholder="Nhập điểm để lọc: "
+                       name="filterScoreMax">
+                <label for="filterScoreMax" class="form-label"> Nhập điểm cao nhất: </label>
+            </div>
+            <div class="col-md-3 col-xs-6">
+                <button  type="submit" class="btn btn-primary">Lọc</button>
+            </div>
+
+
+            <table class="table">
+                <tr>
+                    <th>Điểm</th>
+                    <th>Tổng số lượng điểm</th>
+                </tr>
+                {% for s in score_stats %}
+                <tr>
+                    <td>{{s[0]}}</td>
+                    <td>{{s[1]}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="col-md-7 col-xs-12">
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
+</form>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let data=[];
+    let labels=[];
+
+    {% for s in score_stats %}
+    data.push({{s[1]}})
+    labels.push('{{s[0]}}')
+    {% endfor %}
+
+    window.onload = function() {
+      const ctx = document.getElementById('myChart');
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '# Tổng số lượng điểm',
+            data: data,
+            borderWidth: 1,
+            backgroundColor: ['red', 'green', 'blue', 'gold', 'brown']
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+</script>
 {% endblock %}
