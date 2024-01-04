@@ -58,6 +58,9 @@ def getStudentsNotInClass(limit):
 
     return students_with_score_boards
 
-def getClassBySchoolYear(schoolYear):
-    pass
-# read json and write json
+
+def getClassByGradeAndSchoolYear(grade, schoolYear):
+    classes = (db.session.query(Class)
+               .all())
+    print(classes)
+    # read json and write json
