@@ -66,14 +66,16 @@ def getClassBySchoolYear(schoolYear):
 
 # read json and write json
 
-def getScoreBoard(tenLop, tenMon, hocKi):
-    score_boards = (db.session.query(ScoreBoard)
-               .join(Class)
-               .join(Subject)
-               .join(Semester)
-               # .filter(Semester.name.contains(schoolYear)).all())
-               .filter(Class.name == tenLop, Subject.name == tenMon, Semester.name == hocKi).all())
+def getScoreBoard(tenLop, subjectName, hocKi):
+    score_boards = (db.session.query(ScoreBoard,Student.name,Student.dob)
+                    .join(Class)
+                    .join(Subject)
+                    .join(Semester)
+                    .join(Student)
+                    .filter(Class.name == tenLop, Subject.name == subjectName, Semester.name == hocKi).all())
     return score_boards
+
+
 def getClassByGradeAndSchoolYear(grade, schoolYear):
     classes = (db.session.query(Class)
                .join(Grade)
@@ -83,6 +85,8 @@ def getClassByGradeAndSchoolYear(grade, schoolYear):
                .all())
     return classes
 
+def getAllSubject():
+    return db.session.query(Subject).all()
 
 def createNewClassGrade10(className, size, gradeName, currentSchoolYear):
     # Create new Class
@@ -93,7 +97,7 @@ def createNewClassGrade10(className, size, gradeName, currentSchoolYear):
     db.session.refresh(newClass)
 
     # Create new Score_Boards
-    subjects = db.session.query(Subject).all()
+    subjects = getAllSubject()
     students = getStudentsNotInClass(size)
     semesters = db.session.query(Semester).filter(Semester.name.contains(currentSchoolYear)).all()
     for semester in semesters:
@@ -104,12 +108,13 @@ def createNewClassGrade10(className, size, gradeName, currentSchoolYear):
                 db.session.add(newScoreBoard)
 
     # Create new TeacherClass
-    teachers = db.session.query(User).filter(User.user_role==UserRoleEnum.Teacher).all()
+    teachers = db.session.query(User).filter(User.user_role == UserRoleEnum.Teacher).all()
     for subject in subjects:
         filterTeacherBySubject = [teacher for teacher in teachers if teacher.subject_id == subject.id]
-        newTeacherClass= TeacherClass(teacher_id=random.choice(filterTeacherBySubject).id,class_id=newClass.id)
+        newTeacherClass = TeacherClass(teacher_id=random.choice(filterTeacherBySubject).id, class_id=newClass.id)
         db.session.add(newTeacherClass)
     db.session.commit()
+
 
 def scores_stats(scoreMin=0, scoreMax=10):
     query = db.session.query(Score.value, func.count(Score.value)).group_by(Score.value)

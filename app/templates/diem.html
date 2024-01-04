@@ -3,101 +3,110 @@
 {% block title %}Diem{% endblock %}
 
 {% block content %}
+
 <h1 class="text-center mt-2">Nhập điểm</h1>
-<form action="/nhapdiem" method="POST">
+<form action="/nhapdiem">
     <div class="mb-3 mt-3">
         <label for="inputTenLop" class="form-label">Tên lớp:</label>
-        <input type="text" class="form-control" id="inputTenLop" placeholder="Tên lớp" name="inputTenLop">
+        <input type="text" class="form-control" id="inputTenLop" value="{{className}}" placeholder="Tên lớp"
+               name="inputTenLop" required>
     </div>
     <div class="mb-3">
         <label for="inputCot15p" class="form-label">Số lượng cột 15p:</label>
-        <input type="number" class="form-control" id="inputCot15p" placeholder="Số lượng cột 15p " name="inputCot15p">
+        <input type="number" min="1" max="5" class="form-control" value="{{maxcot15p}}" id="inputCot15p"
+               placeholder="Số lượng cột 15p"
+               name="inputCot15p" required>
     </div>
 
     <div class="mb-3">
         <label for="inputCot45p" class="form-label">Số lượng cột 45p:</label>
-        <input type="number" class="form-control" id="inputCot45p" placeholder="Số lượng cột 45p" name="inputCot45p">
+        <input type="number" min="1" max="3" class="form-control" value="{{maxcot45p}}" id="inputCot45p" placeholder="Số
+        lượng cột 45p"
+               name="inputCot45p" required>
     </div>
 
     <label for="browser" class="form-label">Chọn môn:</label>
-    <input class="form-control" list="browsers" name="inputTenMon" id="browser">
+    <input class="form-control" list="browsers" name="inputTenMon" id="browser" value="{{subjectName}}" required>
     <datalist id="browsers">
-        <option value="Toán">
-        <option value="Lý">
-        <option value="Hóa">
-        <option value="Văn">
-        <option value="Anh">
+        {%for subject in subjects %}
+        <option value="{{subject.name}}">
+            {% endfor %}
     </datalist>
-
-
-    <div class="form-check mb-3">
-        <label class="form-check-label">
-            <input class="form-check-input" type="checkbox" name="remember"> Remember me
-        </label>
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" id='btnSubmit' class="btn btn-primary mb-3  mt-3">Submit</button>
 </form>
 
 
-<!-- Button to Open the Modal -->
-
-
-<!-- The Modal -->
 {% if score_boards|length != 0 %}
+<!-- Button to Open the Modal -->
+<button type="button" id='btnModal' class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+    Open modal
+</button>
+<!-- The Modal -->
 <div class="modal" id="myModal">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content col-15">
+    <form action="/nhapdiem" method="POST">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content col-15">
 
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <h4 class="modal-title">Danh sách bản điểm của học sinh {{inputTenLop}}</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Danh sách bản điểm của học sinh {{className}}</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
 
-            <!-- Modal body -->
-            <div class="modal-body" style="max-height:60vh; overflow-y:auto">
-                <div class="container mt-3 ">
-                    <h2>Basic Table</h2>
-                    <p>The .table class adds basic styling (light padding and horizontal dividers) to a table:</p>
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Date of Birth</th>
-                            {% for i in range(0, maxcot15p) %}
-                            <th scope="col">15p</th>
-                            {% endfor %}
-                            {% for i in range(0, maxcot45p) %}
-                            <th scope="col">45p</th>
-                            {% endfor %}
-                        </tr>
-                        </thead>
-                        </tbody>
-                        {% for score_board in score_boards %}
-                        <th scope="row">{{ loop.index }}</th>
-                        <td>{{ student.name }}</td>
-                        <td>{{ student.dob.strftime('%d-%m-%Y') }}</td>
-                        {% for i in range(0, maxcot15p) %}
-                        <th scope="col">{{}}</th>
-                        {% for i in range(0, maxcot45p) %}
-                        <th scope="col">{{}}</th>
-                        {% endfor %}
-                        {% for i in range(0, maxcot45p) %}
-                        <th scope="col">45p</th>
-                        {% endfor %}
-                        {% endfor %}
-                    </table>
+                <!-- Modal body -->
+                <div class="modal-body" style="max-height:60vh; overflow-y:auto">
+                    <div class="container mt-3 ">
+                        <!--                    <h2>Basic Table</h2>-->
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Date of Birth</th>
+                                {% for i in range(0, maxcot15p) %}
+                                <th scope="col">15p</th>
+                                {% endfor %}
+                                {% for i in range(0, maxcot45p) %}
+                                <th scope="col">45p</th>
+                                {% endfor %}
+                                <th scope="col">CK</th>
+                            </tr>
+                            </thead>
+                            </tbody>
+                            {% for score_board in score_boards %}
+                            <tr>
+                                <th scope="row">{{ loop.index }}</th>
+                                <td>{{ score_board.name }}</td>
+                                <td>{{ score_board.dob.strftime('%d-%m-%Y') }}</td>
+                                {% for i in range(0, maxcot15p) %}
+                                <th scope="col"><input type="number" class="form-control border-0" min="0" max="10">
+                                </th>
+                                {% endfor %}
+                                {% for i in range(0, maxcot45p) %}
+                                <th scope="col"><input type="number" class="form-control border-0" min="0" max="10">
+                                </th>
+                                {% endfor %}
+                                <th scope="col"><input type="number" class="form-control border-0" min="0" max="10">
+                                </th>
+                                text
+                                {% endfor %}
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Lưu</button>
                 </div>
             </div>
 
-            <!-- Modal footer -->
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-            </div>
-
         </div>
-    </div>
+
+    </form>
 </div>
+<script>
+    document.getElementById('btnModal').click()
+</script>
 {% endif %}
 {% endblock %}

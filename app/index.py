@@ -66,7 +66,7 @@ def lapDanhSach():
         grade = int(request.form.get("inputGrade"))
         newNameClass = f'{grade}/{len(dao.getClassByGradeAndSchoolYear(grade, currentSchoolYear)) + 1}'
         if (action == 'xacnhanlap'):
-            dao.createNewClassGrade10(newNameClass,size,grade,currentSchoolYear)
+            dao.createNewClassGrade10(newNameClass, size, grade, currentSchoolYear)
             return redirect(url_for('lapDanhSach'))
         else:
             if grade == 10:
@@ -91,6 +91,7 @@ def dieuChinhDanhSach():
 @app.route('/quydinh')
 def quyDinh():
     funcs = []
+
     if current_user.is_authenticated:
         funcs = dao.load_function(current_user.user_role)
     return render_template("quyDinh.html", funcs=funcs)
@@ -110,9 +111,33 @@ def thongKe():
 @app.route('/nhapdiem', methods=["GET", "POST"])
 def diem():
     funcs = []
+    className = request.args.get('inputTenLop') or ''
+    print(f'[{className}]')
+    subjectName = request.args.get('inputTenMon') or ''
+    semester = 'HK1_23-24'
+    maxcot15p = request.args.get('inputCot15p') or '1'
+    maxcot45p = request.args.get('inputCot45p') or '1'
+    maxcot15p = int(maxcot15p)
+    maxcot45p = int(maxcot45p)
+    subjects = dao.getAllSubject()
+    score_boards = []
+    if(className and subjectName and maxcot15p and maxcot45p):
+        score_boards = dao.getScoreBoard(className, subjectName, semester)
+        print(len(score_boards))
+        print(score_boards)
     if current_user.is_authenticated:
         funcs = dao.load_function(current_user.user_role)
-    return render_template("diem.html", funcs=funcs)
+
+    if request.method == 'POST':
+        # get diem tu table cua tung bangdiem
+
+        # tao diem csdl
+        return redirect(url_for('diem'))
+    return render_template("diem.html",
+                           funcs=funcs, className=className,
+                           maxcot15p=maxcot15p, maxcot45p=maxcot45p,
+                           score_boards=score_boards, subjects=subjects,
+                           subjectName=subjectName)
 
 
 @app.route('/api/policy', methods=['post'])
@@ -141,7 +166,7 @@ def nhap_diem():
     Lops = db.session.query(Class).all()
     Students = db.session.query(Student).all()
     Hocki = 'nkncifiitjm'
-    score_boards=[]
+    score_boards = []
 
     for lop in Lops:
         if (lop.name == tenLop):
@@ -160,8 +185,7 @@ def nhap_diem():
                 db.session.add(u)
                 db.session.commit()
         if request.method == "POST":
-            score_boards = dao.getScoreBoard(tenLop,tenMon,Hocki)
-
+            score_boards = dao.getScoreBoard(tenLop, tenMon, Hocki)
 
 
 @app.route('/chinhsuadiem')
