@@ -1,5 +1,7 @@
 {% extends 'layout/base.html' %}
 
+{% block title%}Thống kê{% endblock %}
+
 {% block content %}
 <h1 class="text-center text-info">THỐNG KÊ BÁO CÁO</h1>
 
@@ -17,10 +19,40 @@
                        name="filterScoreMax">
                 <label for="filterScoreMax" class="form-label"> Nhập điểm cao nhất: </label>
             </div>
-            <div class="col-md-3 col-xs-6">
-                <button  type="submit" class="btn btn-primary">Lọc</button>
+
+            <div class="dropdown col-md-6 col-xs-6">
+                <label for="subject" class="form-label">Chọn môn học: </label>
+                <input class="form-control" list="subjects" name="subject" id="subject">
+                <datalist id="subjects">
+                    {% for s in subjects %}
+                    <option value="{{ s.name }}">
+                        {% endfor %}
+                </datalist>
             </div>
 
+            <div class="dropdown col-md-6 col-xs-6">
+                <label for="classroom" class="form-label">Chọn lớp: </label>
+                <input class="form-control" list="classrooms" name="classroom" id="classroom">
+                <datalist id="classrooms">
+                    {% for c in classrooms %}
+                    <option value="{{ c.name }}">
+                        {% endfor %}
+                </datalist>
+            </div>
+
+            <div class="dropdown col-md-6 col-xs-6">
+                <label for="semester" class="form-label">Chọn học kì: </label>
+                <input class="form-control" list="semesters" name="semester" id="semester">
+                <datalist id="semesters">
+                    {% for s in semesters %}
+                    <option value="{{ s.name }}">
+                        {% endfor %}
+                </datalist>
+            </div>
+
+            <div class="col-md-3 col-xs-6 mt-3 mb-3">
+                <button type="submit" class="btn btn-primary">Lọc</button>
+            </div>
 
             <table class="table">
                 <tr>
@@ -37,6 +69,14 @@
         </div>
         <div class="col-md-7 col-xs-12">
             <canvas id="myChart"></canvas>
+        </div>
+        <div class="row mt-5">
+            <div class="col-md-5 col-xs-12">
+            </div>
+
+            <div class="col-md-7 col-xs-12">
+                <canvas id="myChart2"></canvas>
+            </div>
         </div>
     </div>
 </form>
@@ -57,6 +97,28 @@
 
       new Chart(ctx, {
         type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '# Tổng số lượng điểm',
+            data: data,
+            borderWidth: 1,
+            backgroundColor: ['red', 'green', 'blue', 'gold', 'brown']
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+
+      const ctx2 = document.getElementById('myChart2');
+
+      new Chart(ctx2, {
+        type: 'pie',
         data: {
           labels: labels,
           datasets: [{

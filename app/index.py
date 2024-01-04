@@ -98,11 +98,22 @@ def quyDinh():
 def thongKe():
     score_min = request.args.get('filterScoreMin')
     score_max = request.args.get('filterScoreMax')
+    semester = request.args.get('semester')
+    subject = request.args.get('subject')
+    classroom = request.args.get('classroom')
+
     funcs = []
+
     if current_user.is_authenticated:
         funcs = dao.load_function(current_user.user_role)
     return render_template("thongKe.html", funcs=funcs,
-                           score_stats=dao.scores_stats(scoreMin=score_min, scoreMax=score_max))
+                           score_stats=dao.scores_stats(scoreMin=score_min, scoreMax=score_max,
+                                                        semester=semester,
+                                                        subject=subject,
+                                                        classroom=classroom),
+                           semesters=dao.get_semester(),
+                           subjects=dao.get_subject(),
+                           classrooms=dao.get_classroom())
 
 
 @app.route('/nhapdiem')
@@ -147,8 +158,8 @@ def nhap_diem():
                 # diem[ssb.student_id]['15p']
                 for i in range(0, maxcot15p):
                     u = Score(value=diem[ssb.student_id]['15p'][i], type='15p', score_boards=ssb.id)
-                for i in range (0,maxcot15p):
-                    u = Score(value=diem[ssb.student_id]['15p'][i],type='15p',score_boards=ssb.id)
+                for i in range(0, maxcot15p):
+                    u = Score(value=diem[ssb.student_id]['15p'][i], type='15p', score_boards=ssb.id)
                     db.session.add(u)
                 for i in range(0, maxcot45p):
                     u = Score(value=diem[ssb.student_id]['45p'][i], type='45p', score_boards=ssb.id)
@@ -156,6 +167,7 @@ def nhap_diem():
                 u = Score(value=diem[ssb.student_id]['CK'], type='CK', score_boards=ssb.id)
                 db.session.add(u)
                 db.session.commit()
+
 
 @app.route('/chinhsuadiem')
 def chinhsuadiem():
