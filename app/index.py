@@ -143,15 +143,12 @@ def nhap_diem():
     for lop in Lops:
         if (lop.name == tenLop):
             for ssb in lop.score_boards:
-<<<<<<< HEAD
                 # diem[ssb.student_id] ds diem cua hoc sinh
                 # diem[ssb.student_id]['15p']
                 for i in range(0, maxcot15p):
                     u = Score(value=diem[ssb.student_id]['15p'][i], type='15p', score_boards=ssb.id)
-=======
                 for i in range (0,maxcot15p):
                     u = Score(value=diem[ssb.student_id]['15p'][i],type='15p',score_boards=ssb.id)
->>>>>>> 6f0ca50769de617d5f197579ac78c218ad9cff80
                     db.session.add(u)
                 for i in range(0, maxcot45p):
                     u = Score(value=diem[ssb.student_id]['45p'][i], type='45p', score_boards=ssb.id)
@@ -160,8 +157,6 @@ def nhap_diem():
                 db.session.add(u)
                 db.session.commit()
 
-<<<<<<< HEAD
-=======
 @app.route('/chinhsuadiem')
 def chinhsuadiem():
     funcs = []
@@ -169,7 +164,6 @@ def chinhsuadiem():
         funcs = dao.load_function(current_user.user_role)
     return render_template("chinhsuadiem.html", funcs=funcs)
 
->>>>>>> 6f0ca50769de617d5f197579ac78c218ad9cff80
 
 if __name__ == '__main__':
     from app import admin
