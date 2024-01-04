@@ -15,7 +15,7 @@
         </div>
     </div>
 
-    <div class="col-15">
+    <div class="">
         <label class="visually-hidden" for="inputGrade">Preference</label>
         <select class="form-select" name="inputGrade" id="inputGrade">
             <option value="10" {% if grade== 10 %}selected{% endif %}>Lớp 10</option>
@@ -23,7 +23,7 @@
             <option value="12" {% if grade== 12 %}selected{% endif %}>Lớp 12</option>
         </select>
     </div>
-    <div class="col-15">
+    <div class="">
         <button type="submit" class="btn btn-primary">Submit</button>
     </div>
 </form>
@@ -63,7 +63,7 @@
     <input type="hidden" name="inputSize" value="{{size}}">
     <input type="hidden" name="inputGrade" value="{{grade}}">
     <input type="hidden" name="action" value="xacnhanlap">
-    <h3 class="mt-2">Xác nhận lập danh sách</h3>
+    <h3 class="mt-2">Xác nhận lập danh sách lớp 10/7 niên học {{currentSchoolYear}}</h3>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 {% elif size != "" %}

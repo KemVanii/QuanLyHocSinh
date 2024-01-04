@@ -8,6 +8,7 @@ def load_function(user_role):
     if user_role == UserRoleEnum.Employee:
         return [
             {
+
                 'name': 'Tiếp nhận học sinh',
                 'url': '/student'
             },
@@ -22,9 +23,19 @@ def load_function(user_role):
         ]
     elif user_role == UserRoleEnum.Teacher:
         return [
+
             {
-                'name': 'Điểm',
-                'url': '/diem'
+                'url': '/menu',
+                'name': 'Nhập Điểm',
+                'url': '/nhapdiem'
+            },
+            {
+                'name': 'Chỉnh sửa Điểm',
+                'url': '/chinhsuadiem'
+            },
+            {
+                'name': 'Xem Điểm',
+                'url': '/xemdiem'
             }
         ]
     elif user_role == UserRoleEnum.Admin:
@@ -48,6 +59,7 @@ def getStudentsNotInClass(limit):
 
     return students_with_score_boards
 
+<<<<<<< HEAD
 
 def scores_stats(scoreMin=0, scoreMax=10):
     query = db.session.query(Score.value, func.count(Score.value)).group_by(Score.value)
@@ -58,4 +70,8 @@ def scores_stats(scoreMin=0, scoreMax=10):
 
     return query.all()
 
+=======
+def getClassBySchoolYear(schoolYear):
+    pass
+>>>>>>> 6f0ca50769de617d5f197579ac78c218ad9cff80
 # read json and write json

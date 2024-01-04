@@ -18,6 +18,8 @@ def index():
     funcs = []
     if current_user.is_authenticated:
         funcs = dao.load_function(current_user.user_role)
+    else:
+        return redirect(url_for('login'))
     return render_template('index.html', funcs=funcs)
 
 
@@ -54,6 +56,7 @@ def lapDanhSach():
     size = ""
     grade = 10
     maxSize = 40
+    currentSchoolYear = '23-24'
     if current_user.is_authenticated:
         funcs = dao.load_function(current_user.user_role)
     if request.method == "POST":
@@ -68,7 +71,9 @@ def lapDanhSach():
                 students = dao.getStudentsNotInClass(size)
 
     return render_template("lapDanhSach.html",
-                           funcs=funcs, students=students, size=size, grade=grade, maxSize=maxSize)
+                           funcs=funcs, students=students,
+                           size=size, grade=grade,
+                           maxSize=maxSize, currentSchoolYear=currentSchoolYear)
 
 
 @app.route('/dieuchinhdanhsach')
@@ -98,7 +103,7 @@ def thongKe():
                            score_stats=dao.scores_stats(scoreMin=score_min, scoreMax=score_max))
 
 
-@app.route('/diem')
+@app.route('/nhapdiem')
 def diem():
     funcs = []
     if current_user.is_authenticated:
@@ -136,10 +141,15 @@ def nhap_diem():
     for lop in Lops:
         if (lop.name == tenLop):
             for ssb in lop.score_boards:
+<<<<<<< HEAD
                 # diem[ssb.student_id] ds diem cua hoc sinh
                 # diem[ssb.student_id]['15p']
                 for i in range(0, maxcot15p):
                     u = Score(value=diem[ssb.student_id]['15p'][i], type='15p', score_boards=ssb.id)
+=======
+                for i in range (0,maxcot15p):
+                    u = Score(value=diem[ssb.student_id]['15p'][i],type='15p',score_boards=ssb.id)
+>>>>>>> 6f0ca50769de617d5f197579ac78c218ad9cff80
                     db.session.add(u)
                 for i in range(0, maxcot45p):
                     u = Score(value=diem[ssb.student_id]['45p'][i], type='45p', score_boards=ssb.id)
@@ -148,6 +158,16 @@ def nhap_diem():
                 db.session.add(u)
                 db.session.commit()
 
+<<<<<<< HEAD
+=======
+@app.route('/chinhsuadiem')
+def chinhsuadiem():
+    funcs = []
+    if current_user.is_authenticated:
+        funcs = dao.load_function(current_user.user_role)
+    return render_template("chinhsuadiem.html", funcs=funcs)
+
+>>>>>>> 6f0ca50769de617d5f197579ac78c218ad9cff80
 
 if __name__ == '__main__':
     from app import admin
