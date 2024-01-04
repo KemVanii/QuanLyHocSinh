@@ -57,15 +57,16 @@ def lapDanhSach():
     grade = 10
     maxSize = 40
     currentSchoolYear = '23-24'
-    dao.getClassByGradeAndSchoolYear(grade, currentSchoolYear)
+    newNameClass = ''
     if current_user.is_authenticated:
         funcs = dao.load_function(current_user.user_role)
     if request.method == "POST":
         action = request.form.get("action")
         size = int(request.form.get("inputSize"))
         grade = int(request.form.get("inputGrade"))
+        newNameClass = f'{grade}/{len(dao.getClassByGradeAndSchoolYear(grade, currentSchoolYear)) + 1}'
         if (action == 'xacnhanlap'):
-            # luu csdl
+            dao.createNewClassGrade10(newNameClass,size,grade,currentSchoolYear)
             return redirect(url_for('lapDanhSach'))
         else:
             if grade == 10:
@@ -75,7 +76,8 @@ def lapDanhSach():
     return render_template("lapDanhSach.html",
                            funcs=funcs, students=students,
                            size=size, grade=grade,
-                           maxSize=maxSize, currentSchoolYear=currentSchoolYear)
+                           maxSize=maxSize, currentSchoolYear=currentSchoolYear,
+                           newNameClass=newNameClass)
 
 
 @app.route('/dieuchinhdanhsach')
@@ -147,8 +149,8 @@ def nhap_diem():
                 # diem[ssb.student_id]['15p']
                 for i in range(0, maxcot15p):
                     u = Score(value=diem[ssb.student_id]['15p'][i], type='15p', score_boards=ssb.id)
-                for i in range (0,maxcot15p):
-                    u = Score(value=diem[ssb.student_id]['15p'][i],type='15p',score_boards=ssb.id)
+                for i in range(0, maxcot15p):
+                    u = Score(value=diem[ssb.student_id]['15p'][i], type='15p', score_boards=ssb.id)
                     db.session.add(u)
                 for i in range(0, maxcot45p):
                     u = Score(value=diem[ssb.student_id]['45p'][i], type='45p', score_boards=ssb.id)
@@ -156,6 +158,7 @@ def nhap_diem():
                 u = Score(value=diem[ssb.student_id]['CK'], type='CK', score_boards=ssb.id)
                 db.session.add(u)
                 db.session.commit()
+
 
 @app.route('/chinhsuadiem')
 def chinhsuadiem():
