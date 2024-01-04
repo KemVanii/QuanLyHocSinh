@@ -95,25 +95,25 @@ class TeacherClass(db.Model):
 
 if __name__ == '__main__':
     with app.app_context():
-        # db.create_all()
+        db.create_all()
 
-        import hashlib
-
-        u = User(name='Nguyễn Văn Admin', username='admin', gender=True, dob='1991-01-01', address='TPHCM',
-                 password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
-                 user_role=UserRoleEnum.Admin)
-
-        db.session.add(u)
-        db.session.commit()
-        u = User(name='Nguyễn Văn NhanVien', username='nhanVien', gender=True, dob='1991-01-01', address='TPHCM',
-                 password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
-                 user_role=UserRoleEnum.Employee)
-
-        db.session.add(u)
-        db.session.commit()
-        u = User(name='Nguyễn Văn GiaoVien', username='giaoVien', gender=True, dob='1991-01-01', address='TPHCM',
-                 password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
-                 user_role=UserRoleEnum.Teacher)
-
-        db.session.add(u)
-        db.session.commit()
+        # import hashlib
+        #
+        # u = User(name='Nguyễn Văn Admin', username='admin', gender=True, dob='1991-01-01', address='TPHCM',
+        #          password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+        #          user_role=UserRoleEnum.Admin)
+        #
+        # db.session.add(u)
+        # db.session.commit()
+        # u = User(name='Nguyễn Văn NhanVien', username='nhanVien', gender=True, dob='1991-01-01', address='TPHCM',
+        #          password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+        #          user_role=UserRoleEnum.Employee)
+        #
+        # db.session.add(u)
+        # db.session.commit()
+        # u = User(name='Nguyễn Văn GiaoVien', username='giaoVien', gender=True, dob='1991-01-01', address='TPHCM',
+        #          password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+        #          user_role=UserRoleEnum.Teacher)
+        #
+        # db.session.add(u)
+        # db.session.commit()

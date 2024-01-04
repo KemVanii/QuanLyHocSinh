@@ -59,8 +59,6 @@ def getStudentsNotInClass(limit):
 
     return students_with_score_boards
 
-<<<<<<< HEAD
-
 def scores_stats(scoreMin=0, scoreMax=10):
     query = db.session.query(Score.value, func.count(Score.value)).group_by(Score.value)
     if scoreMin:
@@ -70,8 +68,6 @@ def scores_stats(scoreMin=0, scoreMax=10):
 
     return query.all()
 
-=======
 def getClassBySchoolYear(schoolYear):
     pass
->>>>>>> 6f0ca50769de617d5f197579ac78c218ad9cff80
 # read json and write json
