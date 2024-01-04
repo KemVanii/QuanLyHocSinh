@@ -56,6 +56,7 @@ def lapDanhSach():
     size = ""
     grade = 10
     maxSize = 40
+    currentSchoolYear = '23-24'
     if current_user.is_authenticated:
         funcs = dao.load_function(current_user.user_role)
     if request.method == "POST":
@@ -70,7 +71,9 @@ def lapDanhSach():
                 students = dao.getStudentsNotInClass(size)
 
     return render_template("lapDanhSach.html",
-                           funcs=funcs, students=students, size=size, grade=grade, maxSize=maxSize)
+                           funcs=funcs, students=students,
+                           size=size, grade=grade,
+                           maxSize=maxSize, currentSchoolYear=currentSchoolYear)
 
 
 @app.route('/dieuchinhdanhsach')

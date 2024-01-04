@@ -24,7 +24,7 @@
     {% if current_user.is_authenticated %}
         {% include 'layout/header.html' %}
     {% endif %}
-    <div class="content">
+    <div class="content p-3">
         {% block content %}{% endblock %}
     </div>
 </div>

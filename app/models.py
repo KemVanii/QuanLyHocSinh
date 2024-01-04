@@ -24,6 +24,13 @@ class Student(db.Model):
     score_boards = relationship('ScoreBoard', foreign_keys='ScoreBoard.student_id', backref='student', lazy=True)
 
 
+class Subject(db.Model):
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(50), nullable=False)
+    score_boards = relationship('ScoreBoard', backref='subject', lazy=True)
+    classes = relationship('User', foreign_keys='User.subject_id', backref='subject', lazy=True)
+
+
 class User(db.Model, UserMixin):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False)
@@ -33,7 +40,8 @@ class User(db.Model, UserMixin):
     username = Column(String(50), nullable=False, unique=True)
     password = Column(String(100), nullable=False)
     user_role = Column(Enum(UserRoleEnum))
-    classes = relationship('Class', foreign_keys='Class.teacher_id', backref='user', lazy=True)
+    subject_id = Column(Integer, ForeignKey(Subject.id), nullable=False)
+
 
 
 class Grade(db.Model):
@@ -47,7 +55,6 @@ class Class(db.Model):
     name = Column(String(10), nullable=False)
     size = Column(Integer, nullable=False)
     grade_id = Column(Integer, ForeignKey(Grade.id), nullable=False)
-    teacher_id = Column(Integer, ForeignKey(User.id), nullable=False)
     score_boards = relationship('ScoreBoard', foreign_keys='ScoreBoard.class_id', backref='class', lazy=True)
 
 
@@ -55,12 +62,6 @@ class Phone(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     number = Column(String(10), nullable=False)
     student_id = Column(Integer, ForeignKey(Student.id), nullable=False)
-
-
-class Subject(db.Model):
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(50), nullable=False)
-    score_boards = relationship('ScoreBoard', backref='subject', lazy=True)
 
 
 class Semester(db.Model):
@@ -86,27 +87,33 @@ class Score(db.Model):
     score_board_id = Column(Integer, ForeignKey(ScoreBoard.id))
 
 
+class TeacherClass(db.Model):
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    teacher_id = Column(Integer, ForeignKey(User.id))
+    class_id = Column(Integer, ForeignKey(Class.id))
+
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
 
-        import hashlib
-
-        u = User(name='Nguyễn Văn Admin', username='admin', gender=True, dob='1991-01-01', address='TPHCM',
-                 password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
-                 user_role=UserRoleEnum.Admin)
-
-        db.session.add(u)
-        db.session.commit()
-        u = User(name='Nguyễn Văn NhanVien', username='nhanVien', gender=True, dob='1991-01-01', address='TPHCM',
-                 password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
-                 user_role=UserRoleEnum.Employee)
-
-        db.session.add(u)
-        db.session.commit()
-        u = User(name='Nguyễn Văn GiaoVien', username='giaoVien', gender=True, dob='1991-01-01', address='TPHCM',
-                 password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
-                 user_role=UserRoleEnum.Teacher)
-
-        db.session.add(u)
-        db.session.commit()
+        # import hashlib
+        #
+        # u = User(name='Nguyễn Văn Admin', username='admin', gender=True, dob='1991-01-01', address='TPHCM',
+        #          password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+        #          user_role=UserRoleEnum.Admin)
+        #
+        # db.session.add(u)
+        # db.session.commit()
+        # u = User(name='Nguyễn Văn NhanVien', username='nhanVien', gender=True, dob='1991-01-01', address='TPHCM',
+        #          password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+        #          user_role=UserRoleEnum.Employee)
+        #
+        # db.session.add(u)
+        # db.session.commit()
+        # u = User(name='Nguyễn Văn GiaoVien', username='giaoVien', gender=True, dob='1991-01-01', address='TPHCM',
+        #          password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+        #          user_role=UserRoleEnum.Teacher)
+        #
+        # db.session.add(u)
+        # db.session.commit()

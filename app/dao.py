@@ -58,4 +58,6 @@ def getStudentsNotInClass(limit):
 
     return students_with_score_boards
 
+def getClassBySchoolYear(schoolYear):
+    pass
 # read json and write json
