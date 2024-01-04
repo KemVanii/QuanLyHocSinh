@@ -19,24 +19,21 @@
     <link rel="stylesheet" href="static/css/menu.css">
 </head>
 <body>
-
-<<<<<<< HEAD
 {% include 'layout/header.html' %}
 
 <div class="container">
     {% block content %}{% endblock %}
-=======
-<div class="main-container d-flex">
-    {% if current_user.is_authenticated %}
+    <div class="main-container d-flex">
+        {% if current_user.is_authenticated %}
         {% include 'layout/header.html' %}
-    {% endif %}
-    <div class="content p-3">
-        {% block content %}{% endblock %}
+        {% endif %}
+        <div class="content p-3">
+            {% block content %}{% endblock %}
+        </div>
     </div>
->>>>>>> 6f0ca50769de617d5f197579ac78c218ad9cff80
-</div>
 
-<script src="{{ url_for('static', filename='js/policy.js') }}"></script>
-<script src="{{ url_for('static', filename='js/menu.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/policy.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/menu.js') }}"></script>
+</div>
 </body>
 </html>
