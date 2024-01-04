@@ -73,4 +73,7 @@ def scores_stats(scoreMin=0, scoreMax=10):
         query = query.filter(Score.value <= scoreMax)
 
     return query.all()
+
+def getClassBySchoolYear(schoolYear):
+    pass
 # read json and write json
