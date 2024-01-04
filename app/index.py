@@ -18,6 +18,8 @@ def index():
     funcs = []
     if current_user.is_authenticated:
         funcs = dao.load_function(current_user.user_role)
+    else:
+        return redirect(url_for('login'))
     return render_template('index.html', funcs=funcs)
 
 
