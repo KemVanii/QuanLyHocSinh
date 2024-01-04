@@ -58,6 +58,18 @@ def getStudentsNotInClass(limit):
 
     return students_with_score_boards
 
+
 def getClassBySchoolYear(schoolYear):
     pass
+
+
 # read json and write json
+
+def getScoreBoard(tenLop, tenMon, hocKi):
+    score_boards = (db.session.query(ScoreBoard)
+               .join(Class)
+               .join(Subject)
+               .join(Semester)
+               # .filter(Semester.name.contains(schoolYear)).all())
+               .filter(Class.name == tenLop, Subject.name == tenMon, Semester.name == hocKi).all())
+    return score_boards

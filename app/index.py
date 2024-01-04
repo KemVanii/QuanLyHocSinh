@@ -100,7 +100,7 @@ def thongKe():
     return render_template("thongKe.html", funcs=funcs)
 
 
-@app.route('/nhapdiem')
+@app.route('/nhapdiem', methods=["GET", "POST"])
 def diem():
     funcs = []
     if current_user.is_authenticated:
@@ -125,20 +125,22 @@ def modify_policy():
 
     return jsonify(policies)
 
+
 def nhap_diem():
-    tenLop=String(request.form.get("inputTenLop"))
-    maxcot15p=int(request.form.get("inputCot15p"))
+    tenLop = String(request.form.get("inputTenLop"))
+    maxcot15p = int(request.form.get("inputCot15p"))
     maxcot45p = int(request.form.get("inputCot45p"))
     tenMon = String(request.form.get("inputTenMon"))
     Lops = db.session.query(Class).all()
     Students = db.session.query(Student).all()
-    Hocki='nkncifiitjm'
+    Hocki = 'nkncifiitjm'
+    score_boards=[]
 
     for lop in Lops:
-        if(lop.name==tenLop):
+        if (lop.name == tenLop):
             for ssb in lop.score_boards:
-                for i in range (0,maxcot15p):
-                    u = Score(value=diem[ssb.student_id]['15p'][i],type='15p',score_boards=ssb.id)
+                for i in range(0, maxcot15p):
+                    u = Score(value=diem[ssb.student_id]['15p'][i], type='15p', score_boards=ssb.id)
                     db.session.add(u)
                 for i in range(0, maxcot45p):
                     u = Score(value=diem[ssb.student_id]['45p'][i], type='45p', score_boards=ssb.id)
@@ -146,6 +148,9 @@ def nhap_diem():
                 u = Score(value=diem[ssb.student_id]['CK'], type='CK', score_boards=ssb.id)
                 db.session.add(u)
                 db.session.commit()
+        if request.method == "POST":
+            score_boards = dao.getScoreBoard(tenLop,tenMon,Hocki)
+
 
 @app.route('/chinhsuadiem')
 def chinhsuadiem():
