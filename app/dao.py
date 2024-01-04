@@ -83,6 +83,7 @@ def getClassByGradeAndSchoolYear(grade, schoolYear):
                .join(Semester)
                .filter(Grade.name == grade, Semester.name.contains(schoolYear))
                .all())
+    print(classes)
     return classes
 
 def getAllSubject():
@@ -116,13 +117,43 @@ def createNewClassGrade10(className, size, gradeName, currentSchoolYear):
     db.session.commit()
 
 
-def scores_stats(scoreMin=0, scoreMax=10):
-    query = db.session.query(Score.value, func.count(Score.value)).group_by(Score.value)
+def get_semester():
+    return  db.session.query(Semester).all()
+
+def get_subject():
+    return  db.session.query(Subject).all()
+
+def get_classroom():
+    return  db.session.query(Class).all()
+
+
+def scores_stats(scoreMin=0, scoreMax=10, semester="HK1_23-24", subject="Toán", classroom="10A7"):
+    query = db.session.query(func.round(Score.value, 0), func.count(func.round(Score.value, 0))) \
+        .join(ScoreBoard, ScoreBoard.id==Score.score_board_id) \
+        .join(Semester, Semester.id==ScoreBoard.semester_id) \
+        .join(Subject, Subject.id==ScoreBoard.subject_id) \
+        .join(Class, Class.id==ScoreBoard.class_id) \
+        .group_by(func.round(Score.value, 0)) \
+        .order_by(func.round(Score.value, 0).asc())
+
     if scoreMin:
         query = query.filter(Score.value >= scoreMin)
     if scoreMax:
         query = query.filter(Score.value <= scoreMax)
+    if semester:
+        query = query.filter(Semester.name.contains(semester))
+    if subject:
+        query = query.filter(Subject.name.contains(subject))
+    if classroom:
+        query = query.filter(Class.name.contains(classroom))
 
     return query.all()
 
-    # read json and write json
+
+def passed_stats():
+    pass
+
+
+def getClassBySchoolYear(schoolYear):
+    pass
+# read json and write json

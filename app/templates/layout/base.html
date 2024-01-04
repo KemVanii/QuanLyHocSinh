@@ -23,16 +23,14 @@
 
 <div class="main-container d-flex">
     {% if current_user.is_authenticated %}
-        {% include 'layout/header.html' %}
-        {% endif %}
-        <div class="content p-3">
-            {% block content %}{% endblock %}
-        </div>
+    {% include 'layout/header.html' %}
+    {% endif %}
+    <div class="content p-3">
+        {% block content %}{% endblock %}
     </div>
 </div>
 
-    <script src="{{ url_for('static', filename='js/policy.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/menu.js') }}"></script>
-</div>
+<script src="{{ url_for('static', filename='js/policy.js') }}"></script>
+<script src="{{ url_for('static', filename='js/menu.js') }}"></script>
 </body>
 </html>

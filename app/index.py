@@ -101,11 +101,22 @@ def quyDinh():
 def thongKe():
     score_min = request.args.get('filterScoreMin')
     score_max = request.args.get('filterScoreMax')
+    semester = request.args.get('semester')
+    subject = request.args.get('subject')
+    classroom = request.args.get('classroom')
+
     funcs = []
+
     if current_user.is_authenticated:
         funcs = dao.load_function(current_user.user_role)
     return render_template("thongKe.html", funcs=funcs,
-                           score_stats=dao.scores_stats(scoreMin=score_min, scoreMax=score_max))
+                           score_stats=dao.scores_stats(scoreMin=score_min, scoreMax=score_max,
+                                                        semester=semester,
+                                                        subject=subject,
+                                                        classroom=classroom),
+                           semesters=dao.get_semester(),
+                           subjects=dao.get_subject(),
+                           classrooms=dao.get_classroom())
 
 
 @app.route('/nhapdiem', methods=["GET", "POST"])
@@ -186,6 +197,7 @@ def nhap_diem():
                 db.session.commit()
         if request.method == "POST":
             score_boards = dao.getScoreBoard(tenLop, tenMon, Hocki)
+
 
 
 @app.route('/chinhsuadiem')
