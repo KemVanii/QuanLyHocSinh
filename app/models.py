@@ -67,7 +67,7 @@ class Phone(db.Model):
 class Semester(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(10), nullable=False)
-    # HK1_23
+    # HK1_23-24
     score_boards = relationship('ScoreBoard', backref='semester', lazy=True)
 
 

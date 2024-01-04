@@ -25,7 +25,6 @@ def load_function(user_role):
         return [
 
             {
-                'url': '/menu',
                 'name': 'Nhập Điểm',
                 'url': '/nhapdiem'
             },
@@ -58,6 +57,13 @@ def getStudentsNotInClass(limit):
                                   .limit(limit).all())
 
     return students_with_score_boards
+
+
+def getClassByGradeAndSchoolYear(grade, schoolYear):
+    classes = (db.session.query(Class)
+               .all())
+    print(classes)
+    # read json and write json
 
 def scores_stats(scoreMin=0, scoreMax=10):
     query = db.session.query(Score.value, func.count(Score.value)).group_by(Score.value)

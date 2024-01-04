@@ -57,6 +57,7 @@ def lapDanhSach():
     grade = 10
     maxSize = 40
     currentSchoolYear = '23-24'
+    dao.getClassByGradeAndSchoolYear(grade, currentSchoolYear)
     if current_user.is_authenticated:
         funcs = dao.load_function(current_user.user_role)
     if request.method == "POST":
@@ -69,7 +70,8 @@ def lapDanhSach():
         else:
             if grade == 10:
                 students = dao.getStudentsNotInClass(size)
-
+            if grade == 11 or grade == 12:
+                pass
     return render_template("lapDanhSach.html",
                            funcs=funcs, students=students,
                            size=size, grade=grade,
