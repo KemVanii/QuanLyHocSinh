@@ -8,7 +8,7 @@
 <form action="/nhapdiem">
     <div class="mb-3 mt-3">
         <label for="inputTenLop" class="form-label">Tên lớp:</label>
-        <input type="text" class="form-control" id="inputTenLop" value="{{className}}" placeholder="Tên lớp"
+        <input type="text" class="form-control" id="inputTenLop" value="{{inputTenLop}}" placeholder="Tên lớp"
                name="inputTenLop" required>
     </div>
     <div class="mb-3">
@@ -26,13 +26,13 @@
     </div>
 
     <label for="browser" class="form-label">Chọn môn:</label>
-    <input class="form-control" list="browsers" name="inputTenMon" id="browser" value="{{subjectName}}" required>
+    <input class="form-control" list="browsers" name="inputTenMon" id="browser" value="{{inputTenMon}}" required>
     <datalist id="browsers">
         {%for subject in subjects %}
         <option value="{{subject.name}}">
             {% endfor %}
     </datalist>
-    <button type="submit" id='btnSubmit' class="btn btn-primary mb-3  mt-3">Submit</button>
+    <button type="submit" class="btn btn-primary mb-3  mt-3">Submit</button>
 </form>
 
 
@@ -79,16 +79,21 @@
                                 <td>{{ score_board.name }}</td>
                                 <td>{{ score_board.dob.strftime('%d-%m-%Y') }}</td>
                                 {% for i in range(0, maxcot15p) %}
-                                <th scope="col"><input type="number" class="form-control border-0" min="0" max="10">
+                                <th scope="col">
+                                    <input type="number" name="15p{{score_board.id}}[]" class="form-control border-0" min="0"
+                                           max="10" required>
                                 </th>
                                 {% endfor %}
                                 {% for i in range(0, maxcot45p) %}
-                                <th scope="col"><input type="number" class="form-control border-0" min="0" max="10">
+                                <th scope="col">
+                                    <input type="number" name="45p{{score_board.id}}[]" class="form-control border-0" min="0"
+                                           max="10" required>
                                 </th>
                                 {% endfor %}
-                                <th scope="col"><input type="number" class="form-control border-0" min="0" max="10">
+                                <th scope="col">
+                                    <input type="number" name="ck{{score_board.id}}" class="form-control border-0" min="0"
+                                           max="10" required>
                                 </th>
-                                text
                                 {% endfor %}
                             </tr>
                         </table>
@@ -97,7 +102,10 @@
 
                 <!-- Modal footer -->
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Lưu</button>
+                    <input type="hidden" name="inputTenLop" value="{{inputTenLop}}">
+                    <input type="hidden" name="inputTenMon" value="{{inputTenMon}}">
+                    <input type="hidden">
+                    <button type="submit" class="btn btn-primary">Lưu</button>
                 </div>
             </div>
 

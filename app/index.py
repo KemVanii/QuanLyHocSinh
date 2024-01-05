@@ -121,34 +121,41 @@ def thongKe():
 
 @app.route('/nhapdiem', methods=["GET", "POST"])
 def diem():
-    funcs = []
-    className = request.args.get('inputTenLop') or ''
-    print(f'[{className}]')
-    subjectName = request.args.get('inputTenMon') or ''
     semester = 'HK1_23-24'
+    if request.method == 'POST':
+        #get all scores
+        inputTenLop = request.form.get('inputTenLop')
+        inputTenMon = request.form.get('inputTenMon')
+        score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, semester)
+        dataScores = []
+        for score_board in score_boards:
+            dataScore = {
+                'score_board_id': score_board.id,
+                '15p': request.form.getlist(f'15p{score_board.id}[]'),
+                '45p': request.form.getlist(f'45p{score_board.id}[]'),
+                'ck': request.form.get(f'ck{score_board.id}')
+            }
+            dataScores.append(dataScore)
+        dao.insert_score(dataScores)
+        return redirect(url_for('diem'))
+
+    funcs = dao.load_function(current_user.user_role)
+    inputTenLop = request.args.get('inputTenLop') or ''
+    inputTenMon = request.args.get('inputTenMon') or ''
     maxcot15p = request.args.get('inputCot15p') or '1'
     maxcot45p = request.args.get('inputCot45p') or '1'
     maxcot15p = int(maxcot15p)
     maxcot45p = int(maxcot45p)
     subjects = dao.getAllSubject()
     score_boards = []
-    if(className and subjectName and maxcot15p and maxcot45p):
-        score_boards = dao.getScoreBoard(className, subjectName, semester)
-        print(len(score_boards))
-        print(score_boards)
-    if current_user.is_authenticated:
-        funcs = dao.load_function(current_user.user_role)
+    if inputTenLop and inputTenMon and maxcot15p and maxcot45p:
+        score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, semester)
 
-    if request.method == 'POST':
-        # get diem tu table cua tung bangdiem
-
-        # tao diem csdl
-        return redirect(url_for('diem'))
     return render_template("diem.html",
-                           funcs=funcs, className=className,
+                           funcs=funcs, inputTenLop=inputTenLop,
                            maxcot15p=maxcot15p, maxcot45p=maxcot45p,
                            score_boards=score_boards, subjects=subjects,
-                           subjectName=subjectName)
+                           inputTenMon=inputTenMon)
 
 
 @app.route('/api/policy', methods=['post'])
@@ -169,34 +176,6 @@ def modify_policy():
     return jsonify(policies)
 
 
-def nhap_diem():
-    tenLop = String(request.form.get("inputTenLop"))
-    maxcot15p = int(request.form.get("inputCot15p"))
-    maxcot45p = int(request.form.get("inputCot45p"))
-    tenMon = String(request.form.get("inputTenMon"))
-    Lops = db.session.query(Class).all()
-    Students = db.session.query(Student).all()
-    Hocki = 'nkncifiitjm'
-    score_boards = []
-
-    for lop in Lops:
-        if (lop.name == tenLop):
-            for ssb in lop.score_boards:
-                # diem[ssb.student_id] ds diem cua hoc sinh
-                # diem[ssb.student_id]['15p']
-                for i in range(0, maxcot15p):
-                    u = Score(value=diem[ssb.student_id]['15p'][i], type='15p', score_boards=ssb.id)
-                for i in range(0, maxcot15p):
-                    u = Score(value=diem[ssb.student_id]['15p'][i], type='15p', score_boards=ssb.id)
-                    db.session.add(u)
-                for i in range(0, maxcot45p):
-                    u = Score(value=diem[ssb.student_id]['45p'][i], type='45p', score_boards=ssb.id)
-                    db.session.add(u)
-                u = Score(value=diem[ssb.student_id]['CK'], type='CK', score_boards=ssb.id)
-                db.session.add(u)
-                db.session.commit()
-        if request.method == "POST":
-            score_boards = dao.getScoreBoard(tenLop, tenMon, Hocki)
 
 
 
