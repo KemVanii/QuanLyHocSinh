@@ -13,6 +13,7 @@ def restrict_to_roles(allowed_roles):
             # check role
             if current_user.user_role not in allowed_roles:
                 return redirect(url_for('login'))
+            return f(*args, **kwargs)
         return decorated_function
     return decorator
 
