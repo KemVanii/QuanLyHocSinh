@@ -22,7 +22,7 @@
 <body>
 
 <div class="main-container d-flex">
-    {% if current_user.is_authenticated %}
+    {% if request.endpoint != 'login' %}
     {% include 'layout/header.html' %}
     {% endif %}
     <div class="content p-3">

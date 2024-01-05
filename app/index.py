@@ -5,6 +5,7 @@ import json
 from flask_login import login_user, logout_user, current_user
 from app import app, login
 from app.models import *
+from app.auth import restrict_to_roles
 import dao
 
 
@@ -42,6 +43,7 @@ def logout():
 
 
 @app.route('/tiepnhanhocsinh')
+@restrict_to_roles([UserRoleEnum.Employee])
 def tiepNhanHocSinh():
     funcs = []
     if current_user.is_authenticated:
@@ -50,6 +52,7 @@ def tiepNhanHocSinh():
 
 
 @app.route('/lapdanhsach', methods=["GET", "POST"])
+@restrict_to_roles([UserRoleEnum.Employee])
 def lapDanhSach():
     funcs = []
     students = []
@@ -81,6 +84,7 @@ def lapDanhSach():
 
 
 @app.route('/dieuchinhdanhsach')
+@restrict_to_roles([UserRoleEnum.Employee])
 def dieuChinhDanhSach():
     funcs = []
     if current_user.is_authenticated:
@@ -89,6 +93,7 @@ def dieuChinhDanhSach():
 
 
 @app.route('/quydinh')
+@restrict_to_roles([UserRoleEnum.Admin])
 def quyDinh():
     funcs = []
 
@@ -98,6 +103,7 @@ def quyDinh():
 
 
 @app.route('/thongke')
+@restrict_to_roles([UserRoleEnum.Admin])
 def thongKe():
     score_min = request.args.get('filterScoreMin')
     score_max = request.args.get('filterScoreMax')
@@ -120,6 +126,7 @@ def thongKe():
 
 
 @app.route('/nhapdiem', methods=["GET", "POST"])
+@restrict_to_roles([UserRoleEnum.Teacher])
 def diem():
     semester = 'HK1_23-24'
     if request.method == 'POST':
@@ -180,6 +187,7 @@ def modify_policy():
 
 
 @app.route('/chinhsuadiem')
+@restrict_to_roles([UserRoleEnum.Teacher])
 def chinhsuadiem():
     funcs = []
     if current_user.is_authenticated:
