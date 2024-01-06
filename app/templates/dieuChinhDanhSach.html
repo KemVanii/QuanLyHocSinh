@@ -4,8 +4,24 @@
 
 {% block content %}
 <h1 class="text-center mt-2">Điều chỉnh danh sách</h1>
+
+<div class="container">
+    <form class="row">
+        <div class="col-md-2">
+            <select class="form-select" name="inputGrade">
+                {% for grade in grades %}
+                <option value="{{grade.name}}" {% if grade.name==inputGrade %}selected{% endif %}>Khối {{grade.name}}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-6">
+            <button type="submit" class="btn btn-secondary float-right">Sửa</button>
+        </div>
+    </form>
+</div>
+{% if classes|length != 0 %}
 <div class="container mt-3">
-    <h2>Khối 10</h2>
     <table class="table">
         <thead>
         <tr>
@@ -16,18 +32,22 @@
         </tr>
         </thead>
         <tbody>
+        {% for class in classes %}
         <tr>
-            <th>John</th>
-            <td>Doe</td>
-            <td>john@example.com</td>
+            <th>{{loop.index}}</th>
+            <td>{{class.name}}</td>
+            <td>{{class.size}}</td>
             <td>
-                <form action="">
-                    <button></button>
+                <form action="/dieuchinhdanhsach/{{class.id}}">
+                    <button type="submit" class="btn btn-secondary">Sửa</button>
                 </form>
             </td>
         </tr>
+        {% endfor%}
         </tbody>
     </table>
 </div>
-
+{% else %}
+<h3 class="mt-2">Không tìm thấy danh sách</h3>
+{% endif %}
 {% endblock %}

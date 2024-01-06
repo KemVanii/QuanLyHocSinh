@@ -72,7 +72,6 @@ def getStudentsNotInClass(limit):
 # read json and write json
 
 def getScoreBoard(className, subjectName, semester, currentSchoolYear):
-
     score_boards = (db.session.query(ScoreBoard.id, Student.name, Student.dob)
                     .join(Class)
                     .join(Subject)
@@ -82,14 +81,14 @@ def getScoreBoard(className, subjectName, semester, currentSchoolYear):
                             Semester.name == f'{semester}_{currentSchoolYear}').all())
     return score_boards
 
+
 def getClass(Class_ID):
-    cl = db.session.query(Class).filter(Class.id==Class_ID).first()
+    cl = db.session.query(Class).filter(Class.id == Class_ID).first()
     return cl
 
 
-
 def getClassesByTeacher(teacherId, kw=None):
-    list_class = (db.session.query(TeacherClass, Class.name, Class.size,Class.id)
+    list_class = (db.session.query(TeacherClass, Class.name, Class.size, Class.id)
                   .join(Class)
                   .filter(TeacherClass.teacher_id == teacherId)
                   )
@@ -121,6 +120,29 @@ def getClassesByTeacherAndCurrentSchoolYear(teacherId, currentSchoolYear):
             .filter(TeacherClass.teacher_id == teacherId,
                     Semester.name.contains(currentSchoolYear))
             .all())
+
+
+def getClassById(classId):
+    return db.session.query(Class).filter(Class.id == classId).first()
+
+
+def getStudentListByClassId(classId):
+    return (db.session.query(Student)
+            .join(ScoreBoard)
+            .filter(ScoreBoard.class_id == classId).all())
+
+
+def deleteStudentInClass(studentId, classId, schoolYear):
+    print(studentId, classId, schoolYear)
+    score_boards = (db.session.query(ScoreBoard)
+                    .join(Semester)
+                    .filter(ScoreBoard.class_id == classId,
+                            ScoreBoard.student_id == studentId,
+                            Semester.name.contains(schoolYear))
+                    .all())
+    for score_board in score_boards:
+        score_board.status = False
+    db.session.commit()
 
 
 def getSubjectByUser(teacherId):
@@ -256,7 +278,6 @@ def passed_stats():
 
 
 def insert_score(dataScores):
-    print(dataScores)
     for dataScore in dataScores:
         for i in range(len(dataScore['15p'])):
             s = Score(value=dataScore['15p'][i], type='15p', score_board_id=dataScore['score_board_id'])
@@ -267,5 +288,11 @@ def insert_score(dataScores):
         s = Score(value=dataScore['ck'], type='ck', score_board_id=dataScore['score_board_id'])
         db.session.add(s)
         db.session.commit()
+
+
+
+
+
+
 
 # read json and write json

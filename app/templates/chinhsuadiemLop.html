@@ -5,15 +5,16 @@
 {% block content %}
 <h1 class="text-center mt-2">Chỉnh sửa điểm cho lớp </h1>
 
-<form>
+<form action="/chinhsuadiem/{{idLop}} " method="POST">
     <button type="submit" class="btn btn-primary">Lọc</button>
     <label for="semester" class="form-label">Chọn học kì:</label>
     <select id="semester" name="inputHocki" class="form-select">
         <option value="HK1" {% if inputHocki=='HK1' %} selected {%endif%}>HK1</option>
         <option value="HK2" {% if inputHocki=='HK2' %} selected {%endif%}>HK2</option>
     </select>
+</form>
 
-    <table class="table table-bordered">
+<table class="table table-bordered">
     <thead>
     <tr>
         <th class="text-center" scope="col">#</th>
@@ -24,11 +25,11 @@
         <th class="text-center" scope="col">Cuối kì</th>
     </tr>
     </thead>
-    </tbody>
-    {% for score_board in score_board_sua %}
+    <tbody>
+    {% for score_board in score_boards_sua %}
     <tr>
         <th class="text-center" scope="row">{{ loop.index }}</th>
-        <td>{{ score_board.name }}</td>
+        <td>{{ score_board.id }}</td>
         <td>{{ score_board.dob.strftime('%d-%m-%Y') }}</td>
         {% for i in range(0, inputCot15p) %}
         <th scope="col">
@@ -49,13 +50,10 @@
                    min="0"
                    max="10" step="any" required>
         </th>
-        {% endfor %}
     </tr>
+    {% endfor %}
+    </tbody>
+
+
 </table>
-
-</form>
-
-
-
-
 {% endblock %}
