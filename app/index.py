@@ -126,7 +126,8 @@ def thongke():
     semester = request.args.get('semester')
     subject = request.args.get('subject')
     classroom = request.args.get('classroom')
-    grade = request.args.get('grade')
+    classroom_pie = request.args.get('classroomPie')
+    grade_pie = request.args.get('gradePie')
 
     funcs = []
 
@@ -137,7 +138,7 @@ def thongke():
                                                         semester=semester,
                                                         subject=subject,
                                                         classroom=classroom),
-                           types_stats=dao.types_stats_by_grade(grade=grade),
+                           types_stats=dao.types_stats(classroom=classroom_pie, grade=grade_pie),
                            semesters=dao.get_semester(),
                            subjects=dao.get_subject(),
                            classrooms=dao.get_classroom(),
@@ -223,8 +224,14 @@ def chinhsuadiem():
 @app.route('/chinhsuadiem/<int:idLop>')
 @restrict_to_roles([UserRoleEnum.Teacher])
 def chinhsuadiemLop(idLop):
+    currentSchoolYear = '23-24'
     funcs = dao.load_function(current_user.user_role)
-    return render_template('chinhsuadiemLop.html', funcs=funcs)
+    inputHocki = request.args.get('inputHocki') or 'HK1'
+
+    inputTenMon=dao.getSubjectByUser(current_user.id).name
+    score_boards_sua = dao.getScoreBoard(dao.getClass(idLop).name, inputTenMon, inputHocki, currentSchoolYear)
+    print(score_boards_sua)
+    return render_template('chinhsuadiemLop.html',funcs=funcs,score_boards_sua=score_boards_sua)
 
 
 if __name__ == '__main__':

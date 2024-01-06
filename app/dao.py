@@ -1,5 +1,6 @@
 from app.models import *
-from sqlalchemy import Column, Integer, String, Float, func, desc, asc
+from sqlalchemy import func, desc, asc, text
+from collections import defaultdict
 from app import db
 from app.models import ScoreBoard, Score
 import random
@@ -71,7 +72,6 @@ def getStudentsNotInClass(limit):
 # read json and write json
 
 def getScoreBoard(className, subjectName, semester, currentSchoolYear):
-    print(className, subjectName, semester, currentSchoolYear)
     score_boards = (db.session.query(ScoreBoard.id, Student.name, Student.dob)
                     .join(Class)
                     .join(Subject)
@@ -80,6 +80,11 @@ def getScoreBoard(className, subjectName, semester, currentSchoolYear):
                     .filter(Class.name == className, Subject.name == subjectName,
                             Semester.name == f'{semester}_{currentSchoolYear}').all())
     return score_boards
+
+def getClass(Class_ID):
+    cl = db.session.query(Class).filter(Class.id==Class_ID).first()
+    return cl
+
 
 
 def getClassesByTeacher(teacherId, kw=None):
@@ -176,15 +181,6 @@ def get_grade():
     return db.session.query(Grade).all()
 
 
-class StudentStats:
-    def __init__(self, grade_name, student_name, class_name, avg_score, grade_type):
-        self.grade_name = grade_name
-        self.student_name = student_name
-        self.class_name = class_name
-        self.avg_score = avg_score
-        self.grade_type = grade_type
-
-
 def type_sort_avg_score(avg_score):
     if avg_score >= 8:
         return "Giỏi"
@@ -196,27 +192,44 @@ def type_sort_avg_score(avg_score):
         return "Yếu"
 
 
-def types_stats_by_grade(grade="10"):
+def types_stats(classroom, grade):
     # viet phan loai tung hoc sinh trong khoi, xuat khoi, loai hs, so luong)
+    query = db.session.query(Grade.name, Student.name, Class.name, func.round(func.avg(Score.value), 2)) \
+        .join(Class) \
+        .join(ScoreBoard) \
+        .join(Student) \
+        .join(Subject) \
+        .join(Score) \
+        .group_by(Grade.name, Student.name, Class.name) \
+        .order_by(asc(Grade.name), desc(func.round(func.avg(Score.value), 2)))
 
-    result = []
+    if classroom:
+        query = query.filter(Class.name == classroom)
     if grade:
-        query = db.session.query(Grade.name, Student.name, Class.name, func.round(func.avg(Score.value), 2)) \
-            .join(Class) \
-            .join(ScoreBoard) \
-            .join(Student) \
-            .join(Subject) \
-            .join(Score) \
-            .group_by(Student.name, Class.name) \
-            .filter(Grade.name == grade) \
-            .order_by(desc(func.round(func.avg(Score.value), 2)))
+        query = query.filter(Grade.name == grade)
 
-        result = [StudentStats(grade_name, student_name, class_name, avg_score, type_sort_avg_score(avg_score))
-                  for grade_name, student_name, class_name, avg_score in query.all()]
+    result = query.all()
 
-    # print(result)
+    result_info = defaultdict(lambda: defaultdict(int))
 
-    return result
+    for grade_name, _, _, avg_score in result:
+        grade_type = type_sort_avg_score(avg_score)
+        result_info[grade_name][grade_type] += 1
+
+    result_summary = [
+        (grade_name, grade_type, count)
+        for grade_name, grade_data in result_info.items()
+        for grade_type, count in grade_data.items()
+    ]
+
+    for grade_name, grade_type, count in result_summary:
+        print(f"Grade: {grade_name}, Grade Type: {grade_type}, Count: {count}")
+
+    return result_summary
+
+
+def types_stats_by_grade():
+    pass
 
 
 def scores_stats(score_min=0, score_max=10, semester="HK1_23-24", subject="Toán", classroom="10A7"):
@@ -239,7 +252,7 @@ def scores_stats(score_min=0, score_max=10, semester="HK1_23-24", subject="Toán
     if classroom:
         query = query.filter(Class.name.contains(classroom))
 
-    print(query.all())
+    # print(query.all())
 
     return query.all()
 

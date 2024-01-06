@@ -69,27 +69,37 @@
 
             <hr class="mt-3">
 
-            <div class="dropdown col-md-6 col-xs-6 mt-3">
-                <label for="grade" class="form-label">Chọn khối học: </label>
-                <input class="form-control" list="grades" name="grade" id="grade">
-                <datalist id="grades">
-                    {% for g in grades %}
-                    <option value="{{ g.name }}">
+            <div class="dropdown col-md-6 col-xs-6">
+                <label for="classroomPie" class="form-label">Chọn lớp: </label>
+                <input class="form-control" list="classroomsPie" name="classroomPie" id="classroomPie">
+                <datalist id="classroomsPie">
+                    {% for c in classrooms %}
+                    <option value="{{ c.name }}">
+                        {% endfor %}
+                </datalist>
+            </div>
+
+            <div class="dropdown col-md-6 col-xs-6">
+                <label for="gradePie" class="form-label">Chọn khối: </label>
+                <input class="form-control" list="gradesPie" name="gradePie" id="gradePie">
+                <datalist id="gradesPie">
+                    {% for c in grades %}
+                    <option value="{{ c.name }}">
                         {% endfor %}
                 </datalist>
             </div>
 
             <table class="table">
                 <tr>
-                    <th>Học sinh</th>
-                    <th>Điểm trung bình</th>
+                    <th>Khối</th>
                     <th>Loại học lực</th>
+                    <th>Số lượng</th>
                 </tr>
-                {% for t in types_stats %}
+                {% for grade_name, grade_type, count in types_stats %}
                 <tr>
-                    <td>{{t.student_name}}</td>
-                    <td>{{t.avg_score}}</td>
-                    <td>{{t.grade_type}}</td>
+                    <td>{{grade_name}}</td>
+                    <td>{{grade_type}}</td>
+                    <td>{{count}}</td>
                 </tr>
                 {% endfor %}
             </table>
@@ -126,9 +136,6 @@
 
     </div>
 </form>
-
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     let data=[];
     let labels=[];
@@ -140,60 +147,32 @@
     labels.push('{{s[0]}}')
     {% endfor %}
 
-    {% for t in types_stats %}
-    tData.push({{t.avg_score}})
-    tLabels.push('{{t.student_name}}')
-    {% endfor %}
+    let countCells = document.querySelectorAll('.table td:nth-child(3)');
 
-    window.onload = function() {
-      const ctx = document.getElementById('myChart');
+    let summaryTotals = {};
 
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: '# Số lượng điểm',
-            data: data,
-            borderWidth: 1,
-            backgroundColor: ['lightBlue', 'lightGreen', 'blue', 'gold', 'brown', 'lightPink']
-          }]
-        },
-        options: {
-          scales: {
-            y: {
-              beginAtZero: true
-            }
-          }
-        }
-      });
+    countCells.forEach(cell => {
+    const gradeType = cell.previousElementSibling.textContent;
+    const count = parseInt(cell.textContent);
 
-      const ctx2 = document.getElementById('myChart2');
-
-      new Chart(ctx2, {
-        type: 'pie',
-        data: {
-          labels: tLabels,
-          datasets: [{
-            label: '# Xếp loại điểm',
-            data: tData,
-            borderWidth: 1,
-            backgroundColor: ['lightBlue', 'lightGreen', 'blue', 'gold', 'brown', 'lightPink']
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          aspectRatio: 1,
-
-          scales: {
-            y: {
-              beginAtZero: true
-            }
-          }
-        }
-      });
+    if (!summaryTotals[gradeType]) {
+        summaryTotals[gradeType] = 0;
     }
+    summaryTotals[gradeType] += count;
+    });
+
+    console.log(summaryTotals)
+
+    Object.keys(summaryTotals).forEach(gradeType => {
+        tLabels.push(gradeType);
+        tData.push(summaryTotals[gradeType]);
+    });
+
+<!--    {% for grade_name, grade_type, count in types_stats %}-->
+<!--    tData.push({{count}})-->
+<!--    tLabels.push('{{grade_type}}')-->
+<!--    {% endfor %}-->
+
 
 </script>
 {% endblock %}
