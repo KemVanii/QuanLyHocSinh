@@ -47,7 +47,16 @@ def load_function(user_role):
             {
                 'name': 'Thống kê',
                 'url': '/thongke'
-            }
+            },
+            {
+                'name': 'Tài khoản',
+                'url': '/user'
+            },
+            {
+                'name': 'Môn học',
+                'url': '/subject'
+            },
+
         ]
     return []
 
@@ -60,19 +69,16 @@ def getStudentsNotInClass(limit):
     return students_with_score_boards
 
 
-def getClassBySchoolYear(schoolYear):
-    pass
-
-
 # read json and write json
 
-def getScoreBoard(tenLop, tenMon, hocKi):
-    score_boards = (db.session.query(ScoreBoard)
+def getScoreBoard(className, subjectName, semester, currentSchoolYear):
+    score_boards = (db.session.query(ScoreBoard.id, Student.name, Student.dob)
                     .join(Class)
                     .join(Subject)
                     .join(Semester)
-                    # .filter(Semester.name.contains(schoolYear)).all())
-                    .filter(Class.name == tenLop, Subject.name == tenMon, Semester.name == hocKi).all())
+                    .join(Student)
+                    .filter(Class.name == className, Subject.name == subjectName,
+                            Semester.name == f'{semester}_{currentSchoolYear}').all())
     return score_boards
 
 
@@ -87,6 +93,24 @@ def getClassByGradeAndSchoolYear(grade, schoolYear):
     return classes
 
 
+def getClassesByTeacherAndCurrentSchoolYear(teacherId, currentSchoolYear):
+    return (db.session.query(TeacherClass, Class.name, Class.size)
+            .join(Class)
+            .join(ScoreBoard)
+            .join(Semester)
+            .filter(TeacherClass.teacher_id == teacherId,
+                    Semester.name.contains(currentSchoolYear))
+            .all())
+
+
+def getSubjectByUser(teacherId):
+    return db.session.query(Subject).join(User).filter(User.id == teacherId).first()
+
+
+def getAllSubject():
+    return db.session.query(Subject).all()
+
+
 def createNewClassGrade10(className, size, gradeName, currentSchoolYear):
     # Create new Class
     grade_id = db.session.query(Grade).filter(Grade.name == gradeName).first().id
@@ -96,7 +120,7 @@ def createNewClassGrade10(className, size, gradeName, currentSchoolYear):
     db.session.refresh(newClass)
 
     # Create new Score_Boards
-    subjects = db.session.query(Subject).all()
+    subjects = getAllSubject()
     students = getStudentsNotInClass(size)
     semesters = db.session.query(Semester).filter(Semester.name.contains(currentSchoolYear)).all()
     for semester in semesters:
@@ -203,6 +227,16 @@ def passed_stats():
     pass
 
 
-def getClassBySchoolYear(schoolYear):
-    pass
+def insert_score(dataScores):
+    for dataScore in dataScores:
+        for i in range(len(dataScore['15p'])):
+            s = Score(value=dataScore['15p'][i], type='15p', score_board_id=dataScore['score_board_id'])
+            db.session.add(s)
+        for i in range(len(dataScore['45p'])):
+            s = Score(value=dataScore['45p'][i], type='15p', score_board_id=dataScore['score_board_id'])
+            db.session.add(s)
+        s = Score(value=dataScore['ck'], type='ck', score_board_id=dataScore['score_board_id'])
+        db.session.add(s)
+        db.session.commit()
+
 # read json and write json

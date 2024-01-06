@@ -5,6 +5,7 @@ import json
 from flask_login import login_user, logout_user, current_user
 from app import app, login
 from app.models import *
+from app.auth import restrict_to_roles
 import dao
 
 
@@ -42,6 +43,7 @@ def logout():
 
 
 @app.route('/tiepnhanhocsinh')
+@restrict_to_roles([UserRoleEnum.Employee])
 def tiepNhanHocSinh():
     funcs = []
     if current_user.is_authenticated:
@@ -50,6 +52,7 @@ def tiepNhanHocSinh():
 
 
 @app.route('/lapdanhsach', methods=["GET", "POST"])
+@restrict_to_roles([UserRoleEnum.Employee])
 def lapDanhSach():
     funcs = []
     students = []
@@ -81,6 +84,7 @@ def lapDanhSach():
 
 
 @app.route('/dieuchinhdanhsach')
+@restrict_to_roles([UserRoleEnum.Employee])
 def dieuChinhDanhSach():
     funcs = []
     if current_user.is_authenticated:
@@ -89,8 +93,10 @@ def dieuChinhDanhSach():
 
 
 @app.route('/quydinh')
+@restrict_to_roles([UserRoleEnum.Admin])
 def quyDinh():
     funcs = []
+
     if current_user.is_authenticated:
         funcs = dao.load_function(current_user.user_role)
     return render_template("quyDinh.html", funcs=funcs)
@@ -122,11 +128,44 @@ def thongKe():
 
 
 @app.route('/nhapdiem', methods=["GET", "POST"])
+@restrict_to_roles([UserRoleEnum.Teacher])
 def diem():
-    funcs = []
-    if current_user.is_authenticated:
-        funcs = dao.load_function(current_user.user_role)
-    return render_template("diem.html", funcs=funcs)
+    currentSchoolYear = '23-24'
+    if request.method == 'POST':
+        # get all scores
+        inputTenLop = request.form.get('inputTenLop')
+        inputTenMon = request.form.get('inputTenMon')
+        inputHocki = request.form.get('inputHocki')
+        score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, inputHocki, currentSchoolYear)
+        dataScores = []
+        for score_board in score_boards:
+            dataScore = {
+                'score_board_id': score_board.id,
+                '15p': request.form.getlist(f'15p{score_board.id}[]'),
+                '45p': request.form.getlist(f'45p{score_board.id}[]'),
+                'ck': request.form.get(f'ck{score_board.id}')
+            }
+            dataScores.append(dataScore)
+        dao.insert_score(dataScores)
+        return redirect(url_for('diem'))
+
+    funcs = dao.load_function(current_user.user_role)
+    inputTenLop = request.args.get('inputTenLop') or ''
+    inputTenMon = dao.getSubjectByUser(current_user.id).name
+    inputCot15p = int(request.args.get('inputCot15p') or '1')
+    inputCot45p = int(request.args.get('inputCot45p') or '1')
+    inputHocki = request.args.get('inputHocki')
+    classes = dao.getClassesByTeacherAndCurrentSchoolYear(current_user.id, currentSchoolYear)
+    score_boards = []
+
+    if inputTenLop and inputCot15p and inputCot45p:
+        score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, inputHocki, currentSchoolYear)
+
+    return render_template("diem.html",
+                           funcs=funcs, inputTenLop=inputTenLop,  classes=classes,
+                           inputCot15p=inputCot15p, inputCot45p=inputCot45p,
+                           score_boards=score_boards, inputHocki=inputHocki,
+                           inputTenMon=inputTenMon, currentSchoolYear=currentSchoolYear)
 
 
 @app.route('/api/policy', methods=['post'])
@@ -147,37 +186,8 @@ def modify_policy():
     return jsonify(policies)
 
 
-def nhap_diem():
-    tenLop = String(request.form.get("inputTenLop"))
-    maxcot15p = int(request.form.get("inputCot15p"))
-    maxcot45p = int(request.form.get("inputCot45p"))
-    tenMon = String(request.form.get("inputTenMon"))
-    Lops = db.session.query(Class).all()
-    Students = db.session.query(Student).all()
-    Hocki = 'nkncifiitjm'
-    score_boards = []
-
-    for lop in Lops:
-        if (lop.name == tenLop):
-            for ssb in lop.score_boards:
-                # diem[ssb.student_id] ds diem cua hoc sinh
-                # diem[ssb.student_id]['15p']
-                for i in range(0, maxcot15p):
-                    u = Score(value=diem[ssb.student_id]['15p'][i], type='15p', score_boards=ssb.id)
-                for i in range(0, maxcot15p):
-                    u = Score(value=diem[ssb.student_id]['15p'][i], type='15p', score_boards=ssb.id)
-                    db.session.add(u)
-                for i in range(0, maxcot45p):
-                    u = Score(value=diem[ssb.student_id]['45p'][i], type='45p', score_boards=ssb.id)
-                    db.session.add(u)
-                u = Score(value=diem[ssb.student_id]['CK'], type='CK', score_boards=ssb.id)
-                db.session.add(u)
-                db.session.commit()
-        if request.method == "POST":
-            score_boards = dao.getScoreBoard(tenLop, tenMon, Hocki)
-
-
 @app.route('/chinhsuadiem')
+@restrict_to_roles([UserRoleEnum.Teacher])
 def chinhsuadiem():
     funcs = []
     if current_user.is_authenticated:
