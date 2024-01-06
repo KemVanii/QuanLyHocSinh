@@ -107,7 +107,8 @@ def thongKe():
     semester = request.args.get('semester')
     subject = request.args.get('subject')
     classroom = request.args.get('classroom')
-    grade = request.args.get('grade')
+    classroom_pie = request.args.get('classroomPie')
+    grade_pie = request.args.get('gradePie')
 
     funcs = []
 
@@ -118,7 +119,7 @@ def thongKe():
                                                         semester=semester,
                                                         subject=subject,
                                                         classroom=classroom),
-                           types_stats=dao.types_stats_by_grade(grade=grade),
+                           types_stats=dao.types_stats(classroom=classroom_pie, grade=grade_pie),
                            semesters=dao.get_semester(),
                            subjects=dao.get_subject(),
                            classrooms=dao.get_classroom(),
@@ -160,7 +161,7 @@ def diem():
         score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, inputHocki, currentSchoolYear)
 
     return render_template("diem.html",
-                           funcs=funcs, inputTenLop=inputTenLop,  classes=classes,
+                           funcs=funcs, inputTenLop=inputTenLop, classes=classes,
                            inputCot15p=inputCot15p, inputCot45p=inputCot45p,
                            score_boards=score_boards, inputHocki=inputHocki,
                            inputTenMon=inputTenMon, currentSchoolYear=currentSchoolYear)
