@@ -71,7 +71,7 @@ def getStudentsNotInClass(limit):
 # read json and write json
 
 def getScoreBoard(className, subjectName, semester, currentSchoolYear):
-    print(className,subjectName,semester,currentSchoolYear)
+
     score_boards = (db.session.query(ScoreBoard.id, Student.name, Student.dob)
                     .join(Class)
                     .join(Subject)
@@ -247,6 +247,7 @@ def passed_stats():
 
 
 def insert_score(dataScores):
+    print(dataScores)
     for dataScore in dataScores:
         for i in range(len(dataScore['15p'])):
             s = Score(value=dataScore['15p'][i], type='15p', score_board_id=dataScore['score_board_id'])

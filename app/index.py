@@ -32,13 +32,9 @@ def login():
         if user and user.password == str(hashlib.md5(request.form.get("pswd").encode('utf-8')).hexdigest()):
             login_user(user)
             next_url = request.form.get("next_url")
-            print(next_url)
-            print(request.form.get("pswd"))
             if next_url is not None:
-                print('yes')
                 return redirect(url_for(next_url))
 
-            print('no')
             return redirect(url_for("index"))
 
     next_url = request.args.get('next_url') or 'index'
@@ -61,15 +57,13 @@ def tiepNhanHocSinh():
 @app.route('/lapdanhsach', methods=["GET", "POST"])
 @restrict_to_roles([UserRoleEnum.Employee], next_url='lapdanhsach')
 def lapdanhsach():
-    funcs = []
+    funcs = dao.load_function(current_user.user_role)
     students = []
     size = ""
     grade = 10
     maxSize = 40
     currentSchoolYear = '23-24'
     newNameClass = ''
-    if current_user.is_authenticated:
-        funcs = dao.load_function(current_user.user_role)
     if request.method == "POST":
         action = request.form.get("action")
         size = int(request.form.get("inputSize"))
@@ -100,10 +94,7 @@ def dieuchinhdanhsach():
 @app.route('/quydinh')
 @restrict_to_roles([UserRoleEnum.Admin])
 def quydinh():
-    funcs = []
-
-    if current_user.is_authenticated:
-        funcs = dao.load_function(current_user.user_role)
+    funcs = dao.load_function(current_user.user_role)
     return render_template("quyDinh.html", funcs=funcs)
 
 
@@ -163,7 +154,7 @@ def nhapdiem():
     classes = dao.getClassesByTeacherAndCurrentSchoolYear(current_user.id, currentSchoolYear)
     score_boards = []
 
-    if inputTenLop and inputCot15p and inputCot45p:
+    if inputTenLop and inputHocki and inputCot15p and inputCot45p:
         score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, inputHocki, currentSchoolYear)
 
     return render_template("diem.html",
