@@ -81,10 +81,10 @@ def getScoreBoard(className, subjectName, semester, currentSchoolYear):
                             Semester.name == f'{semester}_{currentSchoolYear}').all())
     return score_boards
 
-def getClass(Class_ID):
-    cl = db.session.query(Class).filter(Class.id==Class_ID).first()
-    return cl
 
+def getClass(Class_ID):
+    cl = db.session.query(Class).filter(Class.id == Class_ID).first()
+    return cl
 
 
 def getClassesByTeacher(teacherId, kw=None):
@@ -120,13 +120,29 @@ def getClassesByTeacherAndCurrentSchoolYear(teacherId, currentSchoolYear):
             .filter(TeacherClass.teacher_id == teacherId,
                     Semester.name.contains(currentSchoolYear))
             .all())
+
+
 def getClassById(classId):
     return db.session.query(Class).filter(Class.id == classId).first()
+
 
 def getStudentListByClassId(classId):
     return (db.session.query(Student)
             .join(ScoreBoard)
             .filter(ScoreBoard.class_id == classId).all())
+
+
+def deleteStudentInClass(studentId, classId, schoolYear):
+    print(studentId, classId, schoolYear)
+    score_boards = (db.session.query(ScoreBoard)
+                    .join(Semester)
+                    .filter(ScoreBoard.class_id == classId,
+                            ScoreBoard.student_id == studentId,
+                            Semester.name.contains(schoolYear))
+                    .all())
+    for score_board in score_boards:
+        score_board.status = False
+    db.session.commit()
 
 
 def getSubjectByUser(teacherId):

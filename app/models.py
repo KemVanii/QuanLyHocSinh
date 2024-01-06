@@ -30,6 +30,9 @@ class Subject(db.Model):
     score_boards = relationship('ScoreBoard', backref='subject', lazy=True)
     classes = relationship('User', foreign_keys='User.subject_id', backref='subject', lazy=True)
 
+    def __str__(self):
+        return self.name
+
 
 class User(db.Model, UserMixin):
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -42,7 +45,8 @@ class User(db.Model, UserMixin):
     user_role = Column(Enum(UserRoleEnum))
     subject_id = Column(Integer, ForeignKey(Subject.id), nullable=False)
 
-
+    def __str__(self):
+        return self.name
 
 class Grade(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -78,6 +82,7 @@ class ScoreBoard(db.Model):
     subject_id = Column(Integer, ForeignKey(Subject.id), nullable=False)
     class_id = Column(Integer, ForeignKey(Class.id), nullable=False)
     semester_id = Column(Integer, ForeignKey(Semester.id), nullable=False)
+    status = Column(Boolean, default=True, nullable=False)
 
 
 class Score(db.Model):
