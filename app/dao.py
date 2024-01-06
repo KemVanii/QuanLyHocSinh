@@ -1,5 +1,5 @@
 from app.models import *
-from sqlalchemy import Column, Integer, String, Float, func
+from sqlalchemy import Column, Integer, String, Float, func, desc, asc
 from app import db
 from app.models import ScoreBoard, Score
 import random
@@ -68,12 +68,14 @@ def getClassBySchoolYear(schoolYear):
 
 def getScoreBoard(tenLop, tenMon, hocKi):
     score_boards = (db.session.query(ScoreBoard)
-               .join(Class)
-               .join(Subject)
-               .join(Semester)
-               # .filter(Semester.name.contains(schoolYear)).all())
-               .filter(Class.name == tenLop, Subject.name == tenMon, Semester.name == hocKi).all())
+                    .join(Class)
+                    .join(Subject)
+                    .join(Semester)
+                    # .filter(Semester.name.contains(schoolYear)).all())
+                    .filter(Class.name == tenLop, Subject.name == tenMon, Semester.name == hocKi).all())
     return score_boards
+
+
 def getClassByGradeAndSchoolYear(grade, schoolYear):
     classes = (db.session.query(Class)
                .join(Grade)
@@ -105,43 +107,94 @@ def createNewClassGrade10(className, size, gradeName, currentSchoolYear):
                 db.session.add(newScoreBoard)
 
     # Create new TeacherClass
-    teachers = db.session.query(User).filter(User.user_role==UserRoleEnum.Teacher).all()
+    teachers = db.session.query(User).filter(User.user_role == UserRoleEnum.Teacher).all()
     for subject in subjects:
         filterTeacherBySubject = [teacher for teacher in teachers if teacher.subject_id == subject.id]
-        newTeacherClass= TeacherClass(teacher_id=random.choice(filterTeacherBySubject).id,class_id=newClass.id)
+        newTeacherClass = TeacherClass(teacher_id=random.choice(filterTeacherBySubject).id, class_id=newClass.id)
         db.session.add(newTeacherClass)
     db.session.commit()
 
 
 def get_semester():
-    return  db.session.query(Semester).all()
+    return db.session.query(Semester).all()
+
 
 def get_subject():
-    return  db.session.query(Subject).all()
+    return db.session.query(Subject).all()
+
 
 def get_classroom():
-    return  db.session.query(Class).all()
+    return db.session.query(Class).all()
 
 
-def scores_stats(scoreMin=0, scoreMax=10, semester="HK1_23-24", subject="Toán", classroom="10A7"):
+def get_grade():
+    return db.session.query(Grade).all()
+
+
+class StudentStats:
+    def __init__(self, grade_name, student_name, class_name, avg_score, grade_type):
+        self.grade_name = grade_name
+        self.student_name = student_name
+        self.class_name = class_name
+        self.avg_score = avg_score
+        self.grade_type = grade_type
+
+
+def type_sort_avg_score(avg_score):
+    if avg_score >= 8:
+        return "Giỏi"
+    elif avg_score >= 6.5:
+        return "Khá"
+    elif avg_score >= 5:
+        return "Trung bình"
+    else:
+        return "Yếu"
+
+
+def types_stats_by_grade(grade="10"):
+    # viet phan loai tung hoc sinh trong khoi, xuat khoi, loai hs, so luong)
+
+    result = []
+    if grade:
+        query = db.session.query(Grade.name, Student.name, Class.name, func.round(func.avg(Score.value), 2)) \
+            .join(Class) \
+            .join(ScoreBoard) \
+            .join(Student) \
+            .join(Subject) \
+            .join(Score) \
+            .group_by(Student.name, Class.name) \
+            .filter(Grade.name == grade) \
+            .order_by(desc(func.round(func.avg(Score.value), 2)))
+
+        result = [StudentStats(grade_name, student_name, class_name, avg_score, type_sort_avg_score(avg_score))
+                  for grade_name, student_name, class_name, avg_score in query.all()]
+
+    # print(result)
+
+    return result
+
+
+def scores_stats(score_min=0, score_max=10, semester="HK1_23-24", subject="Toán", classroom="10A7"):
     query = db.session.query(func.round(Score.value, 0), func.count(func.round(Score.value, 0))) \
-        .join(ScoreBoard, ScoreBoard.id==Score.score_board_id) \
-        .join(Semester, Semester.id==ScoreBoard.semester_id) \
-        .join(Subject, Subject.id==ScoreBoard.subject_id) \
-        .join(Class, Class.id==ScoreBoard.class_id) \
+        .join(ScoreBoard, ScoreBoard.id == Score.score_board_id) \
+        .join(Semester, Semester.id == ScoreBoard.semester_id) \
+        .join(Subject, Subject.id == ScoreBoard.subject_id) \
+        .join(Class, Class.id == ScoreBoard.class_id) \
         .group_by(func.round(Score.value, 0)) \
-        .order_by(func.round(Score.value, 0).asc())
+        .order_by(asc(func.round(Score.value, 0)))
 
-    if scoreMin:
-        query = query.filter(Score.value >= scoreMin)
-    if scoreMax:
-        query = query.filter(Score.value <= scoreMax)
+    if score_min:
+        query = query.filter(Score.value >= score_min)
+    if score_max:
+        query = query.filter(Score.value <= score_max)
     if semester:
         query = query.filter(Semester.name.contains(semester))
     if subject:
         query = query.filter(Subject.name.contains(subject))
     if classroom:
         query = query.filter(Class.name.contains(classroom))
+
+    print(query.all())
 
     return query.all()
 
