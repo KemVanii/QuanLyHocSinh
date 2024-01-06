@@ -5,7 +5,7 @@
 {% block content %}
 <h1 class="text-center mt-2">Chỉnh sửa điểm cho lớp </h1>
 
-<form action="/chinhsuadiem/{{idLop}}">
+<form action="/chinhsuadiem/{{idLop}} " method="POST">
     <button type="submit" class="btn btn-primary">Lọc</button>
     <label for="semester" class="form-label">Chọn học kì:</label>
     <select id="semester" name="inputHocki" class="form-select">
@@ -27,30 +27,30 @@
     </thead>
     <tbody>
     {% for score_board in score_boards_sua %}
-        <tr>
-            <th class="text-center" scope="row">{{ loop.index }}</th>
-            <td>{{ score_board.id }}</td>
-            <td>{{ score_board.dob.strftime('%d-%m-%Y') }}</td>
-            {% for i in range(0, inputCot15p) %}
-            <th scope="col">
-                <input type="number" name="15p{{score_board.id}}[]" class="form-control border-0"
-                       min="0"
-                       max="10" step="any" required>
-            </th>
-            {% endfor %}
-            {% for i in range(0, inputCot45p) %}
-            <th scope="col">
-                <input type="number" name="45p{{score_board.id}}[]" class="form-control border-0"
-                       min="0"
-                       max="10" step="any" required>
-            </th>
-            {% endfor %}
-            <th scope="col">
-                <input type="number" name="ck{{score_board.id}}" class="form-control border-0"
-                       min="0"
-                       max="10" step="any" required>
-            </th>
-        </tr>
+    <tr>
+        <th class="text-center" scope="row">{{ loop.index }}</th>
+        <td>{{ score_board.id }}</td>
+        <td>{{ score_board.dob.strftime('%d-%m-%Y') }}</td>
+        {% for i in range(0, inputCot15p) %}
+        <th scope="col">
+            <input type="number" name="15p{{score_board.id}}[]" class="form-control border-0"
+                   min="0"
+                   max="10" step="any" required>
+        </th>
+        {% endfor %}
+        {% for i in range(0, inputCot45p) %}
+        <th scope="col">
+            <input type="number" name="45p{{score_board.id}}[]" class="form-control border-0"
+                   min="0"
+                   max="10" step="any" required>
+        </th>
+        {% endfor %}
+        <th scope="col">
+            <input type="number" name="ck{{score_board.id}}" class="form-control border-0"
+                   min="0"
+                   max="10" step="any" required>
+        </th>
+    </tr>
     {% endfor %}
     </tbody>
 

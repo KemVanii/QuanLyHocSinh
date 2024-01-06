@@ -289,4 +289,10 @@ def insert_score(dataScores):
         db.session.add(s)
         db.session.commit()
 
+
+
+
+
+
+
 # read json and write json
