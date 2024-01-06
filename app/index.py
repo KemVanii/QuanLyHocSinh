@@ -231,7 +231,11 @@ def chinhsuadiemLop(idLop):
     score_boards_sua = dao.getScoreBoard(dao.getClass(idLop).name, inputTenMon, inputHocki, currentSchoolYear)
     inputCot15p = 1
     inputCot45p = 1
-    print(score_boards_sua[0].scores)
+    # print(score_boards_sua[0][0].scores)
+    # list_score=dao.getScore(dao.getScoreBoardByClassID(idLop))
+    # print(list_score)
+
+
 
 
     return render_template('chinhsuadiemLop.html', funcs=funcs,

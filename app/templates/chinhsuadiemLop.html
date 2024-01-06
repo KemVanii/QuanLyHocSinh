@@ -33,9 +33,8 @@
         <td>{{ score_board.dob.strftime('%d-%m-%Y') }}</td>
         {% for i in range(0, inputCot15p) %}
         <th scope="col">
-            <input type="number" name="15p{{score_board.id}}[]" class="form-control border-0"
-                   min="0"
-                   max="10" step="any" required>
+             <td>{{ score_boards_sua.score }}</td>
+
         </th>
         {% endfor %}
         {% for i in range(0, inputCot45p) %}

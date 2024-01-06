@@ -72,7 +72,7 @@ def getStudentsNotInClass(limit):
 # read json and write json
 
 def getScoreBoard(className, subjectName, semester, currentSchoolYear):
-    score_boards = (db.session.query(ScoreBoard.id, Student.name, Student.dob)
+    score_boards = (db.session.query (ScoreBoard,ScoreBoard.id, Student.name, Student.dob)
                     .join(Class)
                     .join(Subject)
                     .join(Semester)
@@ -273,7 +273,11 @@ def insert_score(dataScores):
         db.session.add(s)
         db.session.commit()
 
-
+# def getScore(ScoreBoard_id):
+#     list_Score=db.session.query(ScoreBoard).join(Score).filter(Score.id==ScoreBoard_id).all()
+#     return list_Score
+# def getScoreBoardByClassID(ClassID):
+#     ScoreBoardID=db.session.query(ScoreBoard).join(Class).filter(Class.id==ClassID).first()
 
 
 
