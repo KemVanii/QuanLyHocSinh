@@ -17,12 +17,13 @@
     <link rel="stylesheet" href="static/css/login.css">
     <link rel="stylesheet" href="static/css/policy.css">
     <link rel="stylesheet" href="static/css/menu.css">
+    <link rel="stylesheet" href="static/css/statistic.css">
     <link rel="stylesheet" href="static/css/diem.css">
 </head>
 <body>
 
 <div class="main-container d-flex">
-    {% if current_user.is_authenticated %}
+    {% if request.endpoint != 'login' %}
     {% include 'layout/header.html' %}
     {% endif %}
     <div class="content p-3">
@@ -32,5 +33,6 @@
 
 <script src="{{ url_for('static', filename='js/policy.js') }}"></script>
 <script src="{{ url_for('static', filename='js/menu.js') }}"></script>
+<script src="{{ url_for('static', filename='js/statistic.js') }}"></script>
 </body>
 </html>
