@@ -31,9 +31,14 @@ def login():
             username=request.form.get("username")).first()
         if user and user.password == str(hashlib.md5(request.form.get("pswd").encode('utf-8')).hexdigest()):
             login_user(user)
+            next_url = request.form.get("next_url")
+            if next_url is not None:
+                return redirect(url_for(next_url))
+
             return redirect(url_for("index"))
 
-    return render_template("login.html")
+    next_url = request.args.get('next_url') or 'index'
+    return render_template("login.html", next_url=next_url)
 
 
 @app.route("/logout")
@@ -45,24 +50,20 @@ def logout():
 @app.route('/tiepnhanhocsinh')
 @restrict_to_roles([UserRoleEnum.Employee])
 def tiepNhanHocSinh():
-    funcs = []
-    if current_user.is_authenticated:
-        funcs = dao.load_function(current_user.user_role)
+    funcs = dao.load_function(current_user.user_role)
     return render_template("tiepNhanHocSinh.html", funcs=funcs)
 
 
 @app.route('/lapdanhsach', methods=["GET", "POST"])
-@restrict_to_roles([UserRoleEnum.Employee])
-def lapDanhSach():
-    funcs = []
+@restrict_to_roles([UserRoleEnum.Employee], next_url='lapdanhsach')
+def lapdanhsach():
+    funcs = dao.load_function(current_user.user_role)
     students = []
     size = ""
     grade = 10
     maxSize = 40
     currentSchoolYear = '23-24'
     newNameClass = ''
-    if current_user.is_authenticated:
-        funcs = dao.load_function(current_user.user_role)
     if request.method == "POST":
         action = request.form.get("action")
         size = int(request.form.get("inputSize"))
@@ -85,23 +86,20 @@ def lapDanhSach():
 
 @app.route('/dieuchinhdanhsach')
 @restrict_to_roles([UserRoleEnum.Employee])
-def dieuChinhDanhSach():
+def dieuchinhdanhsach():
     funcs = dao.load_function(current_user.user_role)
     return render_template("dieuChinhDanhSach.html", funcs=funcs)
 
 
 @app.route('/quydinh')
 @restrict_to_roles([UserRoleEnum.Admin])
-def quyDinh():
-    funcs = []
-
-    if current_user.is_authenticated:
-        funcs = dao.load_function(current_user.user_role)
+def quydinh():
+    funcs = dao.load_function(current_user.user_role)
     return render_template("quyDinh.html", funcs=funcs)
 
 
 @app.route('/thongke', methods=["GET"])
-def thongKe():
+def thongke():
     score_min = request.args.get('filterScoreMin')
     score_max = request.args.get('filterScoreMax')
     semester = request.args.get('semester')
@@ -128,7 +126,7 @@ def thongKe():
 
 @app.route('/nhapdiem', methods=["GET", "POST"])
 @restrict_to_roles([UserRoleEnum.Teacher])
-def diem():
+def nhapdiem():
     currentSchoolYear = '23-24'
     if request.method == 'POST':
         # get all scores
@@ -146,7 +144,7 @@ def diem():
             }
             dataScores.append(dataScore)
         dao.insert_score(dataScores)
-        return redirect(url_for('diem'))
+        return redirect(url_for('nhapdiem'))
 
     funcs = dao.load_function(current_user.user_role)
     inputTenLop = request.args.get('inputTenLop') or ''
@@ -157,7 +155,7 @@ def diem():
     classes = dao.getClassesByTeacherAndCurrentSchoolYear(current_user.id, currentSchoolYear)
     score_boards = []
 
-    if inputTenLop and inputCot15p and inputCot45p:
+    if inputTenLop and inputHocki and inputCot15p and inputCot45p:
         score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, inputHocki, currentSchoolYear)
 
     return render_template("diem.html",
@@ -191,7 +189,26 @@ def chinhsuadiem():
     funcs = []
     if current_user.is_authenticated:
         funcs = dao.load_function(current_user.user_role)
-    return render_template("chinhsuadiem.html", funcs=funcs)
+    subject = ""
+    list_class = []
+    kw = request.args.get('kw')
+    list_class = dao.getClassesByTeacher(current_user.id, kw)
+    subject = dao.getSubjectByUser(current_user.id)
+    return render_template("chinhsuadiem.html", subject=subject, list_class=list_class
+                           , funcs=funcs)
+
+
+@app.route('/chinhsuadiem/<int:idLop>')
+@restrict_to_roles([UserRoleEnum.Teacher])
+def chinhsuadiemLop(idLop):
+    currentSchoolYear = '23-24'
+    funcs = dao.load_function(current_user.user_role)
+    inputHocki = request.args.get('inputHocki') or 'HK1'
+
+    inputTenMon=dao.getSubjectByUser(current_user.id).name
+    score_boards_sua = dao.getScoreBoard(dao.getClass(idLop).name, inputTenMon, inputHocki, currentSchoolYear)
+    print(score_boards_sua)
+    return render_template('chinhsuadiemLop.html',funcs=funcs,score_boards_sua=score_boards_sua)
 
 
 if __name__ == '__main__':

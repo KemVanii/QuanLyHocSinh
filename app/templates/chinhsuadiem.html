@@ -1,36 +1,54 @@
-{% extends 'layout/base.html' %}
+    {% extends 'layout/base.html' %}
 
 {% block title %}Thong ke{% endblock %}
 
 {% block content %}
 <!-- Offcanvas Sidebar -->
-<div class="offcanvas offcanvas-start" id="demo">
-    <div class="offcanvas-header">
-        <h1 class="offcanvas-title">Thông tin lớp chỉnh sửa</h1>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
-    </div>
-    <div class="offcanvas-body">
+<h1 class="text-center mt-2">Danh sách lớp của bạn</h1>
 
-        <div class="mb-3 mt-3">
-            <label for="inputTenLop" class="form-label">Tên lớp:</label>
-            <input type="text" class="form-control" id="inputTenLop" placeholder="Tên lớp" name="inputTenLop">
-        </div>
+<form class="d-flex" method="get" action="/chinhsuadiem">
+    <input class="form-control me-2" type="text" name="kw" placeholder="Tìm kiếm lớp...">
+    <button class="btn btn-primary" type="submit">Search</button>
+</form>
 
-        <label for="browser" class="form-label">Chọn môn:</label>
-        <input class="form-control" list="browsers" name="inputTenMon" id="browser">
-        <datalist id="browsers">
-            <option value="Toán">
-            <option value="Lý">
-            <option value="Hóa">
-            <option value="Văn">
-            <option value="Anh">
-        </datalist>
-        <button class="btn btn-secondary" type="button">A Button</button>
+{% if list_class|length != 0 %}
+<div class="container" style="height: 60vh; overflow-y: auto;">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Tên Lớp</th>
+                <th scope="col">Sỉ số lớp</th>
+                <th scope="col">Môn học</th>
+                <th scope="col">Tên giảng viên</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for class in list_class %}
+            <tr>
+                <th scope="row">{{ loop.index }}</th>
+                <td>{{ class.name }}</td>
+                <td>{{ class.size }}</td>
+                <td>{{ subject.name }}</td>
+                <td>{{ current_user.name }}</td>
+                <td>
+                    <form action="/chinhsuadiem/{{class.id}}">
+                        <button type="submit" class="btn btn-secondary">Sửa</button>
+                    </form>
+                </td>
+
+            </tr>
+
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
-<!-- Button to open the offcanvas sidebar -->
-<button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#demo">
-    Nhập thông tin lớp chỉnh sửa
-</button>
+{% elif size != "" %}
+<h3 class="mt-2">Không tìm thấy danh sách học sinh phù hợp</h3>
+{% endif %}
+
 {% endblock %}
