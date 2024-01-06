@@ -9,7 +9,7 @@
 
     <ul class="list-unstyled px-2">
         {% for f in funcs %}
-        <li class="{% if request.endpoint == f.url %}active{% endif %}"><a href="/{{f.endpoint}}" class="text-decoration-none px-3 py-2 d-block"><i class="fal fa-list"></i>
+        <li class="{% if request.endpoint == f.endpoint %}active{% endif %}"><a href="/{{f.endpoint}}" class="text-decoration-none px-3 py-2 d-block"><i class="fal fa-list"></i>
             {{f.name}}</a></li>
         </li>
         {% endfor%}

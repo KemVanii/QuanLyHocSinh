@@ -31,9 +31,18 @@ def login():
             username=request.form.get("username")).first()
         if user and user.password == str(hashlib.md5(request.form.get("pswd").encode('utf-8')).hexdigest()):
             login_user(user)
+            next_url = request.form.get("next_url")
+            print(next_url)
+            print(request.form.get("pswd"))
+            if next_url is not None:
+                print('yes')
+                return redirect(url_for(next_url))
+
+            print('no')
             return redirect(url_for("index"))
 
-    return render_template("login.html")
+    next_url = request.args.get('next_url') or 'index'
+    return render_template("login.html", next_url=next_url)
 
 
 @app.route("/logout")
@@ -45,15 +54,13 @@ def logout():
 @app.route('/tiepnhanhocsinh')
 @restrict_to_roles([UserRoleEnum.Employee])
 def tiepNhanHocSinh():
-    funcs = []
-    if current_user.is_authenticated:
-        funcs = dao.load_function(current_user.user_role)
+    funcs = dao.load_function(current_user.user_role)
     return render_template("tiepNhanHocSinh.html", funcs=funcs)
 
 
 @app.route('/lapdanhsach', methods=["GET", "POST"])
-@restrict_to_roles([UserRoleEnum.Employee])
-def lapDanhSach():
+@restrict_to_roles([UserRoleEnum.Employee], next_url='lapdanhsach')
+def lapdanhsach():
     funcs = []
     students = []
     size = ""
@@ -85,14 +92,14 @@ def lapDanhSach():
 
 @app.route('/dieuchinhdanhsach')
 @restrict_to_roles([UserRoleEnum.Employee])
-def dieuChinhDanhSach():
+def dieuchinhdanhsach():
     funcs = dao.load_function(current_user.user_role)
     return render_template("dieuChinhDanhSach.html", funcs=funcs)
 
 
 @app.route('/quydinh')
 @restrict_to_roles([UserRoleEnum.Admin])
-def quyDinh():
+def quydinh():
     funcs = []
 
     if current_user.is_authenticated:
@@ -101,7 +108,7 @@ def quyDinh():
 
 
 @app.route('/thongke', methods=["GET"])
-def thongKe():
+def thongke():
     score_min = request.args.get('filterScoreMin')
     score_max = request.args.get('filterScoreMax')
     semester = request.args.get('semester')
@@ -127,7 +134,7 @@ def thongKe():
 
 @app.route('/nhapdiem', methods=["GET", "POST"])
 @restrict_to_roles([UserRoleEnum.Teacher])
-def diem():
+def nhapdiem():
     currentSchoolYear = '23-24'
     if request.method == 'POST':
         # get all scores
@@ -160,7 +167,7 @@ def diem():
         score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, inputHocki, currentSchoolYear)
 
     return render_template("diem.html",
-                           funcs=funcs, inputTenLop=inputTenLop,  classes=classes,
+                           funcs=funcs, inputTenLop=inputTenLop, classes=classes,
                            inputCot15p=inputCot15p, inputCot45p=inputCot45p,
                            score_boards=score_boards, inputHocki=inputHocki,
                            inputTenMon=inputTenMon, currentSchoolYear=currentSchoolYear)
@@ -193,14 +200,8 @@ def chinhsuadiem():
     subject = ""
     list_class = []
     kw = request.args.get('kw')
-    list_class = dao.getClassesByTeacher(current_user.id,kw)
+    list_class = dao.getClassesByTeacher(current_user.id, kw)
     subject = dao.getSubjectByUser(current_user.id)
-
-
-
-
-
-
     return render_template("chinhsuadiem.html", subject=subject, list_class=list_class
                            , funcs=funcs)
 
