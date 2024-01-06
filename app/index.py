@@ -123,7 +123,7 @@ def thongKe():
 def diem():
     semester = 'HK1_23-24'
     if request.method == 'POST':
-        #get all scores
+        # get all scores
         inputTenLop = request.form.get('inputTenLop')
         inputTenMon = request.form.get('inputTenMon')
         score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, semester)
@@ -176,15 +176,24 @@ def modify_policy():
     return jsonify(policies)
 
 
-
-
-
 @app.route('/chinhsuadiem')
 def chinhsuadiem():
     funcs = []
     if current_user.is_authenticated:
         funcs = dao.load_function(current_user.user_role)
-    return render_template("chinhsuadiem.html", funcs=funcs)
+    subject = ""
+    list_class = []
+    kw = request.args.get('kw')
+    list_class = dao.getClassesByTeacher(current_user.id,kw)
+    subject = dao.getSubjectByUser(current_user.id)
+
+
+
+
+
+
+    return render_template("chinhsuadiem.html", subject=subject, list_class=list_class
+                           , funcs=funcs)
 
 
 if __name__ == '__main__':

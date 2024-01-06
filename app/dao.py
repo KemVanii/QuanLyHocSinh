@@ -57,7 +57,6 @@ def load_function(user_role):
                 'url': '/subject'
             },
 
-
         ]
     return []
 
@@ -84,6 +83,20 @@ def getScoreBoard(tenLop, subjectName, hocKi):
                     .join(Student)
                     .filter(Class.name == tenLop, Subject.name == subjectName, Semester.name == hocKi).all())
     return score_boards
+
+
+def getClassesByTeacher(teacherId, kw=None):
+    list_class = (db.session.query(TeacherClass, Class.name, Class.size)
+                  .join(Class)
+                  .filter(TeacherClass.teacher_id == teacherId)
+                  )
+    if kw:
+        list_class = list_class.filter(Class.name.contains(kw)).all()
+    return list_class
+
+
+def getSubjectByUser(teacherId):
+    return db.session.query(Subject).join(User).filter(User.id == teacherId).first()
 
 
 def getClassByGradeAndSchoolYear(grade, schoolYear):
