@@ -86,9 +86,7 @@ def lapDanhSach():
 @app.route('/dieuchinhdanhsach')
 @restrict_to_roles([UserRoleEnum.Employee])
 def dieuChinhDanhSach():
-    funcs = []
-    if current_user.is_authenticated:
-        funcs = dao.load_function(current_user.user_role)
+    funcs = dao.load_function(current_user.user_role)
     return render_template("dieuChinhDanhSach.html", funcs=funcs)
 
 

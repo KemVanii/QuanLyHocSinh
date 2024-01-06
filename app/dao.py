@@ -9,17 +9,16 @@ def load_function(user_role):
     if user_role == UserRoleEnum.Employee:
         return [
             {
-
                 'name': 'Tiếp nhận học sinh',
-                'url': '/student'
+                'endpoint': 'student'
             },
             {
                 'name': 'Lập danh sách',
-                'url': '/lapdanhsach'
+                'endpoint': 'lapdanhsach'
             },
             {
                 'name': 'Điều chỉnh danh sách',
-                'url': '/dieuchinhdanhsach'
+                'endpoint': 'dieuchinhdanhsach'
             },
         ]
     elif user_role == UserRoleEnum.Teacher:
@@ -27,34 +26,34 @@ def load_function(user_role):
 
             {
                 'name': 'Nhập Điểm',
-                'url': '/nhapdiem'
+                'endpoint': 'nhapdiem'
             },
             {
                 'name': 'Chỉnh sửa Điểm',
-                'url': '/chinhsuadiem'
+                'endpoint': 'chinhsuadiem'
             },
             {
                 'name': 'Xem Điểm',
-                'url': '/xemdiem'
+                'endpoint': 'xemdiem'
             }
         ]
     elif user_role == UserRoleEnum.Admin:
         return [
             {
                 'name': 'Quy định',
-                'url': '/quydinh'
+                'endpoint': 'quydinh'
             },
             {
                 'name': 'Thống kê',
-                'url': '/thongke'
+                'endpoint': 'thongke'
             },
             {
                 'name': 'Tài khoản',
-                'url': '/user'
+                'endpoint': 'user'
             },
             {
                 'name': 'Môn học',
-                'url': '/subject'
+                'endpoint': 'subject'
             },
 
         ]
