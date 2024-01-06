@@ -221,7 +221,7 @@ def chinhsuadiem():
                            funcs=funcs)
 
 
-@app.route('/chinhsuadiem/<int:idLop>')
+@app.route('/chinhsuadiem/<int:idLop>', methods=["GET", "POST"])
 @restrict_to_roles([UserRoleEnum.Teacher])
 def chinhsuadiemLop(idLop):
     currentSchoolYear = '23-24'
@@ -231,10 +231,13 @@ def chinhsuadiemLop(idLop):
     score_boards_sua = dao.getScoreBoard(dao.getClass(idLop).name, inputTenMon, inputHocki, currentSchoolYear)
     inputCot15p = 1
     inputCot45p = 1
-    return render_template('chinhsuadiemLop.html', funcs=funcs,
-                           idLop=idLop, score_boards_sua=score_boards_sua,
-                           inputCot15p=inputCot15p, inputCot45p=inputCot15p)
+    print(score_boards_sua[0].scores)
 
+
+    return render_template('chinhsuadiemLop.html', funcs=funcs,
+                       idLop=idLop, score_boards_sua=score_boards_sua,
+                       inputCot15p=inputCot15p, inputCot45p=inputCot15p,
+                       )
 
 if __name__ == '__main__':
     from app import admin
