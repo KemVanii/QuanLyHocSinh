@@ -87,7 +87,8 @@ def getClassesByTeacher(teacherId, kw=None):
                   .filter(TeacherClass.teacher_id == teacherId)
                   )
     if kw:
-        list_class = list_class.filter(Class.name.contains(kw)).all()
+        list_class = list_class.filter(Class.name.contains(kw))
+    list_class = list_class.all()
     return list_class
 
 

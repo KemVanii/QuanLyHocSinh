@@ -53,7 +53,7 @@ def tiepNhanHocSinh():
 
 @app.route('/lapdanhsach', methods=["GET", "POST"])
 @restrict_to_roles([UserRoleEnum.Employee])
-def lapDanhSach():
+def lapdanhsach():
     funcs = []
     students = []
     size = ""
@@ -85,14 +85,14 @@ def lapDanhSach():
 
 @app.route('/dieuchinhdanhsach')
 @restrict_to_roles([UserRoleEnum.Employee])
-def dieuChinhDanhSach():
+def dieuchinhdanhsach():
     funcs = dao.load_function(current_user.user_role)
     return render_template("dieuChinhDanhSach.html", funcs=funcs)
 
 
 @app.route('/quydinh')
 @restrict_to_roles([UserRoleEnum.Admin])
-def quyDinh():
+def quydinh():
     funcs = []
 
     if current_user.is_authenticated:
@@ -101,7 +101,7 @@ def quyDinh():
 
 
 @app.route('/thongke', methods=["GET"])
-def thongKe():
+def thongke():
     score_min = request.args.get('filterScoreMin')
     score_max = request.args.get('filterScoreMax')
     semester = request.args.get('semester')
@@ -127,7 +127,7 @@ def thongKe():
 
 @app.route('/nhapdiem', methods=["GET", "POST"])
 @restrict_to_roles([UserRoleEnum.Teacher])
-def diem():
+def nhapdiem():
     currentSchoolYear = '23-24'
     if request.method == 'POST':
         # get all scores
@@ -195,12 +195,6 @@ def chinhsuadiem():
     kw = request.args.get('kw')
     list_class = dao.getClassesByTeacher(current_user.id,kw)
     subject = dao.getSubjectByUser(current_user.id)
-
-
-
-
-
-
     return render_template("chinhsuadiem.html", subject=subject, list_class=list_class
                            , funcs=funcs)
 
