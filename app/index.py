@@ -205,6 +205,13 @@ def chinhsuadiem():
                            , funcs=funcs)
 
 
+@app.route('/chinhsuadiem/<int:idLop>')
+@restrict_to_roles([UserRoleEnum.Teacher])
+def chinhsuadiemLop(idLop):
+    funcs = dao.load_function(current_user.user_role)
+    return render_template('chinhsuadiemLop.html',funcs=funcs)
+
+
 if __name__ == '__main__':
     from app import admin
 

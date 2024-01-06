@@ -1,0 +1,16 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Chinh sua diem{% endblock %}
+
+{% block content %}
+<h1 class="text-center mt-2">Chỉnh sủa điểm cho lớp </h1>
+
+
+
+
+<label for="semester" class="form-label">Chọn học kì:</label>
+<select id="semester" name="inputHocki" class="form-select">
+    <option value="HK1" {% if inputHocki=='HK1' %} selected {%endif%}>HK1</option>
+    <option value="HK2" {% if inputHocki=='HK2' %} selected {%endif%}>HK2</option>
+</select>
+{% endblock %}

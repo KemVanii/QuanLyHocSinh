@@ -82,13 +82,13 @@ def getScoreBoard(className, subjectName, semester, currentSchoolYear):
 
 
 def getClassesByTeacher(teacherId, kw=None):
-    list_class = (db.session.query(TeacherClass, Class.name, Class.size)
+    list_class = (db.session.query(TeacherClass, Class.name, Class.size,Class.id)
                   .join(Class)
                   .filter(TeacherClass.teacher_id == teacherId)
                   )
     if kw:
-        list_class = list_class.filter(Class.name.contains(kw)).all()
-    return list_class
+        list_class = list_class.filter(Class.name.contains(kw))
+    return list_class.all()
 
 
 def getSubjectByUser(teacherId):

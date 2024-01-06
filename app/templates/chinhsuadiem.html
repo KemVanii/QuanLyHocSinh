@@ -22,6 +22,7 @@
                 <th scope="col">Sỉ số lớp</th>
                 <th scope="col">Môn học</th>
                 <th scope="col">Tên giảng viên</th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -32,7 +33,14 @@
                 <td>{{ class.size }}</td>
                 <td>{{ subject.name }}</td>
                 <td>{{ current_user.name }}</td>
+                <td>
+                    <form action="/chinhsuadiem/{{class.id}}">
+                        <button type="submit" class="btn btn-secondary">Sửa</button>
+                    </form>
+                </td>
+
             </tr>
+
             {% endfor %}
             </tbody>
         </table>
