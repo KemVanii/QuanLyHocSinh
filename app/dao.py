@@ -57,7 +57,6 @@ def load_function(user_role):
                 'url': '/subject'
             },
 
-
         ]
     return []
 
@@ -70,19 +69,16 @@ def getStudentsNotInClass(limit):
     return students_with_score_boards
 
 
-def getClassBySchoolYear(schoolYear):
-    pass
-
-
 # read json and write json
 
-def getScoreBoard(tenLop, subjectName, hocKi):
+def getScoreBoard(className, subjectName, semester, currentSchoolYear):
     score_boards = (db.session.query(ScoreBoard.id, Student.name, Student.dob)
                     .join(Class)
                     .join(Subject)
                     .join(Semester)
                     .join(Student)
-                    .filter(Class.name == tenLop, Subject.name == subjectName, Semester.name == hocKi).all())
+                    .filter(Class.name == className, Subject.name == subjectName,
+                            Semester.name == f'{semester}_{currentSchoolYear}').all())
     return score_boards
 
 
@@ -95,6 +91,20 @@ def getClassByGradeAndSchoolYear(grade, schoolYear):
                .all())
     print(classes)
     return classes
+
+
+def getClassesByTeacherAndCurrentSchoolYear(teacherId, currentSchoolYear):
+    return (db.session.query(TeacherClass, Class.name, Class.size)
+            .join(Class)
+            .join(ScoreBoard)
+            .join(Semester)
+            .filter(TeacherClass.teacher_id == teacherId,
+                    Semester.name.contains(currentSchoolYear))
+            .all())
+
+
+def getSubjectByUser(teacherId):
+    return db.session.query(Subject).join(User).filter(User.id == teacherId).first()
 
 
 def getAllSubject():
