@@ -88,7 +88,28 @@ def lapdanhsach():
 @restrict_to_roles([UserRoleEnum.Employee])
 def dieuchinhdanhsach():
     funcs = dao.load_function(current_user.user_role)
-    return render_template("dieuChinhDanhSach.html", funcs=funcs)
+    currentSchoolYear = '23-24'
+    grades = dao.get_grade()
+    inputGrade = request.args.get('inputGrade') or 10
+    classes = dao.getClassByGradeAndSchoolYear(inputGrade, currentSchoolYear)
+    return render_template("dieuChinhDanhSach.html",
+                           funcs=funcs, grades=grades,
+                           inputGrade=inputGrade, classes=classes)
+
+
+@app.route('/dieuchinhdanhsach/<int:idLop>')
+@restrict_to_roles([UserRoleEnum.Employee])
+def dieuchinhdanhsachlop(idLop):
+    funcs = dao.load_function(current_user.user_role)
+    currentSchoolYear = '23-24'
+    grades = dao.get_grade()
+    inputGrade = request.args.get('inputGrade') or 10
+    cla = dao.getClassById(idLop)
+    students = dao.getStudentListByClassId(idLop)
+    return render_template("dieuChinhDanhSachlop.html",
+                           funcs=funcs, grades=grades,
+                           inputGrade=inputGrade, students=students,
+                           cla=cla, idLop=idLop)
 
 
 @app.route('/quydinh')
@@ -194,9 +215,10 @@ def chinhsuadiem():
     kw = request.args.get('kw')
     list_class = dao.getClassesByTeacher(current_user.id, kw)
     subject = dao.getSubjectByUser(current_user.id)
-    return render_template("chinhsuadiem.html", subject=subject
-                           , list_class=list_class
-                           , funcs=funcs)
+    return render_template("chinhsuadiem.html",
+                           subject=subject,
+                           list_class=list_class,
+                           funcs=funcs)
 
 
 @app.route('/chinhsuadiem/<int:idLop>')

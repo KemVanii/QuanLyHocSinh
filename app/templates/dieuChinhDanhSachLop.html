@@ -1,0 +1,42 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Điều chỉnh danh sách{% endblock %}
+
+{% block content %}
+<h1 class="text-center mt-2">Điều chỉnh danh sách lớp {{cla.name}}</h1>
+{% if students|length != 0 %}
+<button type="button" class="btn btn-primary ">Thêm học sinh</button>
+<button type="button" class="btn btn-primary mr-2">Xóa học sinh</button>
+<div class="container mt-3">
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Gender</th>
+            <th scope="col">Date of Birth</th>
+            <th scope="col">Address</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for student in students %}
+        <tr>
+            <th scope="row">{{ loop.index }}</th>
+            <td>{{ student.name }}</td>
+            {% if student.gender == True %}
+            <td>Male</td>
+            {% else %}
+            <td>Female</td>
+            {% endif %}
+            <td>{{ student.dob.strftime('%d-%m-%Y') }}</td>
+            <td>{{ student.address }}</td>
+        </tr>
+        {% endfor%}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<h3 class="mt-2">Không tìm thấy danh sách</h3>
+{% endif %}
+{% endblock %}
