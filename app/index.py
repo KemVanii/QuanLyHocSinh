@@ -152,7 +152,7 @@ def nhapdiem():
             }
             dataScores.append(dataScore)
         dao.insert_score(dataScores)
-        return redirect(url_for('diem'))
+        return redirect(url_for('nhapdiem'))
 
     funcs = dao.load_function(current_user.user_role)
     inputTenLop = request.args.get('inputTenLop') or ''
@@ -209,8 +209,14 @@ def chinhsuadiem():
 @app.route('/chinhsuadiem/<int:idLop>')
 @restrict_to_roles([UserRoleEnum.Teacher])
 def chinhsuadiemLop(idLop):
+    currentSchoolYear = '23-24'
     funcs = dao.load_function(current_user.user_role)
-    return render_template('chinhsuadiemLop.html',funcs=funcs)
+    inputHocki = request.args.get('inputHocki') or 'HK1'
+
+    inputTenMon=dao.getSubjectByUser(current_user.id).name
+    score_boards_sua = dao.getScoreBoard(dao.getClass(idLop).name, inputTenMon, inputHocki, currentSchoolYear)
+    print(score_boards_sua)
+    return render_template('chinhsuadiemLop.html',funcs=funcs,score_boards_sua=score_boards_sua)
 
 
 if __name__ == '__main__':

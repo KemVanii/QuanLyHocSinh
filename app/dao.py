@@ -71,6 +71,7 @@ def getStudentsNotInClass(limit):
 # read json and write json
 
 def getScoreBoard(className, subjectName, semester, currentSchoolYear):
+    print(className,subjectName,semester,currentSchoolYear)
     score_boards = (db.session.query(ScoreBoard.id, Student.name, Student.dob)
                     .join(Class)
                     .join(Subject)
@@ -79,6 +80,11 @@ def getScoreBoard(className, subjectName, semester, currentSchoolYear):
                     .filter(Class.name == className, Subject.name == subjectName,
                             Semester.name == f'{semester}_{currentSchoolYear}').all())
     return score_boards
+
+def getClass(Class_ID):
+    cl = db.session.query(Class).filter(Class.id==Class_ID).first()
+    return cl
+
 
 
 def getClassesByTeacher(teacherId, kw=None):

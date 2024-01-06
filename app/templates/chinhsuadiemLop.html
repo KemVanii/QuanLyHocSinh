@@ -3,14 +3,59 @@
 {% block title %}Chinh sua diem{% endblock %}
 
 {% block content %}
-<h1 class="text-center mt-2">Chỉnh sủa điểm cho lớp </h1>
+<h1 class="text-center mt-2">Chỉnh sửa điểm cho lớp </h1>
+
+<form>
+    <button type="submit" class="btn btn-primary">Lọc</button>
+    <label for="semester" class="form-label">Chọn học kì:</label>
+    <select id="semester" name="inputHocki" class="form-select">
+        <option value="HK1" {% if inputHocki=='HK1' %} selected {%endif%}>HK1</option>
+        <option value="HK2" {% if inputHocki=='HK2' %} selected {%endif%}>HK2</option>
+    </select>
+
+    <table class="table table-bordered">
+    <thead>
+    <tr>
+        <th class="text-center" scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">Date of Birth</th>
+        <th class="text-center" scope="col" colspan="{{inputCot15p}}">15p</th>
+        <th class="text-center" scope="col" colspan="{{inputCot45p}}">45p</th>
+        <th class="text-center" scope="col">Cuối kì</th>
+    </tr>
+    </thead>
+    </tbody>
+    {% for score_board in score_board_sua %}
+    <tr>
+        <th class="text-center" scope="row">{{ loop.index }}</th>
+        <td>{{ score_board.name }}</td>
+        <td>{{ score_board.dob.strftime('%d-%m-%Y') }}</td>
+        {% for i in range(0, inputCot15p) %}
+        <th scope="col">
+            <input type="number" name="15p{{score_board.id}}[]" class="form-control border-0"
+                   min="0"
+                   max="10" step="any" required>
+        </th>
+        {% endfor %}
+        {% for i in range(0, inputCot45p) %}
+        <th scope="col">
+            <input type="number" name="45p{{score_board.id}}[]" class="form-control border-0"
+                   min="0"
+                   max="10" step="any" required>
+        </th>
+        {% endfor %}
+        <th scope="col">
+            <input type="number" name="ck{{score_board.id}}" class="form-control border-0"
+                   min="0"
+                   max="10" step="any" required>
+        </th>
+        {% endfor %}
+    </tr>
+</table>
+
+</form>
 
 
 
 
-<label for="semester" class="form-label">Chọn học kì:</label>
-<select id="semester" name="inputHocki" class="form-select">
-    <option value="HK1" {% if inputHocki=='HK1' %} selected {%endif%}>HK1</option>
-    <option value="HK2" {% if inputHocki=='HK2' %} selected {%endif%}>HK2</option>
-</select>
 {% endblock %}
