@@ -97,11 +97,18 @@ def dieuchinhdanhsach():
                            inputGrade=inputGrade, classes=classes)
 
 
-@app.route('/dieuchinhdanhsach/<int:idLop>')
+@app.route('/dieuchinhdanhsach/<int:idLop>', methods=["GET", "POST"])
 @restrict_to_roles([UserRoleEnum.Employee])
 def dieuchinhdanhsachlop(idLop):
-    funcs = dao.load_function(current_user.user_role)
     currentSchoolYear = '23-24'
+    if request.method == 'POST':
+        action = request.form.get('action')
+        studentId = request.form.get('student_id')
+        if action == 'delete':
+            dao.deleteStudentInClass(studentId, idLop, currentSchoolYear)
+        return redirect(url_for('dieuchinhdanhsachlop', idLop=idLop))
+    funcs = dao.load_function(current_user.user_role)
+
     grades = dao.get_grade()
     inputGrade = request.args.get('inputGrade') or 10
     cla = dao.getClassById(idLop)

@@ -6,7 +6,6 @@
 <h1 class="text-center mt-2">Điều chỉnh danh sách lớp {{cla.name}}</h1>
 {% if students|length != 0 %}
 <button type="button" class="btn btn-primary ">Thêm học sinh</button>
-<button type="button" class="btn btn-primary mr-2">Xóa học sinh</button>
 <div class="container mt-3">
     <table class="table">
         <thead>
@@ -23,15 +22,24 @@
         <tbody>
         {% for student in students %}
         <tr>
-            <th scope="row">{{ loop.index }}</th>
-            <td>{{ student.name }}</td>
+            <th scope="row" class="align-middle">{{ loop.index }}</th>
+            <td class="align-middle">{{ student.name }}</td>
             {% if student.gender == True %}
-            <td>Male</td>
+            <td class="align-middle">Male</td>
             {% else %}
-            <td>Female</td>
+            <td class="align-middle">Female</td>
             {% endif %}
-            <td>{{ student.dob.strftime('%d-%m-%Y') }}</td>
-            <td>{{ student.address }}</td>
+            <td class="align-middle">{{ student.dob.strftime('%d-%m-%Y') }}</td>
+            <td class="align-middle">{{ student.address }}</td>
+            <td>
+                <form action="/dieuchinhdanhsach/{{idLop}}"
+                      method="POST"
+                      onsubmit="return confirm('Xác nhận xóa?')">
+                    <input type="hidden" value="{{student.id}}" name="student_id">
+                    <input type="hidden" value="delete" name="action">
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </form>
+            </td>
         </tr>
         {% endfor%}
         </tbody>

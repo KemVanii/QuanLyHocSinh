@@ -43,7 +43,6 @@ class User(db.Model, UserMixin):
     subject_id = Column(Integer, ForeignKey(Subject.id), nullable=False)
 
 
-
 class Grade(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False)
@@ -78,6 +77,7 @@ class ScoreBoard(db.Model):
     subject_id = Column(Integer, ForeignKey(Subject.id), nullable=False)
     class_id = Column(Integer, ForeignKey(Class.id), nullable=False)
     semester_id = Column(Integer, ForeignKey(Semester.id), nullable=False)
+    status = Column(Boolean, default=True, nullable=False)
 
 
 class Score(db.Model):
