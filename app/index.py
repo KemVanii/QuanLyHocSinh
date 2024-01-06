@@ -227,11 +227,13 @@ def chinhsuadiemLop(idLop):
     currentSchoolYear = '23-24'
     funcs = dao.load_function(current_user.user_role)
     inputHocki = request.args.get('inputHocki') or 'HK1'
-    inputTenMon=dao.getSubjectByUser(current_user.id).name
+    inputTenMon = dao.getSubjectByUser(current_user.id).name
     score_boards_sua = dao.getScoreBoard(dao.getClass(idLop).name, inputTenMon, inputHocki, currentSchoolYear)
-    print(score_boards_sua)
-    return render_template('chinhsuadiemLop.html',funcs=funcs,idLop=idLop
-                           ,score_boards_sua=score_boards_sua)
+    inputCot15p = 1
+    inputCot45p = 1
+    return render_template('chinhsuadiemLop.html', funcs=funcs,
+                           idLop=idLop, score_boards_sua=score_boards_sua,
+                           inputCot15p=inputCot15p, inputCot45p=inputCot15p)
 
 
 if __name__ == '__main__':
