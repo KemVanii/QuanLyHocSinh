@@ -100,27 +100,29 @@ def quyDinh():
     return render_template("quyDinh.html", funcs=funcs)
 
 
-@app.route('/thongke')
-@restrict_to_roles([UserRoleEnum.Admin])
+@app.route('/thongke', methods=["GET"])
 def thongKe():
     score_min = request.args.get('filterScoreMin')
     score_max = request.args.get('filterScoreMax')
     semester = request.args.get('semester')
     subject = request.args.get('subject')
     classroom = request.args.get('classroom')
+    grade = request.args.get('grade')
 
     funcs = []
 
     if current_user.is_authenticated:
         funcs = dao.load_function(current_user.user_role)
     return render_template("thongKe.html", funcs=funcs,
-                           score_stats=dao.scores_stats(scoreMin=score_min, scoreMax=score_max,
+                           score_stats=dao.scores_stats(score_min=score_min, score_max=score_max,
                                                         semester=semester,
                                                         subject=subject,
                                                         classroom=classroom),
+                           types_stats=dao.types_stats_by_grade(grade=grade),
                            semesters=dao.get_semester(),
                            subjects=dao.get_subject(),
-                           classrooms=dao.get_classroom())
+                           classrooms=dao.get_classroom(),
+                           grades=dao.get_grade())
 
 
 @app.route('/nhapdiem', methods=["GET", "POST"])
