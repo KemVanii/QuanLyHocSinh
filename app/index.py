@@ -1,5 +1,4 @@
 import hashlib
-
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import json
 from flask_login import login_user, logout_user, current_user
@@ -30,7 +29,9 @@ def login():
     if request.method == "POST":
         user = User.query.filter_by(
             username=request.form.get("username")).first()
-        if user and user.password == str(hashlib.md5(request.form.get("pswd").encode('utf-8')).hexdigest()):
+        print(user.password)
+        if (user and user.password == str(hashlib.md5(request.form.get("pswd").encode('utf-8')).hexdigest())
+                and user.status is True):
             login_user(user)
             next_url = request.form.get("next_url")
             if next_url is not None:
@@ -188,6 +189,7 @@ def nhapdiem():
     inputCot45p = int(request.args.get('inputCot45p') or '1')
     inputHocki = request.args.get('inputHocki')
     classes = dao.getClassesByTeacherAndCurrentSchoolYear(current_user.id, currentSchoolYear)
+    print(currentSchoolYear)
     score_boards = []
 
     if inputTenLop and inputHocki and inputCot15p and inputCot45p:
@@ -207,7 +209,8 @@ def modify_policy():
     policies = {
         "max_class_size": data.get('max_class_size'),
         "age_min": data.get('age_min'),
-        "age_max": data.get('age_max')
+        "age_max": data.get('age_max'),
+        "school_year": data.get("school_year")
     }
 
     session['policies'] = policies

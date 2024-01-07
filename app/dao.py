@@ -2,6 +2,7 @@ from app.models import *
 from sqlalchemy import func, desc, asc, text, or_, and_
 from collections import defaultdict
 from app import db
+from app.util import *
 from app.models import ScoreBoard, Score
 import random
 
@@ -140,7 +141,7 @@ def getClassByGradeAndSchoolYear(grade, schoolYear):
     return classes
 
 
-def getClassesByTeacherAndCurrentSchoolYear(teacherId, currentSchoolYear):
+def getClassesByTeacherAndCurrentSchoolYear(teacherId, currentSchoolYear="HK1_23-24"):
     return (db.session.query(TeacherClass, Class.name, Class.size)
             .join(Class)
             .join(ScoreBoard)
@@ -277,6 +278,17 @@ def types_stats(classroom, grade):
         .group_by(Grade.name, Student.name, Class.name) \
         .order_by(asc(Grade.name), desc(func.round(func.avg(Score.value), 2)))
 
+    # query = db.session.query(Grade.name, Student.name, Class.name, func.round(calSemesterAverage(Score.value), 2)) \
+    #     .join(Class) \
+    #     .join(ScoreBoard) \
+    #     .join(Student) \
+    #     .join(Subject) \
+    #     .join(Score) \
+    #     .group_by(Grade.name, Student.name, Class.name) \
+    #     .order_by(asc(Grade.name), desc(func.round(calSemesterAverage(Score.value), 2)))
+
+    print(query.all())
+
     if classroom:
         query = query.filter(Class.name == classroom)
     if grade:
@@ -296,9 +308,6 @@ def types_stats(classroom, grade):
         for grade_type, count in grade_data.items()
     ]
 
-    for grade_name, grade_type, count in result_summary:
-        print(f"Grade: {grade_name}, Grade Type: {grade_type}, Count: {count}")
-
     return result_summary
 
 
@@ -306,12 +315,12 @@ def types_stats_by_grade():
     pass
 
 
-def scores_stats(score_min=0, score_max=10, semester="HK1_23-24", subject="Toán", classroom="10A7"):
+def scores_stats(score_min, score_max, semester, subject, classroom):
     query = db.session.query(func.round(Score.value, 0), func.count(func.round(Score.value, 0))) \
-        .join(ScoreBoard, ScoreBoard.id == Score.score_board_id) \
-        .join(Semester, Semester.id == ScoreBoard.semester_id) \
-        .join(Subject, Subject.id == ScoreBoard.subject_id) \
-        .join(Class, Class.id == ScoreBoard.class_id) \
+        .join(ScoreBoard) \
+        .join(Semester) \
+        .join(Subject) \
+        .join(Class) \
         .group_by(func.round(Score.value, 0)) \
         .order_by(asc(func.round(Score.value, 0)))
 
@@ -326,7 +335,7 @@ def scores_stats(score_min=0, score_max=10, semester="HK1_23-24", subject="Toán
     if classroom:
         query = query.filter(Class.name.contains(classroom))
 
-    # print(query.all())
+    print(query.all())
 
     return query.all()
 

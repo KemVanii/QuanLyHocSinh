@@ -1,6 +1,8 @@
 from flask_admin import Admin
+from flask_admin.actions import action
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
+from flask import flash
 from sqlalchemy import inspect
 from app.models import *
 from app import app, db
@@ -38,14 +40,38 @@ class MyUser(AuthenticatedAdmin):
             password = form.password.data
             model.password = hashlib.md5(password.encode('utf-8')).hexdigest()
 
+    def delete_model(self, model):
+        if model.status:
+            model.status = False
+            self.session.commit()
+            flash('Dữ liệu đã được đánh dấu là không hoạt động.Bấm lại xóa để bật', 'success')
+        else:
+            model.status = True
+            self.session.commit()
+            flash('Dữ liệu đã được đánh dấu là hoạt động. Bấm lại xóa để tắt', 'success')
+
+        return True
+
 
 class MySubject(AuthenticatedAdmin):
     edit_modal = True
+    column_list = ['id', 'name', 'status']
+    form_excluded_columns = ['score_boards', 'classes']
 
-    def on_model_delete(self, model):
-        new_parent = Subject.query.first()
-        User.query.filter_by(subject_id=model.id).update({'subject_id': new_parent.id})
-        db.session.commit()
+    def delete_model(self, model):
+        if hasattr(model, 'status'):
+            if model.status:
+                model.status = False
+                self.session.commit()
+                flash('Dữ liệu đã được đánh dấu là không hoạt động.Bấm lại xóa để bật', 'success')
+            else:
+                model.status = True
+                self.session.commit()
+                flash('Dữ liệu đã được đánh dấu là hoạt động. Bấm lại xóa để tắt', 'success')
+        else:
+            flash('Không thể tìm thấy cột status.', 'error')
+
+        return True
 
 
 admin.add_view(MyStudent(Student, db.session))
