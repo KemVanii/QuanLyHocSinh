@@ -242,10 +242,29 @@ def chinhsuadiem():
 @restrict_to_roles([UserRoleEnum.Teacher])
 def chinhsuadiemLop(idLop):
     currentSchoolYear = app.config['school_year']
+    if request.method == 'POST':
+        # get all scores
+        inputTenLop = request.form.get('inputTenLop')
+        inputTenMon = request.form.get('inputTenMon')
+        inputHocki = request.form.get('inputHocki')
+        score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, inputHocki, currentSchoolYear)
+        dataScores = []
+        for score_board in score_boards:
+            dataScore = {
+                'score_board_id': score_board.id,
+                '15p': request.form.getlist(f'15p{score_board.id}[]'),
+                '45p': request.form.getlist(f'45p{score_board.id}[]'),
+                'ck': request.form.get(f'ck{score_board.id}')
+            }
+            dataScores.append(dataScore)
+        dao.update_score(dataScores)
+        return redirect(url_for('chinhsuadiem'))
+
     funcs = dao.load_function(current_user.user_role)
+    inputTenLop = dao.getClass(idLop).name
     inputHocki = request.args.get('inputHocki') or 'HK1'
     inputTenMon = dao.getSubjectByUser(current_user.id).name
-    score_boards = dao.getScoreBoard(dao.getClass(idLop).name, inputTenMon, inputHocki, currentSchoolYear)
+    score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, inputHocki, currentSchoolYear)
     dataScores = []
     if len(score_boards):
         for score_board in score_boards:
@@ -263,6 +282,8 @@ def chinhsuadiemLop(idLop):
     return render_template('chinhsuadiemLop.html', funcs=funcs,
                            idLop=idLop, score_boards=score_boards,
                            inputCot15p=inputCot15p, inputCot45p=inputCot45p,
+                           inputTenLop=inputTenLop, inputTenMon=inputTenMon,
+                           inputHocki=inputHocki,
                            dataScores=dataScores)
 
 
