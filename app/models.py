@@ -43,7 +43,7 @@ class User(db.Model, UserMixin):
     username = Column(String(50), nullable=False, unique=True)
     password = Column(String(100), nullable=False)
     user_role = Column(Enum(UserRoleEnum))
-    subject_id = Column(Integer, ForeignKey(Subject.id), nullable=False)
+    subject_id = Column(Integer, ForeignKey(Subject.id))
 
     def __str__(self):
         return self.name
