@@ -12,15 +12,18 @@ def load_function(user_role):
         return [
             {
                 'name': 'Tiếp nhận học sinh',
-                'endpoint': 'student'
+                'endpoint': 'student',
+                'icon': 'fa-solid fa-book'
             },
             {
                 'name': 'Lập danh sách',
-                'endpoint': 'lapdanhsach'
+                'endpoint': 'lapdanhsach',
+                'icon': 'fa-solid fa-bars'
             },
             {
                 'name': 'Điều chỉnh danh sách',
-                'endpoint': 'dieuchinhdanhsach'
+                'endpoint': 'dieuchinhdanhsach',
+                'icon': 'fa-solid fa-list'
             },
         ]
     elif user_role == UserRoleEnum.Teacher:
@@ -28,34 +31,41 @@ def load_function(user_role):
 
             {
                 'name': 'Nhập Điểm',
-                'endpoint': 'nhapdiem'
+                'endpoint': 'nhapdiem',
+                'icon': 'fa-solid fa-star'
             },
             {
                 'name': 'Chỉnh sửa Điểm',
-                'endpoint': 'chinhsuadiem'
+                'endpoint': 'chinhsuadiem',
+                'icon': 'fa-solid fa-scroll'
             },
             {
                 'name': 'Xem Điểm',
-                'endpoint': 'xemdiem'
+                'endpoint': 'xemdiem',
+                'icon': 'fa-solid fa-magnifying-glass'
             }
         ]
     elif user_role == UserRoleEnum.Admin:
         return [
             {
                 'name': 'Quy định',
-                'endpoint': 'quydinh'
+                'endpoint': 'quydinh',
+                'icon': 'fa-solid fa-scroll'
             },
             {
                 'name': 'Thống kê',
-                'endpoint': 'thongke'
+                'endpoint': 'thongke',
+                'icon': 'fa-solid fa-chart-simple'
             },
             {
                 'name': 'Tài khoản',
-                'endpoint': 'user'
+                'endpoint': 'user',
+                'icon': 'fa-solid fa-user'
             },
             {
                 'name': 'Môn học',
-                'endpoint': 'subject'
+                'endpoint': 'subject',
+                'icon': 'fa-solid fa-book-bookmark'
             },
 
         ]
