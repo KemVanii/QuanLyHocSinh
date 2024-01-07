@@ -29,7 +29,9 @@ def login():
     if request.method == "POST":
         user = User.query.filter_by(
             username=request.form.get("username")).first()
-        if user and user.password == str(hashlib.md5(request.form.get("pswd").encode('utf-8')).hexdigest()):
+        print(user.password)
+        if (user and user.password == str(hashlib.md5(request.form.get("pswd").encode('utf-8')).hexdigest())
+                and user.status is True):
             login_user(user)
             next_url = request.form.get("next_url")
             if next_url is not None:
@@ -201,7 +203,8 @@ def modify_policy():
     policies = {
         "max_class_size": data.get('max_class_size'),
         "age_min": data.get('age_min'),
-        "age_max": data.get('age_max')
+        "age_max": data.get('age_max'),
+        "school_year": data.get("school_year")
     }
 
     session['policies'] = policies
@@ -249,8 +252,6 @@ def chinhsuadiemLop(idLop):
                            inputCot15p=inputCot15p, inputCot45p=inputCot15p,
                            )
 
-<<<<<<< HEAD
-=======
 
 @app.route('/xemdiem')
 @restrict_to_roles([UserRoleEnum.Teacher])
@@ -262,10 +263,9 @@ def xemdiem():
     subjects = dao.getSubjectByClassAndYear('10/2', currentSchoolYear)
     print(scoreBoards)
     print(subjects)
-    print(isPass(scoreBoards,subjects))
+    print(isPass(scoreBoards, subjects))
     return render_template("xemdiem.html", funcs=funcs)
 
->>>>>>> 174a8098bbbd5962469fb01be8b52f4e5aef49c8
 
 if __name__ == '__main__':
     from app import admin

@@ -2,6 +2,7 @@ from app.models import *
 from sqlalchemy import func, desc, asc, text
 from collections import defaultdict
 from app import db
+from app.util import *
 from app.models import ScoreBoard, Score
 import random
 
@@ -241,6 +242,17 @@ def types_stats(classroom, grade):
         .group_by(Grade.name, Student.name, Class.name) \
         .order_by(asc(Grade.name), desc(func.round(func.avg(Score.value), 2)))
 
+    # query = db.session.query(Grade.name, Student.name, Class.name, func.round(calSemesterAverage(Score.value), 2)) \
+    #     .join(Class) \
+    #     .join(ScoreBoard) \
+    #     .join(Student) \
+    #     .join(Subject) \
+    #     .join(Score) \
+    #     .group_by(Grade.name, Student.name, Class.name) \
+    #     .order_by(asc(Grade.name), desc(func.round(calSemesterAverage(Score.value), 2)))
+
+    print(query.all())
+
     if classroom:
         query = query.filter(Class.name == classroom)
     if grade:
@@ -259,9 +271,6 @@ def types_stats(classroom, grade):
         for grade_name, grade_data in result_info.items()
         for grade_type, count in grade_data.items()
     ]
-
-    for grade_name, grade_type, count in result_summary:
-        print(f"Grade: {grade_name}, Grade Type: {grade_type}, Count: {count}")
 
     return result_summary
 
