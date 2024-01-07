@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById("ageRangeNum1").value = jsonData.age_min;
             document.getElementById("ageRange2").value = jsonData.age_max;
             document.getElementById("ageRangeNum2").value = jsonData.age_max;
+            document.getElementById("school_year").value = jsonData.school_year;
             // Gán dữ liệu cho các ô textbox khác nếu cần
         })
         .catch(error => {
@@ -26,13 +27,15 @@ function modifyPolicies() {
     let max_class_size = document.getElementById("classSizeNum").value
     let age_min = document.getElementById("ageRange1").value
     let age_max = document.getElementById("ageRange2").value
+    let school_year = document.getElementById("school_year").value
 
     fetch('/api/policy', {
         method: 'post',
         body: JSON.stringify({
             "max_class_size": max_class_size,
             "age_min": age_min,
-            "age_max": age_max
+            "age_max": age_max,
+            "school_year": school_year
         }),
         headers: {
             'Content-Type': 'application/json'

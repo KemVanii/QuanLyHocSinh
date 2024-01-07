@@ -36,7 +36,7 @@
     </div>
 </div>
 
-<div class="col-sm-6">
+<div class="col-md-6 mt-3">
     <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#myModalAgeRange">
         Độ tuổi tham gia lớp
     </button>
@@ -82,6 +82,10 @@
     </div>
 </div>
 
-<button class="btn btn-info" data-bs-dismiss="modal" onclick="modifyPolicies()">Apply</button>
+<div class="col-md-2 col-xs-6">
+    <input type="text" class="form-range rounded bg-white mt-3" id="school_year" placeholder="Nhập niên khóa(23-24):  ">
+</div>
+
+<button class="btn btn-info mt-3" data-bs-dismiss="modal" onclick="modifyPolicies()">Apply</button>
 
 {% endblock %}

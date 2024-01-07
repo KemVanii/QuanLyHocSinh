@@ -1,5 +1,4 @@
 import hashlib
-
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import json
 from flask_login import login_user, logout_user, current_user
@@ -30,7 +29,9 @@ def login():
     if request.method == "POST":
         user = User.query.filter_by(
             username=request.form.get("username")).first()
-        if user and user.password == str(hashlib.md5(request.form.get("pswd").encode('utf-8')).hexdigest()):
+        print(user.password)
+        if (user and user.password == str(hashlib.md5(request.form.get("pswd").encode('utf-8')).hexdigest())
+                and user.status is True):
             login_user(user)
             next_url = request.form.get("next_url")
             if next_url is not None:
@@ -74,7 +75,8 @@ def lapdanhsach():
             return redirect(url_for('lapdanhsach'))
         else:
             if grade == 10:
-                students = dao.getStudentsNotInClass(size)
+                students = dao.getStudentsNotHasClass(size)
+
             if grade == 11 or grade == 12:
                 pass
     return render_template("lapDanhSach.html",
@@ -105,18 +107,23 @@ def dieuchinhdanhsachlop(idLop):
         action = request.form.get('action')
         studentId = request.form.get('student_id')
         if action == 'delete':
-            dao.deleteStudentInClass(studentId, idLop, currentSchoolYear)
+            dao.deleteStudentFromClass(studentId, idLop, currentSchoolYear)
+        elif action == 'add':
+            dao.insertStudentToClass(studentId, idLop, currentSchoolYear)
         return redirect(url_for('dieuchinhdanhsachlop', idLop=idLop))
     funcs = dao.load_function(current_user.user_role)
 
-    grades = dao.get_grade()
+    grades = dao.getAllSubject()
     inputGrade = request.args.get('inputGrade') or 10
     cla = dao.getClassById(idLop)
     studentsInClass = dao.getStudentListByClassId(idLop)
-
+    studentsNotHasClass = dao.getStudentsNotHasClass()
+    studentsRemoveClass = dao.getStudentsRemoveClass(cla.grade_id, currentSchoolYear)
+    studentsNotInClass = studentsNotHasClass + studentsRemoveClass
     return render_template("dieuChinhDanhSachlop.html",
                            funcs=funcs, grades=grades,
                            inputGrade=inputGrade, studentsInClass=studentsInClass,
+                           studentsNotInClass=studentsNotInClass,
                            cla=cla, idLop=idLop)
 
 
@@ -182,6 +189,7 @@ def nhapdiem():
     inputCot45p = int(request.args.get('inputCot45p') or '1')
     inputHocki = request.args.get('inputHocki')
     classes = dao.getClassesByTeacherAndCurrentSchoolYear(current_user.id, currentSchoolYear)
+    print(currentSchoolYear)
     score_boards = []
 
     if inputTenLop and inputHocki and inputCot15p and inputCot45p:
@@ -201,7 +209,8 @@ def modify_policy():
     policies = {
         "max_class_size": data.get('max_class_size'),
         "age_min": data.get('age_min'),
-        "age_max": data.get('age_max')
+        "age_max": data.get('age_max'),
+        "school_year": data.get("school_year")
     }
 
     session['policies'] = policies
@@ -244,9 +253,6 @@ def chinhsuadiemLop(idLop):
     # list_score=dao.getScore(dao.getScoreBoardByClassID(idLop))
     # print(list_score)
 
-
-
-
     return render_template('chinhsuadiemLop.html', funcs=funcs,
                            idLop=idLop, score_boards_sua=score_boards_sua,
                            inputCot15p=inputCot15p, inputCot45p=inputCot15p,
@@ -263,7 +269,7 @@ def xemdiem():
     subjects = dao.getSubjectByClassAndYear('10/2', currentSchoolYear)
     print(scoreBoards)
     print(subjects)
-    print(isPass(scoreBoards,subjects))
+    print(isPass(scoreBoards, subjects))
     return render_template("xemdiem.html", funcs=funcs)
 
 

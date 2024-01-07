@@ -27,6 +27,7 @@ class Student(db.Model):
 class Subject(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False)
+    status = Column(Boolean, default=True, nullable=False)
     score_boards = relationship('ScoreBoard', backref='subject', lazy=True)
     classes = relationship('User', foreign_keys='User.subject_id', backref='subject', lazy=True)
 
@@ -43,10 +44,12 @@ class User(db.Model, UserMixin):
     username = Column(String(50), nullable=False, unique=True)
     password = Column(String(100), nullable=False)
     user_role = Column(Enum(UserRoleEnum))
-    subject_id = Column(Integer, ForeignKey(Subject.id))
+    status = Column(Boolean, default=True, nullable=False)
+    subject_id = Column(Integer, ForeignKey(Subject.id), nullable=False)
 
     def __str__(self):
         return self.name
+
 
 class Grade(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -106,8 +109,8 @@ if __name__ == '__main__':
         #
         # u = User(name='Nguyễn Văn Admin', username='admin', gender=True, dob='1991-01-01', address='TPHCM',
         #          password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
-        #          user_role=UserRoleEnum.Admin)
-        #
+        #          user_role=UserRoleEnum.Admin, status=True, subject_id=1)
+        # #
         # db.session.add(u)
         # db.session.commit()
         # u = User(name='Nguyễn Văn NhanVien', username='nhanVien', gender=True, dob='1991-01-01', address='TPHCM',
