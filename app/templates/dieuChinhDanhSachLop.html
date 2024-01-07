@@ -4,7 +4,7 @@
 
 {% block content %}
 <h1 class="text-center mt-2">Điều chỉnh danh sách lớp {{cla.name}}</h1>
-{% if studentsInClass|length != 0 %}
+
 <!-- Button to Open the Modal -->
 <div class="dropdown">
     <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
@@ -45,22 +45,28 @@
                         </tr>
                         </thead>
                         <tbody>
+                        {% for student in studentsNotInClass %}
                         <tr>
-                            <td class="align-middle">John</td>
-                            <td class="align-middle">John</td>
-                            <td class="align-middle">John</td>
-                            <td class="align-middle">John</td>
+                            <th class="align-middle">{{loop.index}}</th>
+                            <td class="align-middle">{{student.name}}</td>
+                            {% if student.gender == True %}
+                            <td>Male</td>
+                            {% else %}
+                            <td>Female</td>
+                            {% endif %}
+                            <td>{{ student.dob.strftime('%d-%m-%Y') }}</td>
                             <td class="align-middle">
                                 <form action="/dieuchinhdanhsach/{{idLop}}"
                                       method="POST"
                                       onsubmit="return confirm('Xác nhận thêm?')">
-                                    <input type="hidden" value="" name="student_id">
+                                    <input type="hidden" value="{{student.id}}" name="student_id">
                                     <input type="hidden" value="add" name="action">
                                     <button type="submit" class=" btn btn-secondary ">Thêm</button>
                                 </form>
                             </td>
                         </tr>
-                        
+                        {% endfor %}
+
                         </tbody>
                     </table>
                 </div>
@@ -124,10 +130,10 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
             </div>
-
         </div>
     </div>
 </div>
+{% if studentsInClass|length != 0 %}
 <div class="container mt-3">
     <table class="table">
         <thead>

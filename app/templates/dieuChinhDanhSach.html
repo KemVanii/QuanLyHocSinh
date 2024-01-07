@@ -16,7 +16,7 @@
             </select>
         </div>
         <div class="col-md-6">
-            <button type="submit" class="btn btn-secondary float-right">Sửa</button>
+            <button type="submit" class="btn btn-primary float-right">Lọc</button>
         </div>
     </form>
 </div>
@@ -28,7 +28,7 @@
             <th>#</th>
             <th>Lớp</th>
             <th>Sỉ số</th>
-            <th>Điều chỉnh</th>
+            <th>Action</th>
         </tr>
         </thead>
         <tbody>
@@ -39,7 +39,7 @@
             <td>{{class.size}}</td>
             <td>
                 <form action="/dieuchinhdanhsach/{{class.id}}">
-                    <button type="submit" class="btn btn-secondary">Sửa</button>
+                    <button type="submit" class="btn btn-secondary">Xem</button>
                 </form>
             </td>
         </tr>

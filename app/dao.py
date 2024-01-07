@@ -1,5 +1,5 @@
 from app.models import *
-from sqlalchemy import func, desc, asc, text
+from sqlalchemy import func, desc, asc, text, or_, and_
 from collections import defaultdict
 from app import db
 from app.util import *
@@ -72,15 +72,23 @@ def load_function(user_role):
     return []
 
 
-def getStudentsNotInClass(limit):
-    students_with_score_boards = (db.session.query(Student)
-                                  .filter(Student.score_boards == None)
-                                  .limit(limit).all())
+def getStudentsNotHasClass(limit=None):
+    query = db.session.query(Student).filter(Student.score_boards == None)
+    if limit:
+        query = query.limit(limit)
+    return query.all()
 
-    return students_with_score_boards
 
+def getStudentsRemoveClass(gradeId, schoolYear):
+    return (db.session.query(Student)
+            .join(ScoreBoard)
+            .join(Class)
+            .join(Semester)
+            .filter(Class.grade_id == gradeId,
+                    Semester.name.contains(schoolYear),
+                    ScoreBoard.status == False)
+            .all())
 
-# read json and write json
 
 def getScoreBoard(className, subjectName, semester, currentSchoolYear):
     score_boards = (db.session.query(ScoreBoard, ScoreBoard.id, Student.name, Student.dob)
@@ -154,7 +162,10 @@ def getClassesByTeacherAndCurrentSchoolYear(teacherId, currentSchoolYear="HK1_23
 
 
 def getClassById(classId):
-    return db.session.query(Class).filter(Class.id == classId).first()
+    return (db.session.query(Class)
+            .join(Grade)
+            .filter(Class.id == classId)
+            .first())
 
 
 def getStudentListByClassId(classId):
@@ -165,7 +176,7 @@ def getStudentListByClassId(classId):
             .all())
 
 
-def deleteStudentInClass(studentId, classId, schoolYear):
+def deleteStudentFromClass(studentId, classId, schoolYear):
     print(studentId, classId, schoolYear)
     score_boards = (db.session.query(ScoreBoard)
                     .join(Semester)
@@ -175,6 +186,31 @@ def deleteStudentInClass(studentId, classId, schoolYear):
                     .all())
     for score_board in score_boards:
         score_board.status = False
+    db.session.commit()
+
+
+def insertStudentToClass(studentId, classId, schoolYear):
+    score_boards = (db.session.query(ScoreBoard)
+                    .join(Semester)
+                    .filter(ScoreBoard.student_id == studentId,
+                            Semester.name.contains(schoolYear))
+                    .all())
+    if len(score_boards) == 0:  # case new Student
+        subjects = (db.session.query(Subject)
+                    .join(User)
+                    .join(TeacherClass)
+                    .filter(TeacherClass.class_id == classId)).all()
+        semesters = db.session.query(Semester).filter(Semester.name.contains(schoolYear)).all()
+        for subject in subjects:
+            for semester in semesters:
+                sb = ScoreBoard(student_id=studentId, subject_id=subject.id, class_id=classId,
+                                semester_id=semester.id)
+                db.session.add(sb)
+
+    else:  # case student have been deleted
+        for score_board in score_boards:
+            score_board.class_id = classId
+            score_board.status = True
     db.session.commit()
 
 
@@ -196,7 +232,7 @@ def createNewClassGrade10(className, size, gradeName, currentSchoolYear):
 
     # Create new Score_Boards
     subjects = getAllSubject()
-    students = getStudentsNotInClass(size)
+    students = getStudentsNotHasClass(size)
     semesters = db.session.query(Semester).filter(Semester.name.contains(currentSchoolYear)).all()
     for semester in semesters:
         for subject in subjects:

@@ -3,7 +3,6 @@ def filter_by_subject_id(scoreboard, subjectId):
 
 
 def isPass(score_boards, subjects):
-    print(score_boards,subjects)
     for subject in subjects:
         sb_filter = list(filter(lambda scoreboard: filter_by_subject_id(scoreboard, subject.id), score_boards))
         print(sb_filter)
@@ -12,7 +11,6 @@ def isPass(score_boards, subjects):
         if ((average1 + average2) / 2) < 5:
             return False
     return True
-
 
 
 def calSemesterAverage(scores):
