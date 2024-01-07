@@ -6,16 +6,25 @@
 
 <h1 class="text-center mt-2">Nhập điểm</h1>
 <form action="/nhapdiem">
-    <div class="mb-3 mt-3">
-        <label for="inputTenLop" class="form-label">Tên lớp:</label>
-        <select id="inputTenLop" name="inputTenLop" class="form-select">
-            {% for class in classes %}
-            <option value="{{class.name}}" {% if inputTenLop== class.name %} selected {%endif%}>
-                {{class.name}}
-            </option>
-            {% endfor %}
-        </select>
-    </div>
+<!--    <div class="mb-3 mt-3">-->
+<!--        <label for="inputTenLop" class="form-label">Tên lớp:</label>-->
+<!--        <select id="inputTenLop" name="inputTenLop" class="form-select">-->
+<!--            {% for class in classes %}-->
+<!--            <option value="{{class.name}}" {% if inputTenLop== class.name %} selected {%endif%}>-->
+<!--                {{class.name}}-->
+<!--            </option>-->
+<!--            {% endfor %}-->
+<!--        </select>-->
+<!--    </div>-->
+    <div class="dropdown mb-3 mt-3">
+                <label for="inputTenLop" class="form-label">Chọn lớp: </label>
+                <input class="form-control" list="classes" name="inputTenLop" id="inputTenLop">
+                <datalist id="classes">
+                    {% for c in classes %}
+                    <option value="{{ c.name }}">
+                        {% endfor %}
+                </datalist>
+            </div>
     <div class="mb-3">
         <label for="inputCot15p" class="form-label">Số lượng cột 15p:</label>
             <input type="number" min="1" max="5" class="form-control" value="{{inputCot15p}}" id="inputCot15p"

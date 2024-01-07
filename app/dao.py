@@ -72,7 +72,7 @@ def getStudentsNotInClass(limit):
 # read json and write json
 
 def getScoreBoard(className, subjectName, semester, currentSchoolYear):
-    score_boards = (db.session.query (ScoreBoard,ScoreBoard.id, Student.name, Student.dob)
+    score_boards = (db.session.query(ScoreBoard, ScoreBoard.id, Student.name, Student.dob)
                     .join(Class)
                     .join(Subject)
                     .join(Semester)
@@ -112,7 +112,7 @@ def getClassByGradeAndSchoolYear(grade, schoolYear):
     return classes
 
 
-def getClassesByTeacherAndCurrentSchoolYear(teacherId, currentSchoolYear):
+def getClassesByTeacherAndCurrentSchoolYear(teacherId, currentSchoolYear="HK1_23-24"):
     return (db.session.query(TeacherClass, Class.name, Class.size)
             .join(Class)
             .join(ScoreBoard)
@@ -248,12 +248,12 @@ def types_stats_by_grade():
     pass
 
 
-def scores_stats(score_min=0, score_max=10, semester="HK1_23-24", subject="Toán", classroom="10A7"):
+def scores_stats(score_min, score_max, semester, subject, classroom):
     query = db.session.query(func.round(Score.value, 0), func.count(func.round(Score.value, 0))) \
-        .join(ScoreBoard, ScoreBoard.id == Score.score_board_id) \
-        .join(Semester, Semester.id == ScoreBoard.semester_id) \
-        .join(Subject, Subject.id == ScoreBoard.subject_id) \
-        .join(Class, Class.id == ScoreBoard.class_id) \
+        .join(ScoreBoard) \
+        .join(Semester) \
+        .join(Subject) \
+        .join(Class) \
         .group_by(func.round(Score.value, 0)) \
         .order_by(asc(func.round(Score.value, 0)))
 
@@ -268,7 +268,7 @@ def scores_stats(score_min=0, score_max=10, semester="HK1_23-24", subject="Toán
     if classroom:
         query = query.filter(Class.name.contains(classroom))
 
-    # print(query.all())
+    print(query.all())
 
     return query.all()
 
@@ -294,9 +294,6 @@ def insert_score(dataScores):
 #     return list_Score
 # def getScoreBoardByClassID(ClassID):
 #     ScoreBoardID=db.session.query(ScoreBoard).join(Class).filter(Class.id==ClassID).first()
-
-
-
 
 
 # read json and write json

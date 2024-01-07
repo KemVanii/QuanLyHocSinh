@@ -1,5 +1,4 @@
 import hashlib
-
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import json
 from flask_login import login_user, logout_user, current_user
@@ -181,6 +180,7 @@ def nhapdiem():
     inputCot45p = int(request.args.get('inputCot45p') or '1')
     inputHocki = request.args.get('inputHocki')
     classes = dao.getClassesByTeacherAndCurrentSchoolYear(current_user.id, currentSchoolYear)
+    print(currentSchoolYear)
     score_boards = []
 
     if inputTenLop and inputHocki and inputCot15p and inputCot45p:
@@ -242,13 +242,11 @@ def chinhsuadiemLop(idLop):
     # list_score=dao.getScore(dao.getScoreBoardByClassID(idLop))
     # print(list_score)
 
-
-
-
     return render_template('chinhsuadiemLop.html', funcs=funcs,
-                       idLop=idLop, score_boards_sua=score_boards_sua,
-                       inputCot15p=inputCot15p, inputCot45p=inputCot15p,
-                       )
+                           idLop=idLop, score_boards_sua=score_boards_sua,
+                           inputCot15p=inputCot15p, inputCot45p=inputCot15p,
+                           )
+
 
 if __name__ == '__main__':
     from app import admin

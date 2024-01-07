@@ -38,13 +38,34 @@ class MyUser(AuthenticatedAdmin):
             password = form.password.data
             model.password = hashlib.md5(password.encode('utf-8')).hexdigest()
 
+    def on_model_delete(self, model):
+        self.session.rollback()
+
+        if model.status:
+            User.query.filter_by(id=model.id).update({'status': False})
+        else:
+            User.query.filter_by(id=model.id).update({'status': True})
+
+        TeacherClass.query.filter_by(teacher_id=model.id).update({'teacher_id': model.id})
+        db.session.commit()
+
 
 class MySubject(AuthenticatedAdmin):
     edit_modal = True
 
+    # def on_model_delete(self, model):
+    #     new_parent = Subject.query.first()
+    #     User.query.filter_by(subject_id=model.id).update({'subject_id': new_parent.id})
+    #     db.session.commit()
+
     def on_model_delete(self, model):
-        new_parent = Subject.query.first()
-        User.query.filter_by(subject_id=model.id).update({'subject_id': new_parent.id})
+        self.session.rollback()
+        if model.status:
+            Subject.query.filter_by(id=model.id).update({'status': False})
+        else:
+            Subject.query.filter_by(id=model.id).update({'status': True})
+
+        User.query.filter_by(subject_id=model.id).update({'subject_id': model.id})
         db.session.commit()
 
 
