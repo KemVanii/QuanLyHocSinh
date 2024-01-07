@@ -82,6 +82,27 @@ def getScoreBoard(className, subjectName, semester, currentSchoolYear):
     return score_boards
 
 
+def getScoreBoardByClassStudentYear(className, studentId, currentSchoolYear):
+    score_boards = (db.session.query(ScoreBoard)
+                    .join(Class)
+                    .join(Student)
+                    .join(Semester)
+                    .filter(Class.name == className, Student.id == studentId,
+                            Semester.name.contains(currentSchoolYear)).all())
+    return score_boards
+
+
+def getSubjectByClassAndYear(className, currentSchoolYear):
+    subjects = (db.session.query(Subject)
+                .join(ScoreBoard)
+                .join(Class)
+                .join(Semester)
+                .filter(Class.name == className,
+                        Semester.name.contains(currentSchoolYear))
+                .all())
+    return subjects
+
+
 def getClass(Class_ID):
     cl = db.session.query(Class).filter(Class.id == Class_ID).first()
     return cl
@@ -108,7 +129,6 @@ def getClassByGradeAndSchoolYear(grade, schoolYear):
                .join(Semester)
                .filter(Grade.name == grade, Semester.name.contains(schoolYear))
                .all())
-    print(classes)
     return classes
 
 
@@ -129,7 +149,9 @@ def getClassById(classId):
 def getStudentListByClassId(classId):
     return (db.session.query(Student)
             .join(ScoreBoard)
-            .filter(ScoreBoard.class_id == classId).all())
+            .filter(ScoreBoard.class_id == classId,
+                    ScoreBoard.status == True)
+            .all())
 
 
 def deleteStudentInClass(studentId, classId, schoolYear):
@@ -283,7 +305,7 @@ def insert_score(dataScores):
             s = Score(value=dataScore['15p'][i], type='15p', score_board_id=dataScore['score_board_id'])
             db.session.add(s)
         for i in range(len(dataScore['45p'])):
-            s = Score(value=dataScore['45p'][i], type='15p', score_board_id=dataScore['score_board_id'])
+            s = Score(value=dataScore['45p'][i], type='45p', score_board_id=dataScore['score_board_id'])
             db.session.add(s)
         s = Score(value=dataScore['ck'], type='ck', score_board_id=dataScore['score_board_id'])
         db.session.add(s)

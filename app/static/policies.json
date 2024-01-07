@@ -1,1 +1,6 @@
-{"max_class_size": "40", "age_min": "19", "age_max": "29"}
+{
+  "max_class_size": "40",
+  "age_min": "19",
+  "age_max": "29",
+  "school_year": "23-24"
+}

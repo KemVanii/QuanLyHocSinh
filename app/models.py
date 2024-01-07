@@ -44,8 +44,12 @@ class User(db.Model, UserMixin):
     username = Column(String(50), nullable=False, unique=True)
     password = Column(String(100), nullable=False)
     user_role = Column(Enum(UserRoleEnum))
+<<<<<<< HEAD
     status = Column(Boolean, default=True, nullable=False)
     subject_id = Column(Integer, ForeignKey(Subject.id), nullable=False)
+=======
+    subject_id = Column(Integer, ForeignKey(Subject.id))
+>>>>>>> 174a8098bbbd5962469fb01be8b52f4e5aef49c8
 
     def __str__(self):
         return self.name
