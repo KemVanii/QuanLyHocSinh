@@ -112,10 +112,11 @@ def dieuchinhdanhsachlop(idLop):
     grades = dao.get_grade()
     inputGrade = request.args.get('inputGrade') or 10
     cla = dao.getClassById(idLop)
-    students = dao.getStudentListByClassId(idLop)
+    studentsInClass = dao.getStudentListByClassId(idLop)
+
     return render_template("dieuChinhDanhSachlop.html",
                            funcs=funcs, grades=grades,
-                           inputGrade=inputGrade, students=students,
+                           inputGrade=inputGrade, studentsInClass=studentsInClass,
                            cla=cla, idLop=idLop)
 
 
