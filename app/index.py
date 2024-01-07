@@ -74,7 +74,8 @@ def lapdanhsach():
             return redirect(url_for('lapdanhsach'))
         else:
             if grade == 10:
-                students = dao.getStudentsNotInClass(size)
+                students = dao.getStudentsNotHasClass(size)
+
             if grade == 11 or grade == 12:
                 pass
     return render_template("lapDanhSach.html",
@@ -105,18 +106,23 @@ def dieuchinhdanhsachlop(idLop):
         action = request.form.get('action')
         studentId = request.form.get('student_id')
         if action == 'delete':
-            dao.deleteStudentInClass(studentId, idLop, currentSchoolYear)
+            dao.deleteStudentFromClass(studentId, idLop, currentSchoolYear)
+        elif action == 'add':
+            dao.insertStudentToClass(studentId, idLop, currentSchoolYear)
         return redirect(url_for('dieuchinhdanhsachlop', idLop=idLop))
     funcs = dao.load_function(current_user.user_role)
 
-    grades = dao.get_grade()
+    grades = dao.getAllSubject()
     inputGrade = request.args.get('inputGrade') or 10
     cla = dao.getClassById(idLop)
     studentsInClass = dao.getStudentListByClassId(idLop)
-
+    studentsNotHasClass = dao.getStudentsNotHasClass()
+    studentsRemoveClass = dao.getStudentsRemoveClass(cla.grade_id, currentSchoolYear)
+    studentsNotInClass = studentsNotHasClass + studentsRemoveClass
     return render_template("dieuChinhDanhSachlop.html",
                            funcs=funcs, grades=grades,
                            inputGrade=inputGrade, studentsInClass=studentsInClass,
+                           studentsNotInClass=studentsNotInClass,
                            cla=cla, idLop=idLop)
 
 
@@ -244,9 +250,6 @@ def chinhsuadiemLop(idLop):
     # list_score=dao.getScore(dao.getScoreBoardByClassID(idLop))
     # print(list_score)
 
-
-
-
     return render_template('chinhsuadiemLop.html', funcs=funcs,
                            idLop=idLop, score_boards_sua=score_boards_sua,
                            inputCot15p=inputCot15p, inputCot45p=inputCot15p,
@@ -263,7 +266,7 @@ def xemdiem():
     subjects = dao.getSubjectByClassAndYear('10/2', currentSchoolYear)
     print(scoreBoards)
     print(subjects)
-    print(isPass(scoreBoards,subjects))
+    print(isPass(scoreBoards, subjects))
     return render_template("xemdiem.html", funcs=funcs)
 
 
