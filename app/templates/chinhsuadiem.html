@@ -1,6 +1,6 @@
     {% extends 'layout/base.html' %}
 
-{% block title %}Thong ke{% endblock %}
+{% block title %}Chỉnh sửa điểm{% endblock %}
 
 {% block content %}
 <!-- Offcanvas Sidebar -->
@@ -19,9 +19,8 @@
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Tên Lớp</th>
-                <th scope="col">Sỉ số lớp</th>
-                <th scope="col">Môn học</th>
-                <th scope="col">Tên giảng viên</th>
+                <th scope="col">Sỉ số</th>
+                <th scope="col">Hành động</th>
                 <th></th>
             </tr>
             </thead>
@@ -31,16 +30,12 @@
                 <th scope="row">{{ loop.index }}</th>
                 <td>{{ class.name }}</td>
                 <td>{{ class.size }}</td>
-                <td>{{ subject.name }}</td>
-                <td>{{ current_user.name }}</td>
                 <td>
                     <form action="/chinhsuadiem/{{class.id}}">
                         <button type="submit" class="btn btn-secondary">Sửa</button>
                     </form>
                 </td>
-
             </tr>
-
             {% endfor %}
             </tbody>
         </table>

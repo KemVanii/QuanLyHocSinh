@@ -1,17 +1,18 @@
 {% extends 'layout/base.html' %}
 
-{% block title %}Chinh sua diem{% endblock %}
+{% block title %}Chỉnh sửa điểm{% endblock %}
 
 {% block content %}
 <h1 class="text-center mt-2">Chỉnh sửa điểm cho lớp </h1>
 
 <form action="/chinhsuadiem/{{idLop}} " method="POST">
-    <button type="submit" class="btn btn-primary">Lọc</button>
+
     <label for="semester" class="form-label">Chọn học kì:</label>
     <select id="semester" name="inputHocki" class="form-select">
         <option value="HK1" {% if inputHocki=='HK1' %} selected {%endif%}>HK1</option>
         <option value="HK2" {% if inputHocki=='HK2' %} selected {%endif%}>HK2</option>
     </select>
+    <button type="submit" class="btn btn-primary">Lọc</button>
 </form>
 
 <table class="table table-bordered">
@@ -20,39 +21,63 @@
         <th class="text-center" scope="col">#</th>
         <th scope="col">Name</th>
         <th scope="col">Date of Birth</th>
-        <th class="text-center" scope="col" colspan="{{inputCot15p}}">15p</th>
-        <th class="text-center" scope="col" colspan="{{inputCot45p}}">45p</th>
-        <th class="text-center" scope="col">Cuối kì</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for score_board in score_boards_sua %}
-    <tr>
-        <th class="text-center" scope="row">{{ loop.index }}</th>
-        <td>{{ score_board.id }}</td>
-        <td>{{ score_board.dob.strftime('%d-%m-%Y') }}</td>
         {% for i in range(0, inputCot15p) %}
-        <th scope="col">
-             <td>{{ score_boards_sua.score }}</td>
-
+        <th class="text-center" scope="col">
+            <span>15p</span>
+            <button type="submit" class="ml-1 btn btn-secondary p-1" onclick="deleteColumn(this, '15p')">Xóa</button>
         </th>
         {% endfor %}
         {% for i in range(0, inputCot45p) %}
-        <th scope="col">
-            <input type="number" name="45p{{score_board.id}}[]" class="form-control border-0"
-                   min="0"
-                   max="10" step="any" required>
+        <th class="text-center" scope="col">
+            <span>45p</span>
+            <button type="submit" class="ml-1 btn btn-secondary p-1" onclick="deleteColumn(this, '45p')">Xóa</button>
         </th>
         {% endfor %}
-        <th scope="col">
-            <input type="number" name="ck{{score_board.id}}" class="form-control border-0"
-                   min="0"
-                   max="10" step="any" required>
+        <th class=" text-center
+            " scope="col">Cuối kì
         </th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for dataScore in dataScores %}
+    <tr>
+        <input type="hidden" value="{{dataScore['score_board_id']}}">
+        <th class="text-center" scope="row">{{ loop.index }}</th>
+        <td>{{ dataScore['student_name'] }}</td>
+        <td>{{ dataScore['student_dob'].strftime('%d-%m-%Y') }}</td>
+        {% for i in range(0, inputCot15p) %}
+        <td scope="col">
+            <input type="number" name="15p{{dataScore['score_board_id']}}[]"
+                   class="form-control border-0 form-control-sm"
+                   min="0" max="10" step="any" value="{{dataScore['15p'][i]}}" required>
+        </td>
+        {% endfor %}
+        {% for i in range(0, inputCot45p) %}
+        <td scope="col">
+            <input type="number" name="45p{{dataScore['score_board_id']}}[]"
+                   class="form-control border-0 form-control-sm"
+                   min="0" max="10" step="any" value="{{dataScore['45p'][i]}}" required>
+        </td>
+        {% endfor %}
+        <td scope="col">
+            <input type="number" name="ck{{dataScore['score_board_id']}}" class="form-control border-0 form-control-sm"
+                   min="0" max="10" step="any" value="{{dataScore['ck']}}" required>
+        </td>
     </tr>
     {% endfor %}
     </tbody>
-
-
 </table>
+<div class="container mt-3">
+    <div class="row justify-content-end">
+        <div class="col-auto">
+            <button type="button" class="btn btn-secondary" onclick="add15pColumn()">Thêm cột 15p</button>
+        </div>
+        <div class="col-auto">
+            <button type="button" class="btn btn-secondary" onclick="add45pColumn()">Thêm cột 45p</button>
+        </div>
+        <div class="col-auto">
+            <button type="button" class="btn btn-primary">Lưu</button>
+        </div>
+    </div>
+</div>
 {% endblock %}

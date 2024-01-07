@@ -245,18 +245,25 @@ def chinhsuadiemLop(idLop):
     funcs = dao.load_function(current_user.user_role)
     inputHocki = request.args.get('inputHocki') or 'HK1'
     inputTenMon = dao.getSubjectByUser(current_user.id).name
-    score_boards_sua = dao.getScoreBoard(dao.getClass(idLop).name, inputTenMon, inputHocki, currentSchoolYear)
-    inputCot15p = 1
-    inputCot45p = 1
-    # print(score_boards_sua[0].scores)
-    # print(score_boards_sua[0][0].scores)
-    # list_score=dao.getScore(dao.getScoreBoardByClassID(idLop))
-    # print(list_score)
-
+    score_boards = dao.getScoreBoard(dao.getClass(idLop).name, inputTenMon, inputHocki, currentSchoolYear)
+    dataScores = []
+    if len(score_boards):
+        for score_board in score_boards:
+            dataScore = {
+                'score_board_id': score_board.id,
+                'student_name': score_board.name,
+                'student_dob': score_board.dob,
+                '15p': [score.value for score in score_board[0].scores if score.type == '15p'],
+                '45p': [score.value for score in score_board[0].scores if score.type == '45p'],
+                'ck': [score.value for score in score_board[0].scores if score.type == 'ck'][0]
+            }
+            dataScores.append(dataScore)
+    inputCot15p = len(dataScores[0]['15p']) if len(dataScores) else None
+    inputCot45p = len(dataScores[0]['45p']) if len(dataScores) else None
     return render_template('chinhsuadiemLop.html', funcs=funcs,
-                           idLop=idLop, score_boards_sua=score_boards_sua,
-                           inputCot15p=inputCot15p, inputCot45p=inputCot15p,
-                           )
+                           idLop=idLop, score_boards=score_boards,
+                           inputCot15p=inputCot15p, inputCot45p=inputCot45p,
+                           dataScores=dataScores)
 
 
 @app.route('/xemdiem')
