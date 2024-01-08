@@ -27,3 +27,4 @@ def calSemesterAverage(scores):
             averageScore = averageScore + score.value * 3
             totalCoefficient = totalCoefficient + 3
     return averageScore / totalCoefficient
+
