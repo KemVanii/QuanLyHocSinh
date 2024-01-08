@@ -297,7 +297,7 @@ def xemdiem():
     subjects = dao.getSubjectByClassAndYear('10/2', currentSchoolYear)
     print(scoreBoards)
     print(subjects)
-    print(isPass(scoreBoards, subjects))
+    # print(isPass(scoreBoards, subjects))
     return render_template("xemdiem.html", funcs=funcs)
 
 
