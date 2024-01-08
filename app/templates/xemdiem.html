@@ -1,7 +1,60 @@
 {% extends 'layout/base.html' %}
 
-{% block title %}Diem{% endblock %}
+{% block title %}Xem điểm{% endblock %}
 
 {% block content %}
 <h1 class="text-center mt-2">Xem điểm</h1>
+<form action="/xemdiem">
+    <div class="row">
+        <div class="col col-3">
+            <select class="form-select">
+                <option value="{{inputNienHoc}}">{{inputNienHoc}}</option>
+                {% for schoolYear in schoolYears %}
+                <option>schoolYear</option>
+                {% endfor %}
+
+            </select>
+        </div>
+        <div class="col">
+            <button type="submit" class="btn btn-primary">Lọc</button>
+        </div>
+    </div>
+</form>
+{% if list_class|length != 0 %}
+<div class="container" style="height: 60vh; overflow-y: auto;">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th class="text-center fw-bold fs-4" scope="col">#</th>
+                <th class=" fw-bold fs-4" scope="col">Tên Lớp</th>
+                <th class=" fw-bold fs-4" scope="col">Sỉ số</th>
+                <th class="text-center fw-bold fs-4" scope="col" colspan="2">Xem</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for class in list_class %}
+            <tr>
+                <th class="text-center fs-4" scope="row">{{ loop.index }}</th>
+                <td class="fs-4">{{ class.name }}</td>
+                <td class="fs-4">{{ class.size }}</td>
+                <td class="text-center">
+                    <form class="col" action="/xemdiem/{{class.id}}/1">
+                        <button type="submit" class="btn btn-secondary">HK1</button>
+                    </form>
+                </td>
+                <td class="text-center">
+                    <form class="col" action="/xemdiem/{{class.id}}/2">
+                        <button type="submit" class="btn btn-secondary">HK2</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else%}
+<h3 class="mt-2">Không tìm thấy danh sách học sinh phù hợp</h3>
+{% endif %}
 {% endblock %}

@@ -101,6 +101,17 @@ def getScoreBoard(className, subjectName, semester, currentSchoolYear):
     return score_boards
 
 
+def getScoreBoardByClass(classId, subjectId, semester):
+    score_boards = (db.session.query(ScoreBoard, ScoreBoard.id, Student.name, Student.dob)
+                    .join(Subject)
+                    .join(Semester)
+                    .join(Student)
+                    .filter(ScoreBoard.class_id == classId,
+                            ScoreBoard.subject_id == subjectId,
+                            Semester.name.contains(semester)).all())
+    return score_boards
+
+
 def getScoreBoardByClassStudentYear(className, studentId, currentSchoolYear):
     score_boards = (db.session.query(ScoreBoard)
                     .join(Class)
@@ -123,15 +134,26 @@ def getSubjectByClassAndYear(className, currentSchoolYear):
 
 
 def getClass(Class_ID):
-    cl = db.session.query(Class).filter(Class.id == Class_ID).first()
-    return cl
+    return (db.session.query(Class)
+            .filter(Class.id == Class_ID).first())
+    return
 
 
-def getClassesByTeacher(teacherId, kw=None):
+def getSemesterByClassId(Class_ID):
+    return (db.session.query(Semester)
+            .join(ScoreBoard)
+            .join(Class)
+            .filter(Class.id == Class_ID)
+            .all())
+
+
+def getClassesByTeacher(teacherId, schoolYear, kw=None):
     list_class = (db.session.query(TeacherClass, Class.name, Class.size, Class.id)
                   .join(Class)
-                  .filter(TeacherClass.teacher_id == teacherId)
-                  )
+                  .join(ScoreBoard)
+                  .join(Semester)
+                  .filter(TeacherClass.teacher_id == teacherId,
+                          Semester.name.contains(schoolYear)))
     if kw:
         list_class = list_class.filter(Class.name.contains(kw))
     return list_class.all()
@@ -366,7 +388,31 @@ def insert_score(dataScores):
             db.session.add(s)
         s = Score(value=dataScore['ck'], type='ck', score_board_id=dataScore['score_board_id'])
         db.session.add(s)
-        db.session.commit()
+    db.session.commit()
+
+
+def update_score(dataScores):
+    for dataScore in dataScores:
+        Score.query.filter(Score.score_board_id == dataScore['score_board_id']).delete()
+        for i in range(len(dataScore['15p'])):
+            s = Score(value=dataScore['15p'][i], type='15p', score_board_id=dataScore['score_board_id'])
+            db.session.add(s)
+        for i in range(len(dataScore['45p'])):
+            s = Score(value=dataScore['45p'][i], type='45p', score_board_id=dataScore['score_board_id'])
+            db.session.add(s)
+        s = Score(value=dataScore['ck'], type='ck', score_board_id=dataScore['score_board_id'])
+        db.session.add(s)
+    db.session.commit()
+
+
+def getSemesterTeacher(TeaderId):
+    return (db.session.query(Semester)
+            .join(ScoreBoard)
+            .join(Class)
+            .join(TeacherClass)
+            .filter(TeacherClass.teacher_id == TeaderId,
+                    Semester.name.contains('HK1'))
+            .all())
 
 # def getScore(ScoreBoard_id):
 #     list_Score=db.session.query(ScoreBoard).join(Score).filter(Score.id==ScoreBoard_id).all()
