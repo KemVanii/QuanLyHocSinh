@@ -21,10 +21,10 @@ hr.h-color{
    border-radius: 8px;
 }
 
-.sidebar li.active a, .sidebar li.active a:hover {
+.sidebar li.active a, .sidebar li.active a:hover{
  color: #000;
 }
-.sidebar li a{
+.sidebar li a, .sidebar h5{
  color: #fff;
 }
 
