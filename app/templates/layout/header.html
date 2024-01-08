@@ -1,3 +1,7 @@
+{% block link %}
+    <link rel="stylesheet" href="/static/css/menu.css">
+{% endblock %}
+
 <div class="sidebar" id="side_nav">
     <div class="header-box px-2 pt-3 pb-4 d-flex justify-content-between">
         <h1 class="fs-4"><span class="bg-white text-dark rounded shadow px-2 me-2">TT</span>
@@ -9,21 +13,25 @@
 
     <ul class="list-unstyled px-2">
         {% for f in funcs %}
-        <li class="{% if request.endpoint == f.endpoint %}active{% endif %}"><a href="/{{f.endpoint}}" class="text-decoration-none px-3 py-2 d-block"><i class="{{ f.icon }}"></i>
+        <li class="{% if request.endpoint == f.endpoint %}active{% endif %}"><a href="/{{f.endpoint}}"
+                                                                                class="text-decoration-none px-3 py-2 d-block"><i
+                class="{{ f.icon }}"></i>
             {{f.name}}</a></li>
         </li>
         {% endfor%}
     </ul>
+
     <hr class="h-color mx-2">
 
     <ul class="list-unstyled px-2">
         <li class="">
             <div style="display:inline; color: #f8f9fa;  cursor:pointer" class=" text-decoration-none px-3 py-2 d-block"
                  data-bs-toggle="collapse"
-                 data-bs-target="#settings">Settings
+                 data-bs-target="#settings"><i class="fa-solid fa-gear pe-1"></i>Settings
             </div>
             <div id="settings" class="collapse" style="padding-left:20px">
-                <a href="/logout" class="text-decoration-none px-3 py-2 d-block"><i class="fa-solid fa-right-from-bracket"></i>
+                <a href="/logout" class="text-decoration-none px-3 py-2 d-block"><i
+                        class="fa-solid fa-right-from-bracket"></i>
                     Logout</a>
                 <a href="" class="text-decoration-none px-3 py-2 d-block"><i class="fa-solid fa-address-card"></i>
                     Profile</a>

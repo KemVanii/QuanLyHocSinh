@@ -164,12 +164,14 @@ def getSubjectByUser(teacherId):
 
 
 def getClassByGradeAndSchoolYear(grade, schoolYear):
-    classes = (db.session.query(Class)
+    classes = (db.session.query(Class, Semester.name)
                .join(Grade)
                .join(ScoreBoard)
                .join(Semester)
                .filter(Grade.name == grade, Semester.name.contains(schoolYear))
                .all())
+
+    print(classes)
     return classes
 
 

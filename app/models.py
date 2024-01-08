@@ -45,7 +45,8 @@ class User(db.Model, UserMixin):
     password = Column(String(100), nullable=False)
     user_role = Column(Enum(UserRoleEnum))
     status = Column(Boolean, default=True, nullable=False)
-    subject_id = Column(Integer, ForeignKey(Subject.id))
+    phones = relationship('Phone', foreign_keys='Phone.user_id', backref='user', lazy=True)
+    subject_id = Column(Integer, ForeignKey(Subject.id), nullable=True)
 
     def __str__(self):
         return self.name
@@ -68,7 +69,8 @@ class Class(db.Model):
 class Phone(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     number = Column(String(10), nullable=False)
-    student_id = Column(Integer, ForeignKey(Student.id), nullable=False)
+    student_id = Column(Integer, ForeignKey(Student.id), nullable=True)
+    user_id = Column(Integer, ForeignKey(User.id), nullable=True)
 
 
 class Semester(db.Model):
