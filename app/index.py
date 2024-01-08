@@ -37,8 +37,7 @@ def login():
                 and user.status is True):
             login_user(user)
             loadPolicies(app)
-            next_url = request.form.get("next_url")
-            print(next_url)
+            next_url = request.args.get("next_url")
             if next_url is not None:
                 return redirect(url_for(next_url))
             return redirect(url_for("index"))

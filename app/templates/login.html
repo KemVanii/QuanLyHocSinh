@@ -31,12 +31,9 @@
 <div id="login" class="wrapper">
     <div class="container">
         <h1>Welcome</h1>
-        <form action="/login" class="was-validated" method="post">
+        <form action="/login?next_url={{next_url}}" class="was-validated" method="post">
             <input type="text" id="username" placeholder="Enter username" name="username" required>
             <input type="password" id="pwd" placeholder="Enter password" name="pswd" required>
-            <!--			<input type="text" placeholder="Username">-->
-            <!--			<input type="password" placeholder="Password">-->
-            <input type="hidden" name="next_url" value="{{next_url}}">
             <button type="submit" id="login-button">Login</button>
         </form>
     </div>
