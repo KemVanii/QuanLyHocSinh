@@ -168,7 +168,7 @@ def getClassByGradeAndSchoolYear(grade, schoolYear):
                .join(Grade)
                .join(ScoreBoard)
                .join(Semester)
-               .filter(Grade.name == grade, Semester.name.contains(schoolYear))
+               .filter(Grade.name == grade, Semester.name == f"HK1_{schoolYear}")
                .all())
 
     print(classes)
@@ -201,7 +201,6 @@ def getStudentListByClassId(classId):
 
 
 def deleteStudentFromClass(studentId, classId, schoolYear):
-    print(studentId, classId, schoolYear)
     score_boards = (db.session.query(ScoreBoard)
                     .join(Semester)
                     .filter(ScoreBoard.class_id == classId,
@@ -210,6 +209,8 @@ def deleteStudentFromClass(studentId, classId, schoolYear):
                     .all())
     for score_board in score_boards:
         score_board.status = False
+    cla = db.session.query(Class).filter(Class.id == classId).first()
+    cla.size = cla.size - 1
     db.session.commit()
 
 
@@ -230,11 +231,12 @@ def insertStudentToClass(studentId, classId, schoolYear):
                 sb = ScoreBoard(student_id=studentId, subject_id=subject.id, class_id=classId,
                                 semester_id=semester.id)
                 db.session.add(sb)
-
     else:  # case student have been deleted
         for score_board in score_boards:
             score_board.class_id = classId
             score_board.status = True
+    cla = db.session.query(Class).filter(Class.id == classId).first()
+    cla.size = cla.size + 1
     db.session.commit()
 
 

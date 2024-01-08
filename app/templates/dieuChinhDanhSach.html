@@ -21,34 +21,32 @@
     </form>
 </div>
 {% if classes|length != 0 %}
-<div class="container mt-3">
-    <table class="table">
-        <thead>
-        <tr>
-            <th>#</th>
-            <th>Lớp</th>
-            <th>Sỉ số</th>
-            <th>Niên khóa</th>
-            <th>Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for class in classes %}
-        <tr>
-            <th>{{loop.index}}</th>
-            <td>{{class.Class.name}}</td>
-            <td>{{class.Class.size}}</td>
-            <td>{{class.name}}</td>
-            <td>
-                <form action="/dieuchinhdanhsach/{{class.Class.id}}">
-                    <button type="submit" class="btn btn-danger">Xem</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor%}
-        </tbody>
-    </table>
-</div>
+<div class="container justify-content-center  mt-3">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Lớp</th>
+                <th>Sỉ số</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for class in classes %}
+            <tr>
+                <th>{{loop.index}}</th>
+                <td>{{class.Class.name}}</td>
+                <td>{{class.Class.size}}</td>
+                <td>
+                    <form action="/dieuchinhdanhsach/{{class.Class.id}}">
+                        <button type="submit" class="btn btn-secondary">Sửa</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor%}
+            </tbody>
+        </table>
+    </div>
 {% else %}
 <h3 class="mt-2">Không tìm thấy danh sách</h3>
 {% endif %}

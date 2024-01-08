@@ -24,7 +24,8 @@ def index():
 
     classes = dao.getClassesByTeacherAndCurrentSchoolYear(current_user.id, app.config["school_year"])
 
-    return render_template('index.html', funcs=funcs, classes=classes, school_year=app.config["school_year"], user_role=UserRoleEnum.Employee)
+    return render_template('index.html', funcs=funcs, classes=classes, school_year=app.config["school_year"],
+                           user_role=UserRoleEnum.Employee)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -61,31 +62,32 @@ def tiepNhanHocSinh():
 @app.route('/lapdanhsach', methods=["GET", "POST"])
 @restrict_to_roles([UserRoleEnum.Employee], next_url='lapdanhsach')
 def lapdanhsach():
-    funcs = dao.load_function(current_user.user_role)
-    students = []
-    size = ""
-    grade = 10
-    maxSize = app.config['max_class_size']
     currentSchoolYear = app.config['school_year']
-    newNameClass = ''
     if request.method == "POST":
-        action = request.form.get("action")
         size = int(request.form.get("inputSize"))
         grade = int(request.form.get("inputGrade"))
         newNameClass = f'{grade}/{len(dao.getClassByGradeAndSchoolYear(grade, currentSchoolYear)) + 1}'
-        if (action == 'xacnhanlap'):
+        if grade == 10:
             dao.createNewClassGrade10(newNameClass, size, grade, currentSchoolYear)
             return redirect(url_for('lapdanhsach'))
-        else:
-            if grade == 10:
-                students = dao.getStudentsNotHasClass(size)
+        if grade == 11 or grade == 12:
+            pass
 
-            if grade == 11 or grade == 12:
-                pass
+    funcs = dao.load_function(current_user.user_role)
+    maxSize = app.config['max_class_size']
+    size = request.args.get("inputSize") or ''
+    grade = int(request.args.get("inputGrade") or '10')
+    students = []
+    newNameClass = ''
+    if size and grade == 10:
+        students = dao.getStudentsNotHasClass(size)
+        newNameClass = f'{grade}/{len(dao.getClassByGradeAndSchoolYear(grade, currentSchoolYear)) + 1}'
+
+
     return render_template("lapDanhSach.html",
                            funcs=funcs, students=students,
-                           size=size, grade=grade,
-                           maxSize=maxSize, currentSchoolYear=currentSchoolYear,
+                           size=size, grade=grade, maxSize=maxSize,
+                           currentSchoolYear=currentSchoolYear,
                            newNameClass=newNameClass)
 
 
@@ -165,7 +167,7 @@ def thongke():
 
 
 @app.route('/nhapdiem', methods=["GET", "POST"])
-@restrict_to_roles([UserRoleEnum.Teacher],next_url='nhapdiem')
+@restrict_to_roles([UserRoleEnum.Teacher], next_url='nhapdiem')
 def nhapdiem():
     currentSchoolYear = app.config['school_year']
     if request.method == 'POST':
@@ -350,4 +352,4 @@ def xemdiemlop(idLop, hk):
 if __name__ == '__main__':
     from app import admin
 
-    app.run(debug=True, port=5000, host='0.0.0.0')
+    app.run(debug=True)
