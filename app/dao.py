@@ -28,7 +28,11 @@ def load_function(user_role):
         ]
     elif user_role == UserRoleEnum.Teacher:
         return [
-
+            {
+                'name': 'Home',
+                'endpoint': '',
+                'icon': 'fa-solid fa-home'
+            },
             {
                 'name': 'Nhập Điểm',
                 'endpoint': 'nhapdiem',
