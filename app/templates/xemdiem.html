@@ -26,18 +26,18 @@
         <table class="table">
             <thead>
             <tr>
-                <th scope="col">#</th>
-                <th scope="col">Tên Lớp</th>
-                <th scope="col">Sỉ số</th>
-                <th scope="col" class="text-center" colspan="2">Hành động</th>
+                <th class="text-center fw-bold fs-4" scope="col">#</th>
+                <th class=" fw-bold fs-4" scope="col">Tên Lớp</th>
+                <th class=" fw-bold fs-4" scope="col">Sỉ số</th>
+                <th class="text-center fw-bold fs-4" scope="col" colspan="2">Xem</th>
             </tr>
             </thead>
             <tbody>
             {% for class in list_class %}
             <tr>
-                <th scope="row">{{ loop.index }}</th>
-                <td>{{ class.name }}</td>
-                <td>{{ class.size }}</td>
+                <th class="text-center fs-4" scope="row">{{ loop.index }}</th>
+                <td class="fs-4">{{ class.name }}</td>
+                <td class="fs-4">{{ class.size }}</td>
                 <td class="text-center">
                     <form class="col" action="/xemdiem/{{class.id}}/1">
                         <button type="submit" class="btn btn-secondary">HK1</button>

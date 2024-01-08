@@ -5,7 +5,7 @@ from flask_login import login_user, logout_user, current_user
 from app import app, login
 from app.models import *
 from app.auth import restrict_to_roles
-from app.util import isPass, calSemesterAverage
+from app.util import isPass, calSemesterAverage, loadPolicies
 import dao
 
 
@@ -29,10 +29,10 @@ def login():
     if request.method == "POST":
         user = User.query.filter_by(
             username=request.form.get("username")).first()
-        print(user.password)
         if (user and user.password == str(hashlib.md5(request.form.get("pswd").encode('utf-8')).hexdigest())
                 and user.status is True):
             login_user(user)
+            loadPolicies(app)
             next_url = request.form.get("next_url")
             if next_url is not None:
                 return redirect(url_for(next_url))

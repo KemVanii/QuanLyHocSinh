@@ -1,6 +1,6 @@
 {% extends 'layout/base.html' %}
 
-{% block title %}Lap danh sach{% endblock %}
+{% block title %}Lập danh sách{% endblock %}
 
 {% block content %}
 
@@ -11,7 +11,7 @@
         <div class="input-group">
             <div class="input-group-text">Sỉ số</div>
             <input type="number" name="inputSize" class="form-control" id="inputSize"
-                   min="1" max="{{maxSize}}" placeholder="Max size is 40" value="{{size}}" required>
+                   min="1" max="{{maxSize}}" placeholder="Max size is {{maxSize}}" value="{{size}}" required>
         </div>
     </div>
 
