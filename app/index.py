@@ -34,9 +34,9 @@ def login():
             login_user(user)
             loadPolicies(app)
             next_url = request.form.get("next_url")
+            print(next_url)
             if next_url is not None:
                 return redirect(url_for(next_url))
-
             return redirect(url_for("index"))
 
     next_url = request.args.get('next_url') or 'index'
@@ -87,7 +87,7 @@ def lapdanhsach():
 
 
 @app.route('/dieuchinhdanhsach')
-@restrict_to_roles([UserRoleEnum.Employee])
+@restrict_to_roles([UserRoleEnum.Employee], next_url='dieuchinhdanhsach')
 def dieuchinhdanhsach():
     funcs = dao.load_function(current_user.user_role)
     currentSchoolYear = app.config['school_year']
@@ -100,7 +100,7 @@ def dieuchinhdanhsach():
 
 
 @app.route('/dieuchinhdanhsach/<int:idLop>', methods=["GET", "POST"])
-@restrict_to_roles([UserRoleEnum.Employee])
+@restrict_to_roles([UserRoleEnum.Employee], next_url='dieuchinhdanhsach')
 def dieuchinhdanhsachlop(idLop):
     currentSchoolYear = app.config['school_year']
     if request.method == 'POST':
@@ -128,13 +128,14 @@ def dieuchinhdanhsachlop(idLop):
 
 
 @app.route('/quydinh')
-@restrict_to_roles([UserRoleEnum.Admin])
+@restrict_to_roles([UserRoleEnum.Admin], next_url='quydinh')
 def quydinh():
     funcs = dao.load_function(current_user.user_role)
     return render_template("quyDinh.html", funcs=funcs)
 
 
 @app.route('/thongke', methods=["GET"])
+@restrict_to_roles([UserRoleEnum.Admin], next_url='thongke')
 def thongke():
     score_min = request.args.get('filterScoreMin')
     score_max = request.args.get('filterScoreMax')
@@ -161,7 +162,7 @@ def thongke():
 
 
 @app.route('/nhapdiem', methods=["GET", "POST"])
-@restrict_to_roles([UserRoleEnum.Teacher])
+@restrict_to_roles([UserRoleEnum.Teacher],next_url='nhapdiem')
 def nhapdiem():
     currentSchoolYear = app.config['school_year']
     if request.method == 'POST':
@@ -222,7 +223,7 @@ def modify_policy():
 
 
 @app.route('/chinhsuadiem')
-@restrict_to_roles([UserRoleEnum.Teacher])
+@restrict_to_roles([UserRoleEnum.Teacher], next_url='chinhsuadiem')
 def chinhsuadiem():
     funcs = dao.load_function(current_user.user_role)
     currentSchoolYear = app.config['school_year']
@@ -238,7 +239,7 @@ def chinhsuadiem():
 
 
 @app.route('/chinhsuadiem/<int:idLop>', methods=["GET", "POST"])
-@restrict_to_roles([UserRoleEnum.Teacher])
+@restrict_to_roles([UserRoleEnum.Teacher], next_url='chinhsuadiem')
 def chinhsuadiemLop(idLop):
     currentSchoolYear = app.config['school_year']
     if request.method == 'POST':
@@ -287,7 +288,7 @@ def chinhsuadiemLop(idLop):
 
 
 @app.route('/xemdiem')
-@restrict_to_roles([UserRoleEnum.Teacher])
+@restrict_to_roles([UserRoleEnum.Teacher], next_url='xemdiem')
 def xemdiem():
     funcs = dao.load_function(current_user.user_role)
     currentSchoolYear = app.config['school_year']
@@ -312,7 +313,7 @@ def xemdiem():
 
 
 @app.route('/xemdiem/<int:idLop>/<int:hk>')
-@restrict_to_roles([UserRoleEnum.Teacher])
+@restrict_to_roles([UserRoleEnum.Teacher], next_url='xemdiem')
 def xemdiemlop(idLop, hk):
     funcs = dao.load_function(current_user.user_role)
     tenLop = dao.getClass(idLop).name
@@ -346,4 +347,4 @@ def xemdiemlop(idLop, hk):
 if __name__ == '__main__':
     from app import admin
 
-    app.run(debug=True)
+    app.run(debug=True, port=5000, host='0.0.0.0')
