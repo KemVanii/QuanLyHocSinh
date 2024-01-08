@@ -97,6 +97,7 @@ def getScoreBoard(className, subjectName, semester, currentSchoolYear):
                     .join(Semester)
                     .join(Student)
                     .filter(Class.name == className, Subject.name == subjectName,
+                            ScoreBoard.status == True,
                             Semester.name == f'{semester}_{currentSchoolYear}').all())
     return score_boards
 

@@ -4,13 +4,13 @@
 
 {% block content %}
 
-{% if current_user.is_authenticated %}
-<h1>Bạn đã đăng nhập</h1>
-<h2>Xin chào {{current_user.name}}</h2>
-<h2>Vai trò của bạn: {{current_user.user_role}}</h2>
-{% else %}
-<h1>Vui long đăng nhập</h1>
-{% endif %}
+<!--{% if current_user.is_authenticated %}-->
+<!--<h1>Bạn đã đăng nhập</h1>-->
+<!--<h2>Xin chào {{current_user.name}}</h2>-->
+<!--<h2>Vai trò của bạn: {{current_user.user_role}}</h2>-->
+<!--{% else %}-->
+<!--<h1>Vui long đăng nhập</h1>-->
+<!--{% endif %}-->
 
 {% if current_user.user_role == user_role.Teacher %}
 <div class="container" style="height: 60vh; overflow-y: auto;">
@@ -18,7 +18,7 @@
         <table class="table">
             <thead>
             <tr>
-                <th scope="col"># </th>
+                <th scope="col">#</th>
                 <th scope="col">Tên lớp</th>
                 <th scope="col">Sỉ số</th>
                 <th scope="col">Niên khóa</th>
@@ -36,6 +36,13 @@
             </tbody>
         </table>
     </div>
+</div>
+{% endif %}
+{% if current_user.user_role == user_role.Employee or current_user.user_role == user_role.Admin  %}
+
+<div class="container d-flex flex-column align-items-center justify-content-center" style="height: 90vh;">
+    <h1 class="text-center mb-4">Hệ thống quản lý học sinh</h1>
+    <img src="{{ url_for('static', filename='image/icon2.jpeg') }}" class="rounded img-fluid" style="width: 400px;" alt="logo">
 </div>
 {% endif %}
 
