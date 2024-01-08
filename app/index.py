@@ -1,6 +1,6 @@
 import hashlib
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import json
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from flask_login import login_user, logout_user, current_user
 from app import app, login
 from app.models import *
@@ -21,7 +21,10 @@ def index():
         funcs = dao.load_function(current_user.user_role)
     else:
         return redirect(url_for('login'))
-    return render_template('index.html', funcs=funcs)
+
+    classes = dao.getClassesByTeacherAndCurrentSchoolYear(current_user.id, app.config["school_year"])
+
+    return render_template('index.html', funcs=funcs, classes=classes, school_year=app.config["school_year"], user_role=UserRoleEnum.Employee)
 
 
 @app.route("/login", methods=["GET", "POST"])

@@ -28,6 +28,7 @@
             <th>#</th>
             <th>Lớp</th>
             <th>Sỉ số</th>
+            <th>Niên khóa</th>
             <th>Action</th>
         </tr>
         </thead>
@@ -35,11 +36,12 @@
         {% for class in classes %}
         <tr>
             <th>{{loop.index}}</th>
+            <td>{{class.Class.name}}</td>
+            <td>{{class.Class.size}}</td>
             <td>{{class.name}}</td>
-            <td>{{class.size}}</td>
             <td>
-                <form action="/dieuchinhdanhsach/{{class.id}}">
-                    <button type="submit" class="btn btn-secondary">Xem</button>
+                <form action="/dieuchinhdanhsach/{{class.Class.id}}">
+                    <button type="submit" class="btn btn-danger">Xem</button>
                 </form>
             </td>
         </tr>

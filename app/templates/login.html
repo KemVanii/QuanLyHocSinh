@@ -2,6 +2,10 @@
 
 {% block title %}Login{% endblock %}
 
+{% block link %}
+    <link rel="stylesheet" href="/static/css/login.css">
+{% endblock %}
+
 {% block content %}
 <!--<div class="login-form container mt-3">-->
 <!--    <form action="/login" class="was-validated" method="post">-->
@@ -24,7 +28,7 @@
 <!--    </form>-->
 <!--</div>-->
 
-<div class="wrapper">
+<div class="wrapper" id="c">
     <div class="container">
         <h1>Welcome</h1>
         <form action="/login" class="was-validated" method="post">

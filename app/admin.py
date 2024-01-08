@@ -1,8 +1,10 @@
 from flask_admin import Admin
-from flask_admin.actions import action
 from flask_admin.contrib.sqla import ModelView
+from wtforms import SelectField, StringField, FieldList, SubmitField, TelField, DateField
+from wtforms.validators import InputRequired, ValidationError
 from flask_login import current_user
 from flask import flash
+from flask_wtf import FlaskForm
 from sqlalchemy import inspect
 from app.models import *
 from app import app, db
@@ -21,6 +23,10 @@ class MyStudent(AuthenticatedEmployee):
     column_searchable_list = ['name', 'id']
     column_editable_list = ['name', 'dob', 'address', 'gender']
     edit_modal = True
+    form_excluded_columns = ['score_boards', 'phones']
+    form_extra_fields = {
+        'gender': SelectField('Gender', choices=[(True, 'Nam'), (False, 'Nữ')], coerce=bool)
+    }
 
 
 class AuthenticatedAdmin(ModelView):
@@ -30,9 +36,13 @@ class AuthenticatedAdmin(ModelView):
 
 class MyUser(AuthenticatedAdmin):
     edit_modal = True
-    column_hide_backrefs = False
     column_filters = ['user_role']
+    column_exclude_list = ['subject_id']
     column_list = [c_attr.key for c_attr in inspect(User).mapper.column_attrs]
+    form_excluded_columns = ['phones']
+    form_extra_fields = {
+        'gender': SelectField('Gender', choices=[(True, 'Nam'), (False, 'Nữ')], coerce=bool)
+    }
 
     def on_model_change(self, form, model, is_created):
         # Hash the password before saving to the database
@@ -51,6 +61,10 @@ class MyUser(AuthenticatedAdmin):
             flash('Dữ liệu đã được đánh dấu là hoạt động. Bấm lại xóa để tắt', 'success')
 
         return True
+
+
+class PhoneNumberView(AuthenticatedAdmin):
+    edit_modal = True
 
 
 class MySubject(AuthenticatedAdmin):
@@ -77,3 +91,4 @@ class MySubject(AuthenticatedAdmin):
 admin.add_view(MyStudent(Student, db.session))
 admin.add_view(MyUser(User, db.session))
 admin.add_view(MySubject(Subject, db.session))
+admin.add_view(PhoneNumberView(Phone, db.session))
