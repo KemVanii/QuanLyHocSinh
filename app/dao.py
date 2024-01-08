@@ -83,12 +83,13 @@ def getStudentsNotHasClass(limit=None):
     return query.all()
 
 
-def getStudentsRemoveClass(gradeId, schoolYear):
+def getStudentsRemoveClass(grade, schoolYear):
     return (db.session.query(Student)
             .join(ScoreBoard)
             .join(Class)
+            .join(Grade)
             .join(Semester)
-            .filter(Class.grade_id == gradeId,
+            .filter(Grade.name == grade,
                     Semester.name.contains(schoolYear),
                     ScoreBoard.status == False)
             .all())
@@ -107,14 +108,24 @@ def getScoreBoard(className, subjectName, semester, currentSchoolYear):
 
 
 def getScoreBoardByClass(classId, subjectId, semester):
-    score_boards = (db.session.query(ScoreBoard, ScoreBoard.id, Student.name, Student.dob)
-                    .join(Subject)
-                    .join(Semester)
-                    .join(Student)
-                    .filter(ScoreBoard.class_id == classId,
-                            ScoreBoard.subject_id == subjectId,
-                            Semester.name.contains(semester)).all())
-    return score_boards
+    return (db.session.query(ScoreBoard, ScoreBoard.id, Student.name, Student.dob)
+            .join(Subject)
+            .join(Semester)
+            .join(Student)
+            .filter(ScoreBoard.class_id == classId,
+                    ScoreBoard.subject_id == subjectId,
+                    Semester.name.contains(semester)).all())
+
+
+def getStudentsAlreadyStudyGradeInSchoolYear(grade, schoolYear):
+    return (db.session.query(Student)
+            .join(ScoreBoard)
+            .join(Class)
+            .join(Grade)
+            .join(Semester)
+            .filter(Grade.name == grade,
+                    Semester.name.contains(schoolYear))
+            .all())
 
 
 def getScoreBoardByClassStudentYear(className, studentId, currentSchoolYear):
@@ -141,7 +152,6 @@ def getSubjectByClassAndYear(className, currentSchoolYear):
 def getClass(Class_ID):
     return (db.session.query(Class)
             .filter(Class.id == Class_ID).first())
-    return
 
 
 def getSemesterByClassId(Class_ID):
@@ -149,6 +159,12 @@ def getSemesterByClassId(Class_ID):
             .join(ScoreBoard)
             .join(Class)
             .filter(Class.id == Class_ID)
+            .all())
+
+
+def getSemestersBySchoolYear(schoolYear):
+    return (db.session.query(Semester)
+            .filter(Semester.name.contains(schoolYear))
             .all())
 
 
@@ -176,7 +192,6 @@ def getClassByGradeAndSchoolYear(grade, schoolYear):
                .filter(Grade.name == grade, Semester.name == f"HK1_{schoolYear}")
                .all())
 
-    print(classes)
     return classes
 
 
@@ -253,9 +268,9 @@ def getAllSubject():
     return db.session.query(Subject).all()
 
 
-def createNewClassGrade10(className, size, gradeName, currentSchoolYear):
+def createNewClassGrade(className, students, size, grade, currentSchoolYear):
     # Create new Class
-    grade_id = db.session.query(Grade).filter(Grade.name == gradeName).first().id
+    grade_id = db.session.query(Grade).filter(Grade.name == grade).first().id
     newClass = Class(name=className, size=size, grade_id=grade_id)
     db.session.add(newClass)
     db.session.commit()
@@ -263,14 +278,23 @@ def createNewClassGrade10(className, size, gradeName, currentSchoolYear):
 
     # Create new Score_Boards
     subjects = getAllSubject()
-    students = getStudentsNotHasClass(size)
     semesters = db.session.query(Semester).filter(Semester.name.contains(currentSchoolYear)).all()
-    for semester in semesters:
-        for subject in subjects:
-            for student in students:
-                newScoreBoard = ScoreBoard(student_id=student.id, subject_id=subject.id,
-                                           class_id=newClass.id, semester_id=semester.id)
-                db.session.add(newScoreBoard)
+    for student in students:
+        score_boards = (db.session.query(ScoreBoard)
+                        .join(Semester)
+                        .filter(ScoreBoard.student_id == student.id,
+                                Semester.name.contains(currentSchoolYear))
+                        .all())
+        if len(score_boards) == 0:
+            for semester in semesters:
+                for subject in subjects:
+                    newScoreBoard = ScoreBoard(student_id=student.id, subject_id=subject.id,
+                                               class_id=newClass.id, semester_id=semester.id)
+                    db.session.add(newScoreBoard)
+        else:
+            for score_board in score_boards:
+                score_board.class_id = newClass.id
+                score_board.status = True
 
     # Create new TeacherClass
     teachers = db.session.query(User).filter(User.user_role == UserRoleEnum.Teacher).all()
@@ -328,8 +352,6 @@ def types_stats(classroom, grade):
     #     .group_by(Grade.name, Student.name, Class.name) \
     #     .order_by(asc(Grade.name), desc(func.round(calSemesterAverage(Score.value), 2)))
 
-    print(query.all())
-
     if classroom:
         query = query.filter(Class.name == classroom)
     if grade:
@@ -375,8 +397,6 @@ def scores_stats(score_min, score_max, semester, subject, classroom):
         query = query.filter(Subject.name.contains(subject))
     if classroom:
         query = query.filter(Class.name.contains(classroom))
-
-    print(query.all())
 
     return query.all()
 

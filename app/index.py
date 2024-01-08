@@ -5,7 +5,7 @@ from flask_login import login_user, logout_user, current_user
 from app import app, login
 from app.models import *
 from app.auth import restrict_to_roles
-from app.util import isPass, calSemesterAverage, loadPolicies
+from app.util import isPass, calSemesterAverage, loadPolicies, filter_student, get_previous_school_year
 import dao
 
 
@@ -16,14 +16,12 @@ def loader_user(user_id):
 
 @app.route('/')
 def index():
-    funcs = []
-    if current_user.is_authenticated:
-        funcs = dao.load_function(current_user.user_role)
-    else:
+    if not current_user.is_authenticated:
         return redirect(url_for('login'))
-
-    classes = dao.getClassesByTeacherAndCurrentSchoolYear(current_user.id, app.config["school_year"])
-
+    funcs = dao.load_function(current_user.user_role)
+    classes = []
+    if current_user.user_role == UserRoleEnum.Teacher:
+        classes = dao.getClassesByTeacherAndCurrentSchoolYear(current_user.id, app.config["school_year"])
     return render_template('index.html', funcs=funcs, classes=classes, school_year=app.config["school_year"],
                            user_role=UserRoleEnum.Employee)
 
@@ -61,16 +59,39 @@ def tiepNhanHocSinh():
 @app.route('/lapdanhsach', methods=["GET", "POST"])
 @restrict_to_roles([UserRoleEnum.Employee], next_url='lapdanhsach')
 def lapdanhsach():
-    currentSchoolYear = app.config['school_year']
+    currSchoolYear = app.config['school_year']
     if request.method == "POST":
         size = int(request.form.get("inputSize"))
         grade = int(request.form.get("inputGrade"))
-        newNameClass = f'{grade}/{len(dao.getClassByGradeAndSchoolYear(grade, currentSchoolYear)) + 1}'
+        newNameClass = f'{grade}/{len(dao.getClassByGradeAndSchoolYear(grade, currSchoolYear)) + 1}'
+        students = []
+        prevSchoolYear = get_previous_school_year(currSchoolYear)
+        prevSemesters = dao.getSemestersBySchoolYear(prevSchoolYear)  # get semester of previous schoolYear
+        currSemester = dao.getSemestersBySchoolYear(currSchoolYear)
+        studentsRemoveClass = dao.getStudentsRemoveClass(grade, currSchoolYear)
+        StudentsAlreadyStudy = dao.getStudentsAlreadyStudyGradeInSchoolYear(grade, prevSchoolYear)
+        studentsFailThisGradeInPrevSchoolYear = filter_student(StudentsAlreadyStudy,
+                                                               prevSemesters,
+                                                               currSemester,
+                                                               False)
         if grade == 10:
-            dao.createNewClassGrade10(newNameClass, size, grade, currentSchoolYear)
-            return redirect(url_for('lapdanhsach'))
-        if grade == 11 or grade == 12:
-            pass
+            studentNotHasClass = dao.getStudentsNotHasClass()
+            students = (studentsRemoveClass
+                        + studentNotHasClass
+                        + studentsFailThisGradeInPrevSchoolYear)
+
+        else:
+            StudentsAlreadyStudy = dao.getStudentsAlreadyStudyGradeInSchoolYear(grade - 1, prevSchoolYear)
+            studentsPassPreGradeInPrevSchoolYear = filter_student(StudentsAlreadyStudy,
+                                                                  prevSemesters,
+                                                                  currSemester,
+                                                                  True)
+            students = (studentsPassPreGradeInPrevSchoolYear
+                        + studentsRemoveClass
+                        + studentsFailThisGradeInPrevSchoolYear)
+        students = students[:int(size)]
+        dao.createNewClassGrade(newNameClass, students, size, grade, currSchoolYear)
+        return redirect(url_for('lapdanhsach'))
 
     funcs = dao.load_function(current_user.user_role)
     maxSize = app.config['max_class_size']
@@ -78,15 +99,39 @@ def lapdanhsach():
     grade = int(request.args.get("inputGrade") or '10')
     students = []
     newNameClass = ''
-    if size and grade == 10:
-        students = dao.getStudentsNotHasClass(size)
-        newNameClass = f'{grade}/{len(dao.getClassByGradeAndSchoolYear(grade, currentSchoolYear)) + 1}'
+    if size:
+        newNameClass = f'{grade}/{len(dao.getClassByGradeAndSchoolYear(grade, currSchoolYear)) + 1}'
+        prevSchoolYear = get_previous_school_year(currSchoolYear)
+        prevSemesters = dao.getSemestersBySchoolYear(prevSchoolYear)  # get semester of previous schoolYear
+        currSemester = dao.getSemestersBySchoolYear(currSchoolYear)
+        studentsRemoveClass = dao.getStudentsRemoveClass(grade, currSchoolYear)
+        StudentsAlreadyStudy = dao.getStudentsAlreadyStudyGradeInSchoolYear(grade, prevSchoolYear)
+        studentsFailThisGradeInPrevSchoolYear = filter_student(StudentsAlreadyStudy,
+                                                               prevSemesters,
+                                                               currSemester,
+                                                               False)
+        if grade == 10:
+            studentNotHasClass = dao.getStudentsNotHasClass()
+            students = (studentsRemoveClass
+                        + studentNotHasClass
+                        + studentsFailThisGradeInPrevSchoolYear)
+            print(studentsFailThisGradeInPrevSchoolYear)
 
+        else:
+            StudentsAlreadyStudy = dao.getStudentsAlreadyStudyGradeInSchoolYear(grade - 1, prevSchoolYear)
+            studentsPassPreGradeInPrevSchoolYear = filter_student(StudentsAlreadyStudy,
+                                                                  prevSemesters,
+                                                                  currSemester,
+                                                                  True)
+            students = (studentsPassPreGradeInPrevSchoolYear
+                        + studentsRemoveClass
+                        + studentsFailThisGradeInPrevSchoolYear)
+        students = students[:int(size)]
 
     return render_template("lapDanhSach.html",
                            funcs=funcs, students=students,
                            size=size, grade=grade, maxSize=maxSize,
-                           currentSchoolYear=currentSchoolYear,
+                           currentSchoolYear=currSchoolYear,
                            newNameClass=newNameClass)
 
 
@@ -115,14 +160,14 @@ def dieuchinhdanhsachlop(idLop):
         elif action == 'add':
             dao.insertStudentToClass(studentId, idLop, currentSchoolYear)
         return redirect(url_for('dieuchinhdanhsachlop', idLop=idLop))
-    funcs = dao.load_function(current_user.user_role)
 
+    funcs = dao.load_function(current_user.user_role)
     grades = dao.getAllSubject()
     inputGrade = request.args.get('inputGrade') or 10
     cla = dao.getClassById(idLop)
     studentsInClass = dao.getStudentListByClassId(idLop)
     studentsNotHasClass = dao.getStudentsNotHasClass()
-    studentsRemoveClass = dao.getStudentsRemoveClass(cla.grade_id, currentSchoolYear)
+    studentsRemoveClass = dao.getStudentsRemoveClass(inputGrade, currentSchoolYear)
     studentsNotInClass = studentsNotHasClass + studentsRemoveClass
     return render_template("dieuChinhDanhSachlop.html",
                            funcs=funcs, grades=grades,
@@ -194,7 +239,6 @@ def nhapdiem():
     inputCot45p = int(request.args.get('inputCot45p') or '1')
     inputHocki = request.args.get('inputHocki')
     classes = dao.getClassesByTeacherAndCurrentSchoolYear(current_user.id, currentSchoolYear)
-    print(currentSchoolYear)
     score_boards = []
 
     if inputTenLop and inputHocki and inputCot15p and inputCot45p:
@@ -297,17 +341,11 @@ def xemdiem():
     funcs = dao.load_function(current_user.user_role)
     currentSchoolYear = app.config['school_year']
     inputTenMon = dao.getSubjectByUser(current_user.id).name
-    # scoreBoards = dao.getScoreBoardByClassStudentYear('10/2', 2, currentSchoolYear)
-    # subjects = dao.getSubjectByClassAndYear('10/2', currentSchoolYear)
-    # print(scoreBoards)
-    # print(subjects)
-    # print(isPass(scoreBoards, subjects))
     semesters = dao.getSemesterTeacher(current_user.id)  # Lấy các học kì 1 ra
     schoolYears = [semester.name.split('_')[1] for semester in semesters]  # lọc lấy niên học
     schoolYears = sorted(schoolYears, key=lambda x: int(x.split('-')[0]))  # sắp xếp niên học tăng dần
     lastSchoolYear = schoolYears[-1]  # lấy niên học cuối cùng
     schoolYears = schoolYears[:-1]  # bỏ niên học cuối cùng ra
-    print(lastSchoolYear, schoolYears)
     inputNienHoc = request.args.get('inputNienHoc') or lastSchoolYear
     kw = ''
     list_class = dao.getClassesByTeacher(current_user.id, currentSchoolYear, kw)
