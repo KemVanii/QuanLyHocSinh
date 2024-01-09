@@ -3,8 +3,8 @@
 {% block title%}Thống kê{% endblock %}
 
 {% block link %}
-    <link rel="stylesheet" href="/static/css/statistic.css">
-pybabel init -i messages.pot -d translations -l vi{% endblock %}
+<link rel="stylesheet" href="/static/css/statistic.css">
+{% endblock %}
 
 {% block content %}
 <h1 class="text-center text-info">THỐNG KÊ BÁO CÁO</h1>
@@ -39,7 +39,7 @@ pybabel init -i messages.pot -d translations -l vi{% endblock %}
                 <input class="form-control" list="classrooms" name="classroom" id="classroom">
                 <datalist id="classrooms">
                     {% for c in classrooms %}
-                    <option value="{{ c.name }}">
+                    <option value="{{ c.Class.name }}">
                         {% endfor %}
                 </datalist>
             </div>
@@ -78,7 +78,7 @@ pybabel init -i messages.pot -d translations -l vi{% endblock %}
                 <input class="form-control" list="classroomsPie" name="classroomPie" id="classroomPie">
                 <datalist id="classroomsPie">
                     {% for c in classrooms %}
-                    <option value="{{ c.name }}">
+                    <option value="{{ c.Class.name }}">
                         {% endfor %}
                 </datalist>
             </div>
@@ -95,15 +95,21 @@ pybabel init -i messages.pot -d translations -l vi{% endblock %}
 
             <table class="table">
                 <tr>
+                    <th>Học kì</th>
                     <th>Khối</th>
-                    <th>Loại học lực</th>
-                    <th>Số lượng</th>
+                    <th>Lớp</th>
+                    <th>Tên học sinh</th>
+                    <th>Điểm trung bình</th>
+                    <th>Xếp loại</th>
                 </tr>
-                {% for grade_name, grade_type, count in types_stats %}
+                {% for student_id, g in grade_type_stats.items() %}
                 <tr>
-                    <td>{{grade_name}}</td>
-                    <td>{{grade_type}}</td>
-                    <td>{{count}}</td>
+                    <td>{{g["semester"]}}</td>
+                    <td>{{g["grade"]}}</td>
+                    <td>{{g["class"]}}</td>
+                    <td>{{g["student_name"]}}</td>
+                    <td>{{g["avg_score"]}}</td>
+                    <td>{{g["grade_type"]}}</td>
                 </tr>
                 {% endfor %}
             </table>
@@ -151,26 +157,27 @@ pybabel init -i messages.pot -d translations -l vi{% endblock %}
     labels.push('{{s[0]}}')
     {% endfor %}
 
-    let countCells = document.querySelectorAll('.table td:nth-child(3)');
+        let gradeTypeCells = document.querySelectorAll('.table td:nth-child(6)');
 
-    let summaryTotals = {};
+        let summaryTotals = {};
 
-    countCells.forEach(cell => {
-    const gradeType = cell.previousElementSibling.textContent;
-    const count = parseInt(cell.textContent);
+        gradeTypeCells.forEach(cell => {
+            const gradeType = cell.textContent.trim();
 
-    if (!summaryTotals[gradeType]) {
-        summaryTotals[gradeType] = 0;
-    }
-    summaryTotals[gradeType] += count;
-    });
+            if (!summaryTotals[gradeType]) {
+                summaryTotals[gradeType] = 0;
+            }
 
-    console.log(summaryTotals)
+        summaryTotals[gradeType]++;
+        });
 
-    Object.keys(summaryTotals).forEach(gradeType => {
-        tLabels.push(gradeType);
-        tData.push(summaryTotals[gradeType]);
-    });
+        console.log(summaryTotals);
+
+        Object.keys(summaryTotals).forEach(gradeType => {
+            tLabels.push(gradeType);
+            tData.push(summaryTotals[gradeType]);
+        });
+
 
 <!--    {% for grade_name, grade_type, count in types_stats %}-->
 <!--    tData.push({{count}})-->
