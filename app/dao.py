@@ -126,6 +126,7 @@ def getScoreBoardByClass(classId, subjectId, semester):
             .join(Student)
             .filter(ScoreBoard.class_id == classId,
                     ScoreBoard.subject_id == subjectId,
+                    ScoreBoard.status == True,
                     Semester.name.contains(semester)).all())
 
 

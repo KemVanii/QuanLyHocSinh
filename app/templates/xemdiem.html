@@ -7,10 +7,9 @@
 <form action="/xemdiem">
     <div class="row">
         <div class="col col-3">
-            <select class="form-select">
-                <option value="{{inputNienHoc}}">{{inputNienHoc}}</option>
+            <select class="form-select" name="inputNienHoc">
                 {% for schoolYear in schoolYears %}
-                <option>schoolYear</option>
+                    <option {% if inputNienHoc == schoolYear %}selected {%endif%} value="{{schoolYear}}" >{{schoolYear}}</option>
                 {% endfor %}
 
             </select>

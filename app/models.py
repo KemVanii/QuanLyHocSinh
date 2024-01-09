@@ -20,7 +20,9 @@ class Student(db.Model):
     gender = Column(Boolean, nullable=False)
     dob = Column(DateTime, nullable=False)
     address = Column(String(100), nullable=False)
-    phones = relationship('Phone', foreign_keys='Phone.student_id', backref='student', lazy=True)
+    phones = relationship('PhoneStudent', foreign_keys='PhoneStudent.student_id', backref='student', lazy=True)
+    email = Column(String(50), nullable=False)
+    status = Column(Boolean, default=True, nullable=False)
     score_boards = relationship('ScoreBoard', foreign_keys='ScoreBoard.student_id', backref='student', lazy=True)
 
 
@@ -45,7 +47,7 @@ class User(db.Model, UserMixin):
     password = Column(String(100), nullable=False)
     user_role = Column(Enum(UserRoleEnum))
     status = Column(Boolean, default=True, nullable=False)
-    phones = relationship('Phone', foreign_keys='Phone.user_id', backref='user', lazy=True)
+    phones = relationship('PhoneUser', foreign_keys='PhoneUser.user_id', backref='user', lazy=True)
     subject_id = Column(Integer, ForeignKey(Subject.id), nullable=True)
 
     def __str__(self):
@@ -66,11 +68,15 @@ class Class(db.Model):
     score_boards = relationship('ScoreBoard', foreign_keys='ScoreBoard.class_id', backref='class', lazy=True)
 
 
-class Phone(db.Model):
+class PhoneUser(db.Model):
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    number = Column(String(10), nullable=False)
+    user_id = Column(Integer, ForeignKey(User.id), nullable=True)
+
+class PhoneStudent(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     number = Column(String(10), nullable=False)
     student_id = Column(Integer, ForeignKey(Student.id), nullable=True)
-    user_id = Column(Integer, ForeignKey(User.id), nullable=True)
 
 
 class Semester(db.Model):
