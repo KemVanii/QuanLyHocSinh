@@ -50,11 +50,11 @@
                             <th class="align-middle">{{loop.index}}</th>
                             <td class="align-middle">{{student.name}}</td>
                             {% if student.gender == True %}
-                            <td>Male</td>
+                            <td class="align-middle">Male</td>
                             {% else %}
-                            <td>Female</td>
+                            <td class="align-middle">Female</td>
                             {% endif %}
-                            <td>{{ student.dob.strftime('%d-%m-%Y') }}</td>
+                            <td class="align-middle">{{ student.dob.strftime('%d-%m-%Y') }}</td>
                             <td class="align-middle">
                                 <form action="/dieuchinhdanhsach/{{idLop}}"
                                       method="POST"
@@ -105,22 +105,28 @@
                         </tr>
                         </thead>
                         <tbody>
+                        {% for studentInfo in studentsForChangeClass %}
                         <tr>
-                            <td class="align-middle">John</td>
-                            <td class="align-middle">John</td>
-                            <td class="align-middle">John</td>
-                            <td class="align-middle">Doe</td>
-                            <td class="align-middle">Doe</td>
+                            <th class="align-middle">{{loop.index}}</th>
+                            <td class="align-middle">{{studentInfo[1].name}}</td>
+                            {% if studentInfo[1].gender == True %}
+                            <td class="align-middle">Male</td>
+                            {% else %}
+                            <td class="align-middle">Female</td>
+                            {% endif %}
+                            <td class="align-middle">{{ studentInfo[1].dob.strftime('%d-%m-%Y') }}</td>
+                             <td class="align-middle">{{ studentInfo[2].name }}</td>
                             <td class="align-middle">
                                 <form action="/dieuchinhdanhsach/{{idLop}}"
                                       method="POST"
                                       onsubmit="return confirm('Xác nhận thêm?')">
-                                    <input type="hidden" value="" name="student_id">
+                                    <input type="hidden" value="{{studentInfo[1].id}}" name="student_id">
                                     <input type="hidden" value="add" name="action">
-                                    <button type="submit" class="btn btn-secondary">Thêm</button>
+                                    <button type="submit" class=" btn btn-secondary ">Thêm</button>
                                 </form>
                             </td>
                         </tr>
+                        {% endfor %}
                         </tbody>
                     </table>
                 </div>

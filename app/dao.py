@@ -95,6 +95,18 @@ def getStudentsRemoveClass(grade, schoolYear):
             .all())
 
 
+def getStudentsHasClass(grade, schoolYear):
+    return (db.session.query(ScoreBoard, Student,Class)
+            .join(Class)
+            .join(Grade)
+            .join(Semester)
+            .join(Student)
+            .filter(Grade.name == grade,
+                    Semester.name == f"HK1_{schoolYear}",
+                    ScoreBoard.status == True)
+            .all())
+
+
 def getScoreBoard(className, subjectName, semester, currentSchoolYear):
     score_boards = (db.session.query(ScoreBoard, ScoreBoard.id, Student.name, Student.dob)
                     .join(Class)
@@ -206,8 +218,15 @@ def getClassesByTeacherAndCurrentSchoolYear(teacherId, currentSchoolYear="HK1_23
 
 
 def getClassById(classId):
-    return (db.session.query(Class)
+    return (db.session.query(Class, Grade.name)
             .join(Grade)
+            .filter(Class.id == classId)
+            .first())
+
+
+def getGradeByClassId(classId):
+    return (db.session.query(Grade)
+            .join(Class)
             .filter(Class.id == classId)
             .first())
 

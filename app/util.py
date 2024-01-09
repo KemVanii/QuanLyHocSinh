@@ -18,10 +18,6 @@ def isPass(score_boards):
 
 
 def filter_student(students, previousSemesters, currentSemesters, filterBy):
-    print(students)
-    print(previousSemesters)
-    print(currentSemesters)
-    print(filterBy)
     students_filter = []
     for student in students:
         score_boards_filter = []  # filter score_boards in previous grade

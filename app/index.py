@@ -76,8 +76,8 @@ def lapdanhsach():
                                                                False)
         if grade == 10:
             studentNotHasClass = dao.getStudentsNotHasClass()
-            students = (studentsRemoveClass
-                        + studentNotHasClass
+            students = (studentNotHasClass
+                        + studentsRemoveClass
                         + studentsFailThisGradeInPrevSchoolYear)
 
         else:
@@ -112,10 +112,9 @@ def lapdanhsach():
                                                                False)
         if grade == 10:
             studentNotHasClass = dao.getStudentsNotHasClass()
-            students = (studentsRemoveClass
-                        + studentNotHasClass
+            students = (studentNotHasClass
+                        + studentsRemoveClass
                         + studentsFailThisGradeInPrevSchoolYear)
-            print(studentsFailThisGradeInPrevSchoolYear)
 
         else:
             StudentsAlreadyStudy = dao.getStudentsAlreadyStudyGradeInSchoolYear(grade - 1, prevSchoolYear)
@@ -151,28 +150,49 @@ def dieuchinhdanhsach():
 @app.route('/dieuchinhdanhsach/<int:idLop>', methods=["GET", "POST"])
 @restrict_to_roles([UserRoleEnum.Employee], next_url='dieuchinhdanhsach')
 def dieuchinhdanhsachlop(idLop):
-    currentSchoolYear = app.config['school_year']
+    currSchoolYear = app.config['school_year']
     if request.method == 'POST':
         action = request.form.get('action')
         studentId = request.form.get('student_id')
         if action == 'delete':
-            dao.deleteStudentFromClass(studentId, idLop, currentSchoolYear)
+            dao.deleteStudentFromClass(studentId, idLop, currSchoolYear)
         elif action == 'add':
-            dao.insertStudentToClass(studentId, idLop, currentSchoolYear)
+            dao.insertStudentToClass(studentId, idLop, currSchoolYear)
         return redirect(url_for('dieuchinhdanhsachlop', idLop=idLop))
 
     funcs = dao.load_function(current_user.user_role)
-    grades = dao.getAllSubject()
-    inputGrade = request.args.get('inputGrade') or 10
-    cla = dao.getClassById(idLop)
+    grade = int(dao.getGradeByClassId(idLop).name)
+    cla = dao.getClass(idLop)
     studentsInClass = dao.getStudentListByClassId(idLop)
-    studentsNotHasClass = dao.getStudentsNotHasClass()
-    studentsRemoveClass = dao.getStudentsRemoveClass(inputGrade, currentSchoolYear)
-    studentsNotInClass = studentsNotHasClass + studentsRemoveClass
+    prevSchoolYear = get_previous_school_year(currSchoolYear)
+    studentsForChangeClass = dao.getStudentsHasClass(grade, currSchoolYear)
+    prevSemesters = dao.getSemestersBySchoolYear(prevSchoolYear)
+    currSemester = dao.getSemestersBySchoolYear(currSchoolYear)
+    studentsRemoveClass = dao.getStudentsRemoveClass(grade, currSchoolYear)
+    StudentsAlreadyStudy = dao.getStudentsAlreadyStudyGradeInSchoolYear(grade, prevSchoolYear)
+    studentsFailThisGradeInPrevSchoolYear = filter_student(StudentsAlreadyStudy,
+                                                           prevSemesters,
+                                                           currSemester,
+                                                           False)
+    if grade == 10:
+        studentNotHasClass = dao.getStudentsNotHasClass()
+        students = (studentNotHasClass
+                    + studentsRemoveClass
+                    + studentsFailThisGradeInPrevSchoolYear)
+
+    else:
+        StudentsAlreadyStudy = dao.getStudentsAlreadyStudyGradeInSchoolYear(grade - 1, prevSchoolYear)
+        studentsPassPreGradeInPrevSchoolYear = filter_student(StudentsAlreadyStudy,
+                                                              prevSemesters,
+                                                              currSemester,
+                                                              True)
+        students = (studentsPassPreGradeInPrevSchoolYear
+                    + studentsRemoveClass
+                    + studentsFailThisGradeInPrevSchoolYear)
     return render_template("dieuChinhDanhSachlop.html",
-                           funcs=funcs, grades=grades,
-                           inputGrade=inputGrade, studentsInClass=studentsInClass,
-                           studentsNotInClass=studentsNotInClass,
+                           funcs=funcs, studentsInClass=studentsInClass,
+                           studentsNotInClass=students,
+                           studentsForChangeClass=studentsForChangeClass,
                            cla=cla, idLop=idLop)
 
 
