@@ -26,6 +26,18 @@ class MyStudent(AuthenticatedEmployee):
         'gender': SelectField('Gender', choices=[(True, 'Nam'), (False, 'Nữ')], coerce=bool)
     }
 
+    def delete_model(self, model):
+        if model.status:
+            model.status = False
+            self.session.commit()
+            flash('Dữ liệu đã được đánh dấu là không hoạt động.Bấm lại xóa để bật', 'success')
+        else:
+            model.status = True
+            self.session.commit()
+            flash('Dữ liệu đã được đánh dấu là hoạt động. Bấm lại xóa để tắt', 'success')
+
+        return True
+
 
 class AuthenticatedAdmin(ModelView):
     def is_accessible(self):
@@ -90,4 +102,4 @@ class MySubject(AuthenticatedAdmin):
 admin.add_view(MyStudent(Student, db.session))
 admin.add_view(MyUser(User, db.session))
 admin.add_view(MySubject(Subject, db.session))
-admin.add_view(PhoneNumberView(Phone, db.session))
+admin.add_view(PhoneNumberView(PhoneUser, db.session))

@@ -63,8 +63,8 @@ def lapdanhsach():
     if request.method == "POST":
         size = int(request.form.get("inputSize"))
         grade = int(request.form.get("inputGrade"))
+        print(grade)
         newNameClass = f'{grade}/{len(dao.getClassByGradeAndSchoolYear(grade, currSchoolYear)) + 1}'
-        students = []
         prevSchoolYear = get_previous_school_year(currSchoolYear)
         prevSemesters = dao.getSemestersBySchoolYear(prevSchoolYear)  # get semester of previous schoolYear
         currSemester = dao.getSemestersBySchoolYear(currSchoolYear)
@@ -240,6 +240,11 @@ def nhapdiem():
         inputTenMon = request.form.get('inputTenMon')
         inputHocki = request.form.get('inputHocki')
         score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, inputHocki, currentSchoolYear)
+        score_boards_filter = []
+        for score_board in score_boards:
+            if len(score_board[0].scores) == 0:
+                score_boards_filter.append(score_board)
+        score_boards = score_boards_filter
         dataScores = []
         for score_board in score_boards:
             dataScore = {
@@ -263,6 +268,11 @@ def nhapdiem():
 
     if inputTenLop and inputHocki and inputCot15p and inputCot45p:
         score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, inputHocki, currentSchoolYear)
+        score_boards_filter =[]
+        for score_board in score_boards:
+            if len(score_board[0].scores) == 0:
+                score_boards_filter.append(score_board)
+        score_boards = score_boards_filter
 
     return render_template("diem.html",
                            funcs=funcs, inputTenLop=inputTenLop, classes=classes,
@@ -289,7 +299,9 @@ def modify_policy():
 
     return jsonify(policies)
 
-
+@app.route('/api/policy', methods=['post'])
+def sendScoreViaEmail():
+    
 @app.route('/chinhsuadiem')
 @restrict_to_roles([UserRoleEnum.Teacher], next_url='chinhsuadiem')
 def chinhsuadiem():
@@ -362,13 +374,12 @@ def xemdiem():
     currentSchoolYear = app.config['school_year']
     inputTenMon = dao.getSubjectByUser(current_user.id).name
     semesters = dao.getSemesterTeacher(current_user.id)  # Lấy các học kì 1 ra
+
     schoolYears = [semester.name.split('_')[1] for semester in semesters]  # lọc lấy niên học
-    schoolYears = sorted(schoolYears, key=lambda x: int(x.split('-')[0]))  # sắp xếp niên học tăng dần
-    lastSchoolYear = schoolYears[-1]  # lấy niên học cuối cùng
-    schoolYears = schoolYears[:-1]  # bỏ niên học cuối cùng ra
-    inputNienHoc = request.args.get('inputNienHoc') or lastSchoolYear
+    schoolYears = sorted(schoolYears, key=lambda x: int(x.split('-')[0]), reverse=True) # sắp xếp niên học giảm dần
+    inputNienHoc = request.args.get('inputNienHoc') or schoolYears[0]
     kw = ''
-    list_class = dao.getClassesByTeacher(current_user.id, currentSchoolYear, kw)
+    list_class = dao.getClassesByTeacher(current_user.id, inputNienHoc, kw)
     return render_template("xemdiem.html", funcs=funcs,
                            inputNienHoc=inputNienHoc, schoolYears=schoolYears,
                            list_class=list_class)
@@ -383,6 +394,8 @@ def xemdiemlop(idLop, hk):
     semesters = dao.getSemesterByClassId(idLop)
     nienhoc = semesters[0].name.split('_')[1]
     score_boards = dao.getScoreBoardByClass(idLop, current_user.subject_id, f"HK{hk}")
+    print(score_boards)
+
     dataScores = []
     if score_boards and score_boards[0][0].scores:
         for score_board in score_boards:
