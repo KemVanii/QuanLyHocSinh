@@ -63,8 +63,8 @@ def lapdanhsach():
     if request.method == "POST":
         size = int(request.form.get("inputSize"))
         grade = int(request.form.get("inputGrade"))
+        print(grade)
         newNameClass = f'{grade}/{len(dao.getClassByGradeAndSchoolYear(grade, currSchoolYear)) + 1}'
-        students = []
         prevSchoolYear = get_previous_school_year(currSchoolYear)
         prevSemesters = dao.getSemestersBySchoolYear(prevSchoolYear)  # get semester of previous schoolYear
         currSemester = dao.getSemestersBySchoolYear(currSchoolYear)
@@ -299,7 +299,9 @@ def modify_policy():
 
     return jsonify(policies)
 
-
+@app.route('/api/policy', methods=['post'])
+def sendScoreViaEmail():
+    
 @app.route('/chinhsuadiem')
 @restrict_to_roles([UserRoleEnum.Teacher], next_url='chinhsuadiem')
 def chinhsuadiem():

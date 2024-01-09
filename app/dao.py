@@ -300,16 +300,19 @@ def createNewClassGrade(className, students, size, grade, currentSchoolYear):
     subjects = getAllSubject()
     semesters = db.session.query(Semester).filter(Semester.name.contains(currentSchoolYear)).all()
     for student in students:
+        print(student)
         score_boards = (db.session.query(ScoreBoard)
                         .join(Semester)
                         .filter(ScoreBoard.student_id == student.id,
                                 Semester.name.contains(currentSchoolYear))
                         .all())
+
         if len(score_boards) == 0:
             for semester in semesters:
                 for subject in subjects:
                     newScoreBoard = ScoreBoard(student_id=student.id, subject_id=subject.id,
-                                               class_id=newClass.id, semester_id=semester.id)
+                                               class_id=newClass.id, semester_id=semester.id,
+                                               status=True)
                     db.session.add(newScoreBoard)
         else:
             for score_board in score_boards:
