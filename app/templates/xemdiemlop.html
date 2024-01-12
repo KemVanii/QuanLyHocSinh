@@ -3,49 +3,53 @@
 {% block title %}Xem điểm{% endblock %}
 
 {% block content %}
-<h2 class="text-center mt-2">Danh sách điểm lớp {{tenLop}} môn {{tenMon}} HK{{hocKi}}_{{nienhoc}}</h2>
-{% if dataScores|length != 0 %}
-<table class="table table-bordered border border-dark">
-    <thead>
-    <tr>
-        <th class="text-center fw-bold fs-4" scope="col">#</th>
-        <th scope="col" class="fw-bold fs-4">Họ và tên</th>
-        <th scope="col" class="fw-bold fs-4">Ngày sinh</th>
-        {% for i in range(0, cot15p) %}
-        <th class="text-center fw-bold fs-4" scope="col">15p</th>
+<div id="xemdiemlop">
+    <h2 class="text-center mt-2">Danh sách điểm lớp {{tenLop}} môn {{tenMon}} HK{{hocKi}}_{{nienhoc}}</h2>
+    {% if dataScores|length != 0 %}
+    <table class="table table-bordered border border-dark">
+        <thead>
+        <tr>
+            <th class="text-center fw-bold fs-4" scope="col">#</th>
+            <th scope="col" class="fw-bold fs-4">Họ và tên</th>
+            <th scope="col" class="fw-bold fs-4">Ngày sinh</th>
+            {% for i in range(0, cot15p) %}
+            <th class="text-center fw-bold fs-4" scope="col">15p</th>
+            {% endfor %}
+            {% for i in range(0, cot45p) %}
+            <th class="text-center fw-bold fs-4" scope="col">45p</th>
+            {% endfor %}
+            <th class="text-center fw-bold fs-4" scope="col">Cuối kì</th>
+            <th class="text-center fw-bold fs-4" scope="col">Điểm trung bình</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for dataScore in dataScores %}
+        <tr>
+            <input type="hidden" value="{{dataScore['score_board_id']}}">
+            <th class="text-center fs-4" scope="row">{{ loop.index }}</th>
+            <td class=" fs-4">{{ dataScore['student_name'] }}</td>
+            <td class=" fs-4">{{ dataScore['student_dob'].strftime('%d-%m-%Y') }}</td>
+            {% for i in range(0, cot15p) %}
+            <td class="text-center fs-4" scope="col">{{dataScore['15p'][i]}}</td>
+            {% endfor %}
+            {% for i in range(0, cot45p) %}
+            <td class="text-center fs-4" scope="col">{{dataScore['45p'][i]}}</td>
+            {% endfor %}
+            <td class="text-center fs-4" scope="col">{{dataScore['ck']}}</td>
+            <td class="text-center fs-4" scope="col">{{dataScore['dtb']}}</td>
+        </tr>
         {% endfor %}
-        {% for i in range(0, cot45p) %}
-        <th class="text-center fw-bold fs-4" scope="col">45p</th>
-        {% endfor %}
-        <th class="text-center fw-bold fs-4" scope="col">Cuối kì</th>
-        <th class="text-center fw-bold fs-4" scope="col">Điểm trung bình</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for dataScore in dataScores %}
-    <tr>
-        <input type="hidden" value="{{dataScore['score_board_id']}}">
-        <th class="text-center fs-4" scope="row">{{ loop.index }}</th>
-        <td class=" fs-4">{{ dataScore['student_name'] }}</td>
-        <td class=" fs-4">{{ dataScore['student_dob'].strftime('%d-%m-%Y') }}</td>
-        {% for i in range(0, cot15p) %}
-        <td class="text-center fs-4" scope="col">{{dataScore['15p'][i]}}</td>
-        {% endfor %}
-        {% for i in range(0, cot45p) %}
-        <td class="text-center fs-4" scope="col">{{dataScore['45p'][i]}}</td>
-        {% endfor %}
-        <td class="text-center fs-4" scope="col">{{dataScore['ck']}}</td>
-        <td class="text-center fs-4" scope="col">{{dataScore['dtb']}}</td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
-<div class="d-flex justify-content-end">
-    <form action="">
-        <button type="button" class="btn btn-primary float-end">Gửi email kết quả</button>
-    </form>
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-end">
+        <form>
+            <input id="inputIdLop" type="hidden" value="{{idLop}}" name="idLop">
+            <input id="inputIdHocKy" type="hidden" value="{{hocKi}}" name="hk">
+            <button id="btnSendMail" type="button" class="btn btn-primary float-end">Gửi email kết quả</button>
+        </form>
+    </div>
+    {% else %}
+    <h4>Hiện chưa được nhập điểm!</h4>
 </div>
-{% else %}
-<h4>Hiện chưa được nhập điểm!</h4>
 {% endif %}
 {% endblock %}

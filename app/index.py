@@ -299,9 +299,26 @@ def modify_policy():
 
     return jsonify(policies)
 
-@app.route('/api/policy', methods=['post'])
+@app.route('/api/sendMail', methods=['post'])
 def sendScoreViaEmail():
-    
+    idLop = request.form.get('idLop')
+    hk = request.form.get('hk')
+    score_boards = dao.getScoreBoardByClass(idLop, current_user.subject_id, f"HK{hk}")
+    dataScores = []
+    if score_boards and score_boards[0][0].scores:
+        for score_board in score_boards:
+            dataScore = {
+                'score_board_id': score_board.id,
+                'student_name': score_board.name,
+                'student_dob': score_board.dob,
+                '15p': [score.value for score in score_board[0].scores if score.type == '15p'],
+                '45p': [score.value for score in score_board[0].scores if score.type == '45p'],
+                'ck': [score.value for score in score_board[0].scores if score.type == 'ck'][0],
+                'dtb': round(calSemesterAverage(score_board[0].scores), 1)
+            }
+            dataScores.append(dataScore)
+    return jsonify({'status': 'ok', 'message': 'Data sent successfully'})
+
 @app.route('/chinhsuadiem')
 @restrict_to_roles([UserRoleEnum.Teacher], next_url='chinhsuadiem')
 def chinhsuadiem():
