@@ -1,6 +1,7 @@
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from wtforms import SelectField, PasswordField
+from wtforms.fields import DateField
 from flask_login import current_user
 from flask import flash
 from sqlalchemy import inspect
@@ -8,6 +9,7 @@ from app.models import *
 from app import app, db
 from app.models import Subject
 import hashlib
+from datetime import datetime
 
 admin = Admin(app=app, name='Admin', template_mode='bootstrap4', url="/")
 
@@ -21,10 +23,23 @@ class MyStudent(AuthenticatedEmployee):
     column_searchable_list = ['name', 'id']
     column_editable_list = ['name', 'dob', 'address', 'gender']
     edit_modal = True
-    form_excluded_columns = ['score_boards', 'phones']
+    form_excluded_columns = ['score_boards', 'phones', 'status']
     form_extra_fields = {
-        'gender': SelectField('Gender', choices=[(True, 'Nam'), (False, 'Nữ')], coerce=bool)
+        'gender': SelectField('Gender', choices=[(True, 'Nam'), (False, 'Nữ')], coerce=bool),
+        'dob': DateField('Date of Birth', format='%Y-%m-%d')
     }
+
+    def validate_form(self, form):
+        dob = form.dob.data
+        if dob:
+            today = datetime.today()
+            age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+            min_age = int(app.config['age_min'])
+            max_age = int(app.config['age_max'])
+            if age < min_age or age > max_age:
+                flash(f"Tuổi phải nằm trong khoảng từ {min_age} đến {max_age}.", 'error')
+                return False
+        return super(MyStudent, self).validate_form(form)
 
     def delete_model(self, model):
         if model.status:
@@ -35,7 +50,6 @@ class MyStudent(AuthenticatedEmployee):
             model.status = True
             self.session.commit()
             flash('Dữ liệu đã được đánh dấu là hoạt động. Bấm lại xóa để tắt', 'success')
-
         return True
 
 
