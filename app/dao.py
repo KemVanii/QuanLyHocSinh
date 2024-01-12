@@ -120,7 +120,7 @@ def getScoreBoard(className, subjectName, semester, currentSchoolYear):
 
 
 def getScoreBoardByClass(classId, subjectId, semester):
-    return (db.session.query(ScoreBoard, ScoreBoard.id, Student.name, Student.dob)
+    return (db.session.query(ScoreBoard, ScoreBoard.id, Student.name, Student.dob, Student.email)
             .join(Subject)
             .join(Semester)
             .join(Student)

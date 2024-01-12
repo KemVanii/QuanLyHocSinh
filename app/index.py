@@ -6,6 +6,7 @@ from app import app, login
 from app.models import *
 from app.auth import restrict_to_roles
 from app.util import isPass, calSemesterAverage, loadPolicies, filter_student, get_previous_school_year
+from app.mailService import send_email
 import dao
 
 
@@ -268,7 +269,7 @@ def nhapdiem():
 
     if inputTenLop and inputHocki and inputCot15p and inputCot45p:
         score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, inputHocki, currentSchoolYear)
-        score_boards_filter =[]
+        score_boards_filter = []
         for score_board in score_boards:
             if len(score_board[0].scores) == 0:
                 score_boards_filter.append(score_board)
@@ -299,6 +300,7 @@ def modify_policy():
 
     return jsonify(policies)
 
+
 @app.route('/api/sendMail', methods=['post'])
 def sendScoreViaEmail():
     idLop = request.form.get('idLop')
@@ -308,16 +310,17 @@ def sendScoreViaEmail():
     if score_boards and score_boards[0][0].scores:
         for score_board in score_boards:
             dataScore = {
-                'score_board_id': score_board.id,
                 'student_name': score_board.name,
-                'student_dob': score_board.dob,
+                'email': score_board.email,
                 '15p': [score.value for score in score_board[0].scores if score.type == '15p'],
                 '45p': [score.value for score in score_board[0].scores if score.type == '45p'],
                 'ck': [score.value for score in score_board[0].scores if score.type == 'ck'][0],
                 'dtb': round(calSemesterAverage(score_board[0].scores), 1)
             }
             dataScores.append(dataScore)
+    send_email(dataScores, 'Toán', hk)
     return jsonify({'status': 'ok', 'message': 'Data sent successfully'})
+
 
 @app.route('/chinhsuadiem')
 @restrict_to_roles([UserRoleEnum.Teacher], next_url='chinhsuadiem')
@@ -393,7 +396,7 @@ def xemdiem():
     semesters = dao.getSemesterTeacher(current_user.id)  # Lấy các học kì 1 ra
 
     schoolYears = [semester.name.split('_')[1] for semester in semesters]  # lọc lấy niên học
-    schoolYears = sorted(schoolYears, key=lambda x: int(x.split('-')[0]), reverse=True) # sắp xếp niên học giảm dần
+    schoolYears = sorted(schoolYears, key=lambda x: int(x.split('-')[0]), reverse=True)  # sắp xếp niên học giảm dần
     inputNienHoc = request.args.get('inputNienHoc') or schoolYears[0]
     kw = ''
     list_class = dao.getClassesByTeacher(current_user.id, inputNienHoc, kw)
