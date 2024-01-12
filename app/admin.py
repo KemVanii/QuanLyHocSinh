@@ -1,10 +1,8 @@
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from wtforms import SelectField, StringField, FieldList, SubmitField, TelField, DateField
-from wtforms.validators import InputRequired, ValidationError
+from wtforms import SelectField, PasswordField
 from flask_login import current_user
 from flask import flash
-from flask_wtf import FlaskForm
 from sqlalchemy import inspect
 from app.models import *
 from app import app, db
@@ -58,8 +56,9 @@ class MyUser(AuthenticatedAdmin):
 
     def on_model_change(self, form, model, is_created):
         # Hash the password before saving to the database
-        if 'password' in form:
-            password = form.password.data
+        password = form.password.data
+        password_form_hashed = hashlib.md5(password.encode('utf-8')).hexdigest()
+        if model.password != password:
             model.password = hashlib.md5(password.encode('utf-8')).hexdigest()
 
     def delete_model(self, model):

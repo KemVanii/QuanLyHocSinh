@@ -223,10 +223,10 @@ def thongke():
                                                         semester=semester,
                                                         subject=subject,
                                                         classroom=classroom),
-                           types_stats=dao.types_stats(classroom=classroom_pie, grade=grade_pie),
-                           semesters=dao.get_semester(),
+                           grade_type_stats=dao.grade_type_stats(classroom_name=classroom_pie, grade_name=grade_pie),
+                           semesters=dao.get_semester_by_school_year(school_year=semester),
                            subjects=dao.get_subject(),
-                           classrooms=dao.get_classroom(),
+                           classrooms=dao.get_class_by_school_year(school_year=app.config['school_year']),
                            grades=dao.get_grade())
 
 

@@ -1,5 +1,10 @@
 import json
 import os
+import hashlib
+
+
+def filter_by_subject_id(scoreboard, subjectId):
+    return scoreboard.subject_id == subjectId
 
 
 def isPass(score_boards):
@@ -26,7 +31,8 @@ def filter_student(students, previousSemesters, currentSemesters, filterBy):
         isInClass = False
         for score_board in student.score_boards:
             if (score_board.semester_id == currentSemesters[0].id
-                    or score_board.semester_id == currentSemesters[1].id): # has Score_Board in currentSemesters mean is in class
+                    or score_board.semester_id == currentSemesters[
+                        1].id):  # has Score_Board in currentSemesters mean is in class
                 isInClass = True
                 break
             if (score_board.semester_id == previousSemesters[0].id
@@ -37,6 +43,7 @@ def filter_student(students, previousSemesters, currentSemesters, filterBy):
         if isPass(score_boards_filter) == filterBy:
             students_filter.append(student)
     return students_filter
+
 
 def calSemesterAverage(scores):
     totalCoefficient = 0
@@ -74,3 +81,12 @@ def get_previous_school_year(current_school_year):
     return previous_school_year
 
 
+def type_sort_avg_score(avg_score):
+    if avg_score >= 8:
+        return "Giỏi"
+    elif avg_score >= 6.5:
+        return "Khá"
+    elif avg_score >= 5:
+        return "Trung bình"
+    else:
+        return "Yếu"

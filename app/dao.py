@@ -96,7 +96,7 @@ def getStudentsRemoveClass(grade, schoolYear):
 
 
 def getStudentsHasClass(grade, schoolYear):
-    return (db.session.query(ScoreBoard, Student,Class)
+    return (db.session.query(ScoreBoard, Student, Class)
             .join(Class)
             .join(Grade)
             .join(Semester)
@@ -204,6 +204,13 @@ def getClassByGradeAndSchoolYear(grade, schoolYear):
                .join(Semester)
                .filter(Grade.name == grade, Semester.name == f"HK1_{schoolYear}")
                .all())
+
+    return classes
+
+
+def get_class_by_school_year(school_year):
+    grade = db.session.query(Grade).join(Class).filter(Class.grade_id == Grade.id).first()
+    classes = getClassByGradeAndSchoolYear(grade=grade.name, schoolYear=school_year)
 
     return classes
 
@@ -328,31 +335,19 @@ def createNewClassGrade(className, students, size, grade, currentSchoolYear):
     db.session.commit()
 
 
-def get_semester():
-    return db.session.query(Semester).all()
+def get_semester_by_school_year(school_year):
+    if school_year is None:
+        school_year = app.config['school_year']
+
+    return db.session.query(Semester).filter(Semester.name.like(f'%{school_year}%')).all()
 
 
 def get_subject():
     return db.session.query(Subject).all()
 
 
-def get_classroom():
-    return db.session.query(Class).all()
-
-
 def get_grade():
     return db.session.query(Grade).all()
-
-
-def type_sort_avg_score(avg_score):
-    if avg_score >= 8:
-        return "Giỏi"
-    elif avg_score >= 6.5:
-        return "Khá"
-    elif avg_score >= 5:
-        return "Trung bình"
-    else:
-        return "Yếu"
 
 
 def types_stats(classroom, grade):
@@ -424,8 +419,95 @@ def scores_stats(score_min, score_max, semester, subject, classroom):
     return query.all()
 
 
-def passed_stats():
-    pass
+def get_scoreboards_by_student_semester(student, semester):
+    query = db.session.query(ScoreBoard).join(Student).join(Semester).filter(Student.id == student,
+                                                                             Semester.name == semester).all()
+
+    return query
+
+
+def get_class_by_name(name):
+    return db.session.query(Class).filter(Class.name == name).first()
+
+
+def grade_type_stats_by_class(classroom_name):
+    classroom = get_class_by_name(classroom_name)
+    students_in_class = getStudentListByClassId(classroom.id)
+    grade = getGradeByClassId(classroom.id)
+    semester = "HK1_23-24"
+    classroom = getClass(classroom.id)
+    result = {}
+    if students_in_class:
+        for s in students_in_class:
+            score_boards = get_scoreboards_by_student_semester(s.id, semester)
+            total_coefficient = 0
+            avg_score = 0
+            if score_boards is not None:
+                for score_board in score_boards:
+                    avg_score = avg_score + calSemesterAverage(score_board.scores)
+                    total_coefficient = total_coefficient + 1
+                result_avg_score = avg_score / total_coefficient
+                grade_type = type_sort_avg_score(result_avg_score)
+                result[s.id] = {
+                    "semester": semester,
+                    "grade": grade.name,
+                    "class": classroom.name,
+                    "student_id": s.id,
+                    "student_name": s.name,
+                    "avg_score": round(result_avg_score, 2),
+                    "grade_type": grade_type
+                }
+
+    return result
+
+
+def get_students_in_grade(grade_name):
+    return db.session.query(Student).join(ScoreBoard).join(Class).join(Grade).filter(Grade.name == grade_name)
+
+
+def get_classes_by_student_id(student_id):
+    return db.session.query(Class).join(ScoreBoard).join(Student).filter(Student.id == student_id).first()
+
+
+def grade_type_stats_by_grade(grade_name):
+    students_in_grade = get_students_in_grade(grade_name)
+    grade = db.session.query(Grade).filter(Grade.name == grade_name).first()
+    semester = "HK1_23-24"
+    result = {}
+    if students_in_grade:
+        for s in students_in_grade:
+            score_boards = get_scoreboards_by_student_semester(s.id, semester)
+            classroom = get_classes_by_student_id(s.id)
+            total_coefficient = 0
+            avg_score = 0
+            if score_boards is not None:
+                for score_board in score_boards:
+                    avg_score = avg_score + calSemesterAverage(score_board.scores)
+                    total_coefficient = total_coefficient + 1
+                result_avg_score = avg_score / total_coefficient
+                grade_type = type_sort_avg_score(result_avg_score)
+                result[s.id] = {
+                    "semester": semester,
+                    "grade": grade.name,
+                    "class": classroom.name,
+                    "student_id": s.id,
+                    "student_name": s.name,
+                    "avg_score": round(result_avg_score, 2),
+                    "grade_type": grade_type
+                }
+
+    return result
+
+
+def grade_type_stats(classroom_name, grade_name):
+    result = {}
+    if classroom_name:
+        result = grade_type_stats_by_class(classroom_name)
+    if grade_name:
+        result = grade_type_stats_by_grade(grade_name)
+
+    print(result)
+    return result
 
 
 def insert_score(dataScores):
