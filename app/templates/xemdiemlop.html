@@ -46,6 +46,10 @@
             <input id="inputIdLop" type="hidden" value="{{idLop}}" name="idLop">
             <input id="inputIdHocKy" type="hidden" value="{{hocKi}}" name="hk">
             <button id="btnSendMail" type="button" class="btn btn-primary float-end">Gửi email kết quả</button>
+            <button id="btnLoadSendMail" class="d-none btn btn-primary" disabled>
+                <span class="spinner-border spinner-border-sm"></span>
+                Đang gửi email..
+            </button>
         </form>
     </div>
     {% else %}
