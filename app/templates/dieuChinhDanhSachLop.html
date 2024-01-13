@@ -3,185 +3,191 @@
 {% block title %}Điều chỉnh danh sách{% endblock %}
 
 {% block content %}
-<h1 class="text-center mt-2">Điều chỉnh danh sách lớp {{cla.name}}</h1>
+<div id="dieuchinhdanhsachlop">
+    <h1 class="text-center mt-2">Điều chỉnh danh sách lớp {{cla.name}}</h1>
 
-<!-- Button to Open the Modal -->
-<div class="dropdown">
-    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
-        Thêm học sinh
-    </button>
-    <ul class="dropdown-menu">
-        <li data-bs-toggle="modal" data-bs-target="#myModal1" class="dropdown-item" style="cursor: pointer;">Học sinh
-            chưa thuộc bất kì lớp nào
-        </li>
-        <li data-bs-toggle="modal" data-bs-target="#myModal2" class="dropdown-item hover-cursor-pointer"
-            style="cursor: pointer;">Chuyển lớp
-        </li>
-    </ul>
-</div>
-
-<!-- The Modal -->
-<div class="modal" id="myModal1">
-    <div class="modal-dialog modal-lg  modal-dialog-scrollable">
-        <div class="modal-content">
-
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <h4 class="modal-title">Thêm học sinh chưa thuộc bất kì lớp nào</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <!-- Modal body -->
-            <div class="modal-body">
-                <div class="container mt-3">
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Tên</th>
-                            <th scope="col">Giới tính</th>
-                            <th scope="col">Ngày sinh</th>
-                            <th scope="col">Action</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for student in studentsNotInClass %}
-                        <tr>
-                            <th class="align-middle">{{loop.index}}</th>
-                            <td class="align-middle">{{student.name}}</td>
-                            {% if student.gender == True %}
-                            <td class="align-middle">Male</td>
-                            {% else %}
-                            <td class="align-middle">Female</td>
-                            {% endif %}
-                            <td class="align-middle">{{ student.dob.strftime('%d-%m-%Y') }}</td>
-                            <td class="align-middle">
-                                <form action="/dieuchinhdanhsach/{{idLop}}"
-                                      method="POST"
-                                      onsubmit="return confirm('Xác nhận thêm?')">
-                                    <input type="hidden" value="{{student.id}}" name="student_id">
-                                    <input type="hidden" value="add" name="action">
-                                    <button type="submit" class=" btn btn-secondary ">Thêm</button>
-                                </form>
-                            </td>
-                        </tr>
-                        {% endfor %}
-
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Modal footer -->
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-            </div>
-
-        </div>
+    <!-- Button to Open the Modal -->
+    {% if studentsInClass|length < maxSize %}
+    <div class="dropdown">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+            Thêm học sinh
+        </button>
+        <ul class="dropdown-menu">
+            <li data-bs-toggle="modal" data-bs-target="#myModal1" class="dropdown-item" style="cursor: pointer;">Học
+                sinh
+                chưa thuộc bất kì lớp nào
+            </li>
+            <li data-bs-toggle="modal" data-bs-target="#myModal2" class="dropdown-item hover-cursor-pointer"
+                style="cursor: pointer;">Chuyển lớp
+            </li>
+        </ul>
     </div>
-</div>
-<div class="modal" id="myModal2">
-    <div class="modal-dialog modal-lg  modal-dialog-scrollable">
-        <div class="modal-content">
 
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <h4 class="modal-title">Thêm học sinh đã thuộc lớp</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
+    <!-- The Modal -->
+    <div class="modal" id="myModal1">
+        <div class="modal-dialog modal-lg  modal-dialog-scrollable">
+            <div class="modal-content">
 
-            <!-- Modal body -->
-            <div class="modal-body">
-                <div class="container mt-3">
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Gender</th>
-                            <th scope="col">Date of Birth</th>
-                            <th scope="col">Current class</th>
-                            <th scope="col">Action</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for studentInfo in studentsForChangeClass %}
-                        <tr>
-                            <th class="align-middle">{{loop.index}}</th>
-                            <td class="align-middle">{{studentInfo[1].name}}</td>
-                            {% if studentInfo[1].gender == True %}
-                            <td class="align-middle">Male</td>
-                            {% else %}
-                            <td class="align-middle">Female</td>
-                            {% endif %}
-                            <td class="align-middle">{{ studentInfo[1].dob.strftime('%d-%m-%Y') }}</td>
-                             <td class="align-middle">{{ studentInfo[2].name }}</td>
-                            <td class="align-middle">
-                                <form action="/dieuchinhdanhsach/{{idLop}}"
-                                      method="POST"
-                                      onsubmit="return confirm('Xác nhận thêm?')">
-                                    <input type="hidden" value="{{studentInfo[1].id}}" name="student_id">
-                                    <input type="hidden" value="add" name="action">
-                                    <button type="submit" class=" btn btn-secondary ">Thêm</button>
-                                </form>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Thêm học sinh chưa thuộc bất kì lớp nào</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-            </div>
 
-            <!-- Modal footer -->
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="container mt-3">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Tên</th>
+                                <th scope="col">Giới tính</th>
+                                <th scope="col">Ngày sinh</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for student in studentsNotInClass %}
+                            <tr>
+                                <th class="align-middle">{{loop.index}}</th>
+                                <td class="align-middle">{{student.name}}</td>
+                                {% if student.gender == True %}
+                                <td class="align-middle">Male</td>
+                                {% else %}
+                                <td class="align-middle">Female</td>
+                                {% endif %}
+                                <td class="align-middle">{{ student.dob.strftime('%d-%m-%Y') }}</td>
+                                <td class="align-middle">
+                                    <form action="/dieuchinhdanhsach/{{idLop}}"
+                                          method="POST"
+                                          onsubmit="return confirm('Xác nhận thêm?')">
+                                        <input type="hidden" value="{{student.id}}" name="student_id">
+                                        <input type="hidden" value="add" name="action">
+                                        <button type="submit" class=" btn btn-secondary ">Thêm</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+
             </div>
         </div>
     </div>
+    <div class="modal" id="myModal2">
+        <div class="modal-dialog modal-lg  modal-dialog-scrollable">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Thêm học sinh đã thuộc lớp</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="container mt-3">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Gender</th>
+                                <th scope="col">Date of Birth</th>
+                                <th scope="col">Current class</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for studentInfo in studentsForChangeClass %}
+                            <tr>
+                                <th class="align-middle">{{loop.index}}</th>
+                                <td class="align-middle">{{studentInfo[1].name}}</td>
+                                {% if studentInfo[1].gender == True %}
+                                <td class="align-middle">Male</td>
+                                {% else %}
+                                <td class="align-middle">Female</td>
+                                {% endif %}
+                                <td class="align-middle">{{ studentInfo[1].dob.strftime('%d-%m-%Y') }}</td>
+                                <td class="align-middle">{{ studentInfo[2].name }}</td>
+                                <td class="align-middle">
+                                    <form action="/dieuchinhdanhsach/{{idLop}}"
+                                          method="POST"
+                                          onsubmit="return confirm('Xác nhận thêm?')">
+                                        <input type="hidden" value="{{studentInfo[1].id}}" name="student_id">
+                                        <input type="hidden" value="add" name="action">
+                                        <button type="submit" class=" btn btn-secondary ">Thêm</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+    {% if studentsInClass|length != 0 %}
+    <div class="container mt-3">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Tên</th>
+                <th scope="col">Giới tính</th>
+                <th scope="col">Ngày sinh</th>
+                <th scope="col">Địa chỉ</th>
+                <th scope="col">Action</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for student in studentsInClass %}
+            <tr>
+                <th scope="row" class="align-middle">{{ loop.index }}</th>
+                <td class="align-middle">{{ student.name }}</td>
+                {% if student.gender == True %}
+                <td class="align-middle">Nam</td>
+                {% else %}
+                <td class="align-middle">Nữ</td>
+                {% endif %}
+                <td class="align-middle">{{ student.dob.strftime('%d-%m-%Y') }}</td>
+                <td class="align-middle">{{ student.address }}</td>
+                <td>
+                    <form action="/dieuchinhdanhsach/{{idLop}}"
+                          method="POST"
+                          onsubmit="return confirm('Xác nhận xóa?')">
+                        <input type="hidden" value="{{student.id}}" name="student_id">
+                        <input type="hidden" value="delete" name="action">
+                        <button type="submit" class="btn btn-danger">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+
+
+            {% endfor%}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <h3 class="mt-2">Không tìm thấy danh sách</h3>
+    {% endif %}
 </div>
-{% if studentsInClass|length != 0 %}
-<div class="container mt-3">
-    <table class="table">
-        <thead>
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">Tên</th>
-            <th scope="col">Giới tính</th>
-            <th scope="col">Ngày sinh</th>
-            <th scope="col">Địa chỉ</th>
-            <th scope="col">Action</th>
-
-        </tr>
-        </thead>
-        <tbody>
-        {% for student in studentsInClass %}
-        <tr>
-            <th scope="row" class="align-middle">{{ loop.index }}</th>
-            <td class="align-middle">{{ student.name }}</td>
-            {% if student.gender == True %}
-            <td class="align-middle">Nam</td>
-            {% else %}
-            <td class="align-middle">Nữ</td>
-            {% endif %}
-            <td class="align-middle">{{ student.dob.strftime('%d-%m-%Y') }}</td>
-            <td class="align-middle">{{ student.address }}</td>
-            <td>
-                <form action="/dieuchinhdanhsach/{{idLop}}"
-                      method="POST"
-                      onsubmit="return confirm('Xác nhận xóa?')">
-                    <input type="hidden" value="{{student.id}}" name="student_id">
-                    <input type="hidden" value="delete" name="action">
-                    <button type="submit" class="btn btn-danger">Xóa</button>
-                </form>
-            </td>
-        </tr>
-
-
-        {% endfor%}
-        </tbody>
-    </table>
-</div>
-{% else %}
-<h3 class="mt-2">Không tìm thấy danh sách</h3>
-{% endif %}
 {% endblock %}

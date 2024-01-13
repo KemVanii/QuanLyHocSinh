@@ -175,6 +175,7 @@ def dieuchinhdanhsachlop(idLop):
                                                            prevSemesters,
                                                            currSemester,
                                                            False)
+    maxSize = int(app.config['max_class_size'])
     if grade == 10:
         studentNotHasClass = dao.getStudentsNotHasClass()
         students = (studentNotHasClass
@@ -194,7 +195,7 @@ def dieuchinhdanhsachlop(idLop):
                            funcs=funcs, studentsInClass=studentsInClass,
                            studentsNotInClass=students,
                            studentsForChangeClass=studentsForChangeClass,
-                           cla=cla, idLop=idLop)
+                           cla=cla, idLop=idLop, maxSize=maxSize)
 
 
 @app.route('/quydinh')

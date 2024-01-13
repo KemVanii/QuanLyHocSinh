@@ -267,7 +267,7 @@ def insertStudentToClass(studentId, classId, schoolYear):
                     .filter(ScoreBoard.student_id == studentId,
                             Semester.name.contains(schoolYear))
                     .all())
-    if len(score_boards) == 0:  # case new Student
+    if len(score_boards) == 0:  # Trường hợp học sinh mới
         subjects = (db.session.query(Subject)
                     .join(User)
                     .join(TeacherClass)
@@ -278,12 +278,15 @@ def insertStudentToClass(studentId, classId, schoolYear):
                 sb = ScoreBoard(student_id=studentId, subject_id=subject.id, class_id=classId,
                                 semester_id=semester.id)
                 db.session.add(sb)
-    else:  # case student have been deleted
+    else:  # Trường hợp học sinh bị xóa khỏi lớp hoặc đang chuyển lớp
+        classIdOld = score_boards[0].class_id
+        classOld = db.session.query(Class).filter(Class.id == classIdOld).first()
+        classOld.size = classOld.size - 1
         for score_board in score_boards:
             score_board.class_id = classId
             score_board.status = True
-    cla = db.session.query(Class).filter(Class.id == classId).first()
-    cla.size = cla.size + 1
+    classNew = db.session.query(Class).filter(Class.id == classId).first()
+    classNew.size = classNew.size + 1
     db.session.commit()
 
 
