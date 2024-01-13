@@ -3,43 +3,55 @@
 {% block title %}Diem{% endblock %}
 
 {% block link %}
-    <link rel="stylesheet" href="/static/css/diem.css">
+<link rel="stylesheet" href="/static/css/diem.css">
 {% endblock %}
 
 {% block content %}
 
+
 <h1 class="text-center mt-2">Nhập điểm môn {{inputTenMon}}</h1>
 <form action="/nhapdiem">
-    <div class="mb-3 mt-3">
-        <label for="inputTenLop" class="form-label">Tên lớp:</label>
-        <select id="inputTenLop" name="inputTenLop" class="form-select">
-            {% for class in classes %}
-            <option value="{{class.name}}" {% if inputTenLop== class.name %} selected {%endif%}>
-                {{class.name}}
-            </option>
-            {% endfor %}
-        </select>
+    <div class="row mb-3 mt-3">
+        <div class="col-md-4">
+            <label for="inputTenLop" class="form-label">Tên lớp:</label>
+            <select id="inputTenLop" name="inputTenLop" class="form-select">
+                {% for class in classes %}
+                <option value="{{class.name}}" {% if inputTenLop== class.name %} selected {%endif%}>
+                    {{class.name}}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="semester" class="form-label">Chọn học kì:</label>
+            <select id="semester" name="inputHocki" class="form-select">
+                <option value="HK1">HK1</option>
+                <option value="HK2">HK2</option>
+            </select>
+        </div>
     </div>
-    <div class="mb-3">
-        <label for="inputCot15p" class="form-label">Số lượng cột 15p:</label>
-            <input type="number" min="1" max="5" class="form-control" value="{{inputCot15p}}" id="inputCot15p"
-               placeholder="Số lượng cột 15p"
-               name="inputCot15p" required>
-    </div>
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label for="inputCot15p" class="form-label">Số lượng cột 15p:</label>
+            <select id="inputCot15p" name="inputCot15p" class="form-select">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+        </div>
 
-    <div class="mb-3">
-        <label for="inputCot45p" class="form-label">Số lượng cột 45p:</label>
-        <input type="number" min="1" max="3" class="form-control" value="{{inputCot45p}}" id="inputCot45p"
-               placeholder="Số lượng cột 45p"
-               name="inputCot45p" required>
+        <div class="col-md-4">
+            <label for="inputCot45p" class="form-label">Số lượng cột 45p:</label>
+            <select id="inputCot45p" name="inputCot45p" class="form-select">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+            </select>
+        </div>
     </div>
-
-    <label for="semester" class="form-label">Chọn học kì:</label>
-    <select id="semester" name="inputHocki" class="form-select">
-        <option value="HK1" {% if inputHocki=='HK1' %} selected {%endif%}>HK1</option>
-        <option value="HK2" {% if inputHocki=='HK2' %} selected {%endif%}>HK2</option>
-    </select>
-    <button type="submit" class="btn btn-primary mb-3  mt-3">Submit</button>
+    <button type="submit" class="btn btn-primary mb-3 mt-3">Submit</button>
 </form>
 
 
@@ -55,7 +67,7 @@
             <div class="modal-content col-15">
                 <!-- Modal Header -->
                 <div class="modal-header">
-                    <h4 class="modal-title">Danh sách bảng điểm lớp {{inputTenLop}} môn {{inputTenMon}} {{inputHocki}}
+                    <h4 class="modal-title">Nhập điểm lớp {{inputTenLop}} môn {{inputTenMon}} {{inputHocki}}
                         {{currentSchoolYear}}</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
@@ -64,14 +76,18 @@
                 <div class="modal-body" style="max-height:60vh; overflow-y:auto">
                     <div class="container mt-3 ">
                         <!--                    <h2>Basic Table</h2>-->
-                        <table class="table table-bordered">
+                        <table class="table table-bordered border border-dark">
                             <thead>
                             <tr>
                                 <th class="text-center" scope="col">#</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Date of Birth</th>
-                                <th class="text-center" scope="col" colspan="{{inputCot15p}}">15p</th>
-                                <th class="text-center" scope="col" colspan="{{inputCot45p}}">45p</th>
+                                <th scope="col">Tên</th>
+                                <th scope="col">Ngày sinh</th>
+                                {% for i in range(0, inputCot15p) %}
+                                <th class="text-center" scope="col">15p</th>
+                                {% endfor %}
+                                {% for i in range(0, inputCot45p) %}
+                                <th class="text-center" scope="col">45p</th>
+                                {% endfor %}
                                 <th class="text-center" scope="col">Cuối kì</th>
                             </tr>
                             </thead>
@@ -82,20 +98,20 @@
                                 <td>{{ score_board.name }}</td>
                                 <td>{{ score_board.dob.strftime('%d-%m-%Y') }}</td>
                                 {% for i in range(0, inputCot15p) %}
-                                <th scope="col">
+                                <th scope="col" class="col-auto">
                                     <input type="number" name="15p{{score_board.id}}[]" class="form-control border-0"
                                            min="0"
                                            max="10" step="any" required>
                                 </th>
                                 {% endfor %}
                                 {% for i in range(0, inputCot45p) %}
-                                <th scope="col">
+                                <th scope="col" class="col-auto">
                                     <input type="number" name="45p{{score_board.id}}[]" class="form-control border-0"
                                            min="0"
                                            max="10" step="any" required>
                                 </th>
                                 {% endfor %}
-                                <th scope="col">
+                                <th scope="col" class="col-auto">
                                     <input type="number" name="ck{{score_board.id}}" class="form-control border-0"
                                            min="0"
                                            max="10" step="any" required>
