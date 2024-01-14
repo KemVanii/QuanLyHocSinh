@@ -22,7 +22,7 @@ def index():
     funcs = dao.load_function(current_user.user_role)
     classes = []
     if current_user.user_role == UserRoleEnum.Teacher:
-        classes = dao.getClassesByTeacherAndCurrentSchoolYear(current_user.id, app.config["school_year"])
+        classes = dao.getClassesByTeacherAndSchoolYear(current_user.id, app.config["school_year"])
     return render_template('index.html', funcs=funcs, classes=classes, school_year=app.config["school_year"],
                            user_role=UserRoleEnum.Employee)
 
@@ -261,7 +261,7 @@ def nhapdiem():
     inputCot15p = int(request.args.get('inputCot15p') or '1')
     inputCot45p = int(request.args.get('inputCot45p') or '1')
     inputHocki = request.args.get('inputHocki')
-    classes = dao.getClassesByTeacherAndCurrentSchoolYear(current_user.id, currentSchoolYear)
+    classes = dao.getClassesByTeacherAndSchoolYear(current_user.id, currentSchoolYear)
     score_boards = []
     idLop = None
     if inputTenLop and inputHocki:
@@ -330,7 +330,7 @@ def chinhsuadiem():
     funcs = dao.load_function(current_user.user_role)
     currentSchoolYear = app.config['school_year']
     kw = request.args.get('kw') or ''
-    list_class = dao.getClassesByTeacher(current_user.id, currentSchoolYear, kw)
+    list_class = dao.getClassesByTeacherAndSchoolYear(current_user.id, currentSchoolYear, kw)
     subject = dao.getSubjectByUser(current_user.id)
     return render_template("chinhsuadiem.html",
                            subject=subject, kw=kw,
@@ -393,12 +393,10 @@ def chinhsuadiemLop(idLop):
 def xemdiem():
     funcs = dao.load_function(current_user.user_role)
     semesters = dao.getSemesterTeacher(current_user.id)  # Lấy các học kì 1 ra
-
     schoolYears = [semester.name.split('_')[1] for semester in semesters]  # lọc lấy niên học
     schoolYears = sorted(schoolYears, key=lambda x: int(x.split('-')[0]), reverse=True)  # sắp xếp niên học giảm dần
     inputNienHoc = request.args.get('inputNienHoc') or schoolYears[0]
-    kw = ''
-    list_class = dao.getClassesByTeacher(current_user.id, inputNienHoc, kw)
+    list_class = dao.getClassesByTeacherAndSchoolYear(current_user.id, inputNienHoc)
     return render_template("xemdiem.html", funcs=funcs,
                            inputNienHoc=inputNienHoc, schoolYears=schoolYears,
                            list_class=list_class)

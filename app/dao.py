@@ -201,7 +201,7 @@ def getSemestersBySchoolYear(schoolYear):
             .all())
 
 
-def getClassesByTeacher(teacherId, schoolYear, kw=None):
+def getClassesByTeacherAndSchoolYear(teacherId, schoolYear, kw=None):
     list_class = (db.session.query(TeacherClass, Class.name, Class.size, Class.id)
                   .join(Class)
                   .join(ScoreBoard)
@@ -235,18 +235,6 @@ def get_class_by_school_year(school_year):
     classes = getClassByGradeAndSchoolYear(grade=grade.name, schoolYear=school_year)
 
     return classes
-
-
-def getClassesByTeacherAndSchoolYear(teacherId, schoolYear):
-    return (db.session.query(TeacherClass, Class.name, Class.size)
-            .join(Class)
-            .join(ScoreBoard)
-            .join(Semester)
-            .filter(TeacherClass.teacher_id == teacherId,
-                    Semester.name.contains(schoolYear))
-            .order_by(Class.name)
-            .all())
-
 
 def getClassById(classId):
     return (db.session.query(Class, Grade.name)
