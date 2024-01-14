@@ -169,13 +169,20 @@ def dieuchinhdanhsachlop(idLop):
     funcs = dao.load_function(current_user.user_role)
     grade = int(dao.getGradeByClassId(idLop).name)
     cla = dao.getClass(idLop)
+    # Lấy danh sách học sinh thuộc lớp đó
     studentsInClass = dao.getStudentListByClassId(idLop)
-    prevSchoolYear = get_previous_school_year(currSchoolYear)
+    # Lấy học danh sách hoc sinh chuyển lớp
     studentsForChangeClass = dao.getStudentsHasClass(grade, currSchoolYear, cla.name)
+    # Lấy học danh sách học sinh chuyển trường
+    studentsTransferSchool = dao.getStudentsTranferSchool()
+    # Lấy học sinh chuyển cấp
     studentNotHasClass = dao.getStudentsNotHasClass()
+    # Lấy hoc sinh bị xóa khỏi lớp
+    studentsRemoveClass = dao.getStudentsRemoveClass(grade, currSchoolYear)
+    # Lấy học sinh đã học khối này ở kì trước nhưng bị rớt
+    prevSchoolYear = get_previous_school_year(currSchoolYear)
     prevSemesters = dao.getSemestersBySchoolYear(prevSchoolYear)
     currSemester = dao.getSemestersBySchoolYear(currSchoolYear)
-    studentsRemoveClass = dao.getStudentsRemoveClass(grade, currSchoolYear)
     StudentsAlreadyStudy = dao.getStudentsAlreadyStudyGradeInSchoolYear(grade, prevSchoolYear)
     studentsFailThisGradeInPrevSchoolYear = filter_student(StudentsAlreadyStudy,
                                                            prevSemesters,
@@ -183,12 +190,12 @@ def dieuchinhdanhsachlop(idLop):
                                                            False)
     maxSize = int(app.config['max_class_size'])
     if grade == 10:
-
         students = (studentNotHasClass
                     + studentsRemoveClass
                     + studentsFailThisGradeInPrevSchoolYear)
 
     else:
+        # Lấy học sinh đã học khối trước ở kì trước và đã đậu
         StudentsAlreadyStudy = dao.getStudentsAlreadyStudyGradeInSchoolYear(grade - 1, prevSchoolYear)
         studentsPassPreGradeInPrevSchoolYear = filter_student(StudentsAlreadyStudy,
                                                               prevSemesters,
@@ -202,6 +209,7 @@ def dieuchinhdanhsachlop(idLop):
                            funcs=funcs, studentsInClass=studentsInClass,
                            studentsNotInClass=students,
                            studentsForChangeClass=studentsForChangeClass,
+                           studentsTransferSchool=studentsTransferSchool,
                            cla=cla, idLop=idLop, maxSize=maxSize)
 
 

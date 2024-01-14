@@ -77,10 +77,15 @@ def load_function(user_role):
 
 
 def getStudentsNotHasClass(limit=None):
-    query = db.session.query(Student).filter(Student.score_boards == None)
+    query = db.session.query(Student).filter(Student.score_boards == None,
+                                             Student.isTransferSchool == False)
     if limit:
         query = query.limit(limit)
     return query.all()
+
+
+def getStudentsTranferSchool():
+    return db.session.query(Student).filter(Student.isTransferSchool == True).all()
 
 
 def getStudentsRemoveClass(grade, schoolYear):
@@ -221,13 +226,14 @@ def get_class_by_school_year(school_year):
     return classes
 
 
-def getClassesByTeacherAndCurrentSchoolYear(teacherId, currentSchoolYear="HK1_23-24"):
+def getClassesByTeacherAndCurrentSchoolYear(teacherId, currentSchoolYear):
     return (db.session.query(TeacherClass, Class.name, Class.size)
             .join(Class)
             .join(ScoreBoard)
             .join(Semester)
             .filter(TeacherClass.teacher_id == teacherId,
                     Semester.name.contains(currentSchoolYear))
+            .order_by(Class.name)
             .all())
 
 
