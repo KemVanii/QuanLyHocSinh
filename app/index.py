@@ -64,7 +64,6 @@ def lapdanhsach():
     if request.method == "POST":
         size = int(request.form.get("inputSize"))
         grade = int(request.form.get("inputGrade"))
-        print(grade)
         newNameClass = f'{grade}/{len(dao.getClassByGradeAndSchoolYear(grade, currSchoolYear)) + 1}'
         prevSchoolYear = get_previous_school_year(currSchoolYear)
         prevSemesters = dao.getSemestersBySchoolYear(prevSchoolYear)  # get semester of previous schoolYear
@@ -267,20 +266,24 @@ def nhapdiem():
     inputHocki = request.args.get('inputHocki')
     classes = dao.getClassesByTeacherAndCurrentSchoolYear(current_user.id, currentSchoolYear)
     score_boards = []
-
-    if inputTenLop and inputHocki and inputCot15p and inputCot45p:
+    idLop = None
+    if inputTenLop and inputHocki:
         score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, inputHocki, currentSchoolYear)
+        if len(score_boards) != 0:
+            idLop = score_boards[0].class_id
         score_boards_filter = []
         for score_board in score_boards:
             if len(score_board[0].scores) == 0:
                 score_boards_filter.append(score_board)
         score_boards = score_boards_filter
 
+    print(inputTenLop, inputHocki)
     return render_template("nhapdiem.html",
                            funcs=funcs, inputTenLop=inputTenLop, classes=classes,
                            inputCot15p=inputCot15p, inputCot45p=inputCot45p,
                            score_boards=score_boards, inputHocki=inputHocki,
-                           inputTenMon=inputTenMon, currentSchoolYear=currentSchoolYear)
+                           inputTenMon=inputTenMon, currentSchoolYear=currentSchoolYear,
+                           idLop=idLop)
 
 
 @app.route('/api/policy', methods=['post'])
@@ -328,13 +331,11 @@ def sendScoreViaEmail():
 def chinhsuadiem():
     funcs = dao.load_function(current_user.user_role)
     currentSchoolYear = app.config['school_year']
-    subject = ""
-    list_class = []
-    kw = request.args.get('kw')
+    kw = request.args.get('kw') or ''
     list_class = dao.getClassesByTeacher(current_user.id, currentSchoolYear, kw)
     subject = dao.getSubjectByUser(current_user.id)
     return render_template("chinhsuadiem.html",
-                           subject=subject,
+                           subject=subject, kw=kw,
                            list_class=list_class,
                            funcs=funcs)
 
@@ -367,25 +368,26 @@ def chinhsuadiemLop(idLop):
     inputTenMon = dao.getSubjectByUser(current_user.id).name
     score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, inputHocki, currentSchoolYear)
     dataScores = []
-    if len(score_boards):
-        for score_board in score_boards:
-            dataScore = {
-                'score_board_id': score_board.id,
-                'student_name': score_board.name,
-                'student_dob': score_board.dob,
-                '15p': [score.value for score in score_board[0].scores if score.type == '15p'],
-                '45p': [score.value for score in score_board[0].scores if score.type == '45p'],
-                'ck': [score.value for score in score_board[0].scores if score.type == 'ck'][0]
-            }
-            dataScores.append(dataScore)
+    for score_board in score_boards:
+        if len(score_board[0].scores) == 0:
+            dataScores = []
+            break
+        dataScore = {
+            'score_board_id': score_board.id,
+            'student_name': score_board.name,
+            'student_dob': score_board.dob,
+            '15p': [score.value for score in score_board[0].scores if score.type == '15p'],
+            '45p': [score.value for score in score_board[0].scores if score.type == '45p'],
+            'ck': [score.value for score in score_board[0].scores if score.type == 'ck'][0]
+        }
+        dataScores.append(dataScore)
     inputCot15p = len(dataScores[0]['15p']) if len(dataScores) else None
     inputCot45p = len(dataScores[0]['45p']) if len(dataScores) else None
     return render_template('chinhsuadiemLop.html', funcs=funcs,
-                           idLop=idLop, score_boards=score_boards,
+                           idLop=idLop, dataScores=dataScores,
                            inputCot15p=inputCot15p, inputCot45p=inputCot45p,
                            inputTenLop=inputTenLop, inputTenMon=inputTenMon,
-                           inputHocki=inputHocki,
-                           dataScores=dataScores)
+                           inputHocki=inputHocki, inputNienHoc=currentSchoolYear)
 
 
 @app.route('/xemdiem')

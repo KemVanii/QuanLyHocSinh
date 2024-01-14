@@ -108,7 +108,7 @@ def getStudentsHasClass(grade, schoolYear):
 
 
 def getScoreBoard(className, subjectName, semester, currentSchoolYear):
-    score_boards = (db.session.query(ScoreBoard, ScoreBoard.id, Student.name, Student.dob)
+    score_boards = (db.session.query(ScoreBoard, ScoreBoard.class_id, ScoreBoard.id, Student.name, Student.dob)
                     .join(Class)
                     .join(Subject)
                     .join(Semester)

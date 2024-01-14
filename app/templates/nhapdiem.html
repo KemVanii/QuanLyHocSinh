@@ -9,9 +9,11 @@
 {% block content %}
 <div id="nhapdiem">
     <h1 class="text-center mt-2">Nhập điểm môn {{inputTenMon}}</h1>
-     {% if score_boards|length == 0 %}
-    <div class="alert alert-danger">
-        <strong>Lỗi!</strong> Lớp {{inputTenLop}} {{inputHocki}} đã được nhập
+    {% if inputTenLop != '' and score_boards|length == 0 %}
+    <div class="alert alert-danger d-flex align-items-center ">
+        <span><strong>Lỗi!</strong> Lớp {{inputTenLop}} {{inputHocki}} đã được nhập.</span>
+        <a href="/chinhsuadiem/{{idLop}}?inputHocki={{inputHocki}}"
+           type="button" class="btn  btn-link p-1">Chỉnh sửa điểm lớp này</a>
     </div>
     {% endif %}
     <form action="/nhapdiem">
@@ -29,8 +31,8 @@
             <div class="col-md-4">
                 <label for="semester" class="form-label">Chọn học kì:</label>
                 <select id="semester" name="inputHocki" class="form-select">
-                    <option value="HK1">HK1</option>
-                    <option value="HK2">HK2</option>
+                    <option value="HK1" {% if inputHocKi =="HK1" %} selected {%endif%}>HK1</option>
+                    <option value="HK2" {% if inputHocki =="HK2" %} selected {%endif%}>HK2</option>
                 </select>
             </div>
         </div>

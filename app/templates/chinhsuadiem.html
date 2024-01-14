@@ -7,8 +7,8 @@
 <h1 class="text-center mt-2">Danh sách lớp của bạn</h1>
 
 <form class="d-flex" method="get" action="/chinhsuadiem">
-    <input class="form-control me-2" type="text" name="kw" placeholder="Tìm kiếm lớp...">
-    <button class="btn btn-primary" type="submit">Search</button>
+    <input class="form-control me-2" type="text" name="kw" value="{{kw}}" placeholder="Tìm kiếm lớp...">
+    <button class="btn btn-primary" type="submit">Lọc</button>
 </form>
 
 {% if list_class|length != 0 %}
