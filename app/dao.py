@@ -4,6 +4,7 @@ from collections import defaultdict
 from app import db
 from app.util import *
 from app.models import ScoreBoard, Score
+from app.util import filter_student, get_previous_school_year
 import random
 
 
@@ -77,8 +78,9 @@ def load_function(user_role):
 
 
 def getStudentsNotHasClass(limit=None):
-    query = db.session.query(Student).filter(Student.score_boards == None,
-                                             Student.isTransferSchool == False)
+    query = (db.session.query(Student)
+             .filter(Student.score_boards is None,
+                     Student.isTransferSchool == False))
     if limit:
         query = query.limit(limit)
     return query.all()
@@ -92,7 +94,7 @@ def getStudentsTranferSchool():
 def getStudentsRemoveClass(grade, schoolYear):
     return (db.session.query(Student)
             .join(ScoreBoard)
-            .join(Class)
+            .join(Class) #for join grade
             .join(Grade)
             .join(Semester)
             .filter(Grade.name == grade,
@@ -148,6 +150,15 @@ def getStudentsAlreadyStudyGradeInSchoolYear(grade, schoolYear):
             .filter(Grade.name == grade,
                     Semester.name.contains(schoolYear))
             .all())
+
+
+def getStudentsPassOrFailInGradeInPreSchoolYear(grade, currSchoolYear, result):
+    prevSchoolYear = get_previous_school_year(currSchoolYear)
+    StudentsAlreadyStudy = getStudentsAlreadyStudyGradeInSchoolYear(grade, prevSchoolYear)
+    prevSemesters = getSemestersBySchoolYear(prevSchoolYear)
+    currSemester = getSemestersBySchoolYear(currSchoolYear)
+    return filter_student(StudentsAlreadyStudy, prevSemesters,
+                          currSemester, result)
 
 
 def getScoreBoardByClassStudentYear(className, studentId, currentSchoolYear):
@@ -226,13 +237,13 @@ def get_class_by_school_year(school_year):
     return classes
 
 
-def getClassesByTeacherAndCurrentSchoolYear(teacherId, currentSchoolYear):
+def getClassesByTeacherAndSchoolYear(teacherId, schoolYear):
     return (db.session.query(TeacherClass, Class.name, Class.size)
             .join(Class)
             .join(ScoreBoard)
             .join(Semester)
             .filter(TeacherClass.teacher_id == teacherId,
-                    Semester.name.contains(currentSchoolYear))
+                    Semester.name.contains(schoolYear))
             .order_by(Class.name)
             .all())
 

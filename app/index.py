@@ -54,12 +54,12 @@ def login():
 @app.route("/logout")
 def logout():
     logout_user()
-    return redirect(url_for("index"))
+    return redirect(url_for("login"))
 
 
 @app.route('/tiepnhanhocsinh')
-@restrict_to_roles([UserRoleEnum.Employee])
-def tiepNhanHocSinh():
+@restrict_to_roles([UserRoleEnum.Employee], next_url='tiepnhanhocsinh')
+def tiepnhanhocsinh():
     return redirect('/student')
 
 
@@ -71,15 +71,10 @@ def lapdanhsach():
         size = int(request.form.get("inputSize"))
         grade = int(request.form.get("inputGrade"))
         newNameClass = f'{grade}/{len(dao.getClassByGradeAndSchoolYear(grade, currSchoolYear)) + 1}'
-        prevSchoolYear = get_previous_school_year(currSchoolYear)
-        prevSemesters = dao.getSemestersBySchoolYear(prevSchoolYear)  # get semester of previous schoolYear
-        currSemester = dao.getSemestersBySchoolYear(currSchoolYear)
         studentsRemoveClass = dao.getStudentsRemoveClass(grade, currSchoolYear)
-        StudentsAlreadyStudy = dao.getStudentsAlreadyStudyGradeInSchoolYear(grade, prevSchoolYear)
-        studentsFailThisGradeInPrevSchoolYear = filter_student(StudentsAlreadyStudy,
-                                                               prevSemesters,
-                                                               currSemester,
-                                                               False)
+        studentsFailThisGradeInPrevSchoolYear = (
+            dao.getStudentsPassOrFailInGradeInPreSchoolYear(grade, currSchoolYear,
+                                                             False))
         if grade == 10:
             studentNotHasClass = dao.getStudentsNotHasClass()
             students = (studentNotHasClass
@@ -87,11 +82,11 @@ def lapdanhsach():
                         + studentsFailThisGradeInPrevSchoolYear)
 
         else:
-            StudentsAlreadyStudy = dao.getStudentsAlreadyStudyGradeInSchoolYear(grade - 1, prevSchoolYear)
-            studentsPassPreGradeInPrevSchoolYear = filter_student(StudentsAlreadyStudy,
-                                                                  prevSemesters,
-                                                                  currSemester,
-                                                                  True)
+
+            studentsPassPreGradeInPrevSchoolYear = (
+                dao.getStudentsPassOrFailInGradeInPreSchoolYear(grade - 1,
+                                                                 currSchoolYear,
+                                                                 True))
             students = (studentsPassPreGradeInPrevSchoolYear
                         + studentsRemoveClass
                         + studentsFailThisGradeInPrevSchoolYear)
@@ -107,15 +102,10 @@ def lapdanhsach():
     newNameClass = ''
     if size:
         newNameClass = f'{grade}/{len(dao.getClassByGradeAndSchoolYear(grade, currSchoolYear)) + 1}'
-        prevSchoolYear = get_previous_school_year(currSchoolYear)
-        prevSemesters = dao.getSemestersBySchoolYear(prevSchoolYear)  # get semester of previous schoolYear
-        currSemester = dao.getSemestersBySchoolYear(currSchoolYear)
         studentsRemoveClass = dao.getStudentsRemoveClass(grade, currSchoolYear)
-        StudentsAlreadyStudy = dao.getStudentsAlreadyStudyGradeInSchoolYear(grade, prevSchoolYear)
-        studentsFailThisGradeInPrevSchoolYear = filter_student(StudentsAlreadyStudy,
-                                                               prevSemesters,
-                                                               currSemester,
-                                                               False)
+        studentsFailThisGradeInPrevSchoolYear = (
+            dao.getStudentsPassOrFailInGradeInPreSchoolYear(grade, currSchoolYear,
+                                                             False))
         if grade == 10:
             studentNotHasClass = dao.getStudentsNotHasClass()
             students = (studentNotHasClass
@@ -123,11 +113,10 @@ def lapdanhsach():
                         + studentsFailThisGradeInPrevSchoolYear)
 
         else:
-            StudentsAlreadyStudy = dao.getStudentsAlreadyStudyGradeInSchoolYear(grade - 1, prevSchoolYear)
-            studentsPassPreGradeInPrevSchoolYear = filter_student(StudentsAlreadyStudy,
-                                                                  prevSemesters,
-                                                                  currSemester,
-                                                                  True)
+            studentsPassPreGradeInPrevSchoolYear = (
+                dao.getStudentsPassOrFailInGradeInPreSchoolYear(grade - 1,
+                                                                 currSchoolYear,
+                                                                 True))
             students = (studentsPassPreGradeInPrevSchoolYear
                         + studentsRemoveClass
                         + studentsFailThisGradeInPrevSchoolYear)
@@ -144,10 +133,10 @@ def lapdanhsach():
 @restrict_to_roles([UserRoleEnum.Employee], next_url='dieuchinhdanhsach')
 def dieuchinhdanhsach():
     funcs = dao.load_function(current_user.user_role)
-    currentSchoolYear = app.config['school_year']
+    currSchoolYear = app.config['school_year']
     grades = dao.get_grade()
     inputGrade = request.args.get('inputGrade') or 10
-    classes = dao.getClassByGradeAndSchoolYear(inputGrade, currentSchoolYear)
+    classes = dao.getClassByGradeAndSchoolYear(inputGrade, currSchoolYear)
     return render_template("dieuChinhDanhSach.html",
                            funcs=funcs, grades=grades,
                            inputGrade=inputGrade, classes=classes)
@@ -180,14 +169,9 @@ def dieuchinhdanhsachlop(idLop):
     # Lấy hoc sinh bị xóa khỏi lớp
     studentsRemoveClass = dao.getStudentsRemoveClass(grade, currSchoolYear)
     # Lấy học sinh đã học khối này ở kì trước nhưng bị rớt
-    prevSchoolYear = get_previous_school_year(currSchoolYear)
-    prevSemesters = dao.getSemestersBySchoolYear(prevSchoolYear)
-    currSemester = dao.getSemestersBySchoolYear(currSchoolYear)
-    StudentsAlreadyStudy = dao.getStudentsAlreadyStudyGradeInSchoolYear(grade, prevSchoolYear)
-    studentsFailThisGradeInPrevSchoolYear = filter_student(StudentsAlreadyStudy,
-                                                           prevSemesters,
-                                                           currSemester,
-                                                           False)
+    studentsFailThisGradeInPrevSchoolYear = (
+        dao.getStudentsPassOrFailInGradeInPreSchoolYear(grade, currSchoolYear,
+                                                        False))
     maxSize = int(app.config['max_class_size'])
     if grade == 10:
         students = (studentNotHasClass
@@ -195,14 +179,11 @@ def dieuchinhdanhsachlop(idLop):
                     + studentsFailThisGradeInPrevSchoolYear)
 
     else:
-        # Lấy học sinh đã học khối trước ở kì trước và đã đậu
-        StudentsAlreadyStudy = dao.getStudentsAlreadyStudyGradeInSchoolYear(grade - 1, prevSchoolYear)
-        studentsPassPreGradeInPrevSchoolYear = filter_student(StudentsAlreadyStudy,
-                                                              prevSemesters,
-                                                              currSemester,
-                                                              True)
-        students = (studentNotHasClass
-                    + studentsPassPreGradeInPrevSchoolYear
+        studentsPassPreGradeInPrevSchoolYear = (
+            dao.getStudentsPassOrFailInGradeInPreSchoolYear(grade - 1,
+                                                            currSchoolYear,
+                                                            True))
+        students = (studentsPassPreGradeInPrevSchoolYear
                     + studentsRemoveClass
                     + studentsFailThisGradeInPrevSchoolYear)
     return render_template("dieuChinhDanhSachlop.html",
