@@ -411,8 +411,6 @@ def chinhsuadiemLop(idLop):
 @restrict_to_roles([UserRoleEnum.Teacher], next_url='xemdiem')
 def xemdiem():
     funcs = dao.load_function(current_user.user_role)
-    currentSchoolYear = app.config['school_year']
-    inputTenMon = dao.getSubjectByUser(current_user.id).name
     semesters = dao.getSemesterTeacher(current_user.id)  # Lấy các học kì 1 ra
 
     schoolYears = [semester.name.split('_')[1] for semester in semesters]  # lọc lấy niên học
@@ -436,18 +434,20 @@ def xemdiemlop(idLop, hk):
     score_boards = dao.getScoreBoardByClass(idLop, current_user.subject_id, f"HK{hk}")
 
     dataScores = []
-    if score_boards:
-        for score_board in score_boards:
-            dataScore = {
-                'score_board_id': score_board.id,
-                'student_name': score_board.name,
-                'student_dob': score_board.dob,
-                '15p': [score.value for score in score_board[0].scores if score.type == '15p'],
-                '45p': [score.value for score in score_board[0].scores if score.type == '45p'],
-                'ck': [score.value for score in score_board[0].scores if score.type == 'ck'][0],
-                'dtb': round(calSemesterAverage(score_board[0].scores), 1)
-            }
-            dataScores.append(dataScore)
+    for score_board in score_boards:
+        if len(score_board[0].scores) == 0:
+            dataScores = []
+            break
+        dataScore = {
+            'score_board_id': score_board.id,
+            'student_name': score_board.name,
+            'student_dob': score_board.dob,
+            '15p': [score.value for score in score_board[0].scores if score.type == '15p'],
+            '45p': [score.value for score in score_board[0].scores if score.type == '45p'],
+            'ck': [score.value for score in score_board[0].scores if score.type == 'ck'][0],
+            'dtb': round(calSemesterAverage(score_board[0].scores), 1)
+        }
+        dataScores.append(dataScore)
     cot15p = len(dataScores[0]['15p']) if len(dataScores) else 0
     cot45p = len(dataScores[0]['45p']) if len(dataScores) else 0
     return render_template("xemdiemlop.html", funcs=funcs,
