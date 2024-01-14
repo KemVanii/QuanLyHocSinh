@@ -276,7 +276,7 @@ def nhapdiem():
                 score_boards_filter.append(score_board)
         score_boards = score_boards_filter
 
-    return render_template("diem.html",
+    return render_template("nhapdiem.html",
                            funcs=funcs, inputTenLop=inputTenLop, classes=classes,
                            inputCot15p=inputCot15p, inputCot45p=inputCot45p,
                            score_boards=score_boards, inputHocki=inputHocki,
