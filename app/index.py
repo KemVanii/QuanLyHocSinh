@@ -5,7 +5,8 @@ from flask_login import login_user, logout_user, current_user
 from app import app, login
 from app.models import *
 from app.auth import restrict_to_roles
-from app.util import isPass, calSemesterAverage, loadPolicies, filter_student, get_previous_school_year
+from app.util import isPass, calSemesterAverage, loadPolicies, filter_student, get_previous_school_year, \
+    createDataScoresfromReqForm
 from app.mailService import send_email
 import dao
 
@@ -74,7 +75,7 @@ def lapdanhsach():
         studentsRemoveClass = dao.getStudentsRemoveClass(grade, currSchoolYear)
         studentsFailThisGradeInPrevSchoolYear = (
             dao.getStudentsPassOrFailInGradeInPreSchoolYear(grade, currSchoolYear,
-                                                             False))
+                                                            False))
         if grade == 10:
             studentNotHasClass = dao.getStudentsNotHasClass()
             students = (studentNotHasClass
@@ -85,8 +86,8 @@ def lapdanhsach():
 
             studentsPassPreGradeInPrevSchoolYear = (
                 dao.getStudentsPassOrFailInGradeInPreSchoolYear(grade - 1,
-                                                                 currSchoolYear,
-                                                                 True))
+                                                                currSchoolYear,
+                                                                True))
             students = (studentsPassPreGradeInPrevSchoolYear
                         + studentsRemoveClass
                         + studentsFailThisGradeInPrevSchoolYear)
@@ -105,7 +106,7 @@ def lapdanhsach():
         studentsRemoveClass = dao.getStudentsRemoveClass(grade, currSchoolYear)
         studentsFailThisGradeInPrevSchoolYear = (
             dao.getStudentsPassOrFailInGradeInPreSchoolYear(grade, currSchoolYear,
-                                                             False))
+                                                            False))
         if grade == 10:
             studentNotHasClass = dao.getStudentsNotHasClass()
             students = (studentNotHasClass
@@ -115,8 +116,8 @@ def lapdanhsach():
         else:
             studentsPassPreGradeInPrevSchoolYear = (
                 dao.getStudentsPassOrFailInGradeInPreSchoolYear(grade - 1,
-                                                                 currSchoolYear,
-                                                                 True))
+                                                                currSchoolYear,
+                                                                True))
             students = (studentsPassPreGradeInPrevSchoolYear
                         + studentsRemoveClass
                         + studentsFailThisGradeInPrevSchoolYear)
@@ -243,15 +244,7 @@ def nhapdiem():
             if len(score_board[0].scores) == 0:
                 score_boards_filter.append(score_board)
         score_boards = score_boards_filter
-        dataScores = []
-        for score_board in score_boards:
-            dataScore = {
-                'score_board_id': score_board.id,
-                '15p': request.form.getlist(f'15p{score_board.id}[]'),
-                '45p': request.form.getlist(f'45p{score_board.id}[]'),
-                'ck': request.form.get(f'ck{score_board.id}')
-            }
-            dataScores.append(dataScore)
+        dataScores = createDataScoresfromReqForm(request, score_boards)
         dao.insert_score(dataScores)
         return redirect(url_for('nhapdiem'))
 
@@ -348,15 +341,7 @@ def chinhsuadiemLop(idLop):
         inputTenMon = request.form.get('inputTenMon')
         inputHocki = request.form.get('inputHocki')
         score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, inputHocki, currentSchoolYear)
-        dataScores = []
-        for score_board in score_boards:
-            dataScore = {
-                'score_board_id': score_board.id,
-                '15p': request.form.getlist(f'15p{score_board.id}[]'),
-                '45p': request.form.getlist(f'45p{score_board.id}[]'),
-                'ck': request.form.get(f'ck{score_board.id}')
-            }
-            dataScores.append(dataScore)
+        dataScores = createDataScoresfromReqForm(request, score_boards)
         dao.update_score(dataScores)
         return redirect(url_for('chinhsuadiem'))
 
