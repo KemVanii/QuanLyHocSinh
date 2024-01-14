@@ -5,7 +5,11 @@
 {% block content %}
 <div id="dieuchinhdanhsachlop">
     <h1 class="text-center mt-2">Điều chỉnh danh sách lớp {{cla.name}}</h1>
-
+    {% if studentsInClass|length == 0 %}
+    <div class="alert alert-info">
+        <strong>Thông tin!</strong> Danh sách lớp hiện rỗng.
+    </div>
+    {% endif %}
     <!-- Button to Open the Modal -->
     {% if studentsInClass|length < maxSize %}
     <div class="dropdown">
@@ -266,8 +270,6 @@
             </tbody>
         </table>
     </div>
-    {% else %}
-    <h3 class="mt-2">Không tìm thấy danh sách</h3>
     {% endif %}
 </div>
 {% endblock %}
