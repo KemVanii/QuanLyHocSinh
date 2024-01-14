@@ -3,25 +3,32 @@
 {% block title %}Dieu chinh danh sach{% endblock %}
 
 {% block content %}
-<h1 class="text-center mt-2">Điều chỉnh danh sách</h1>
+<div id="dieuchinhdanhsach">
+    <h1 class="text-center mt-2">Điều chỉnh danh sách</h1>
+    {% if classes|length == 0 %}
+    <div class="alert alert-info">
+        <strong>Thông tin!</strong> Không tìm thấy danh sách lớp phù hợp.
+    </div>
+    {% endif %}
+    <div class="container">
+        <form class="row">
+            <div class="col-md-2">
+                <select class="form-select" name="inputGrade">
+                    {% for grade in grades %}
+                    <option value="{{grade.name}}" {% if grade.name==inputGrade %}selected{% endif %}>Khối
+                        {{grade.name}}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <button type="submit" class="btn btn-primary float-right">Lọc</button>
+            </div>
+        </form>
+    </div>
 
-<div class="container">
-    <form class="row">
-        <div class="col-md-2">
-            <select class="form-select" name="inputGrade">
-                {% for grade in grades %}
-                <option value="{{grade.name}}" {% if grade.name==inputGrade %}selected{% endif %}>Khối {{grade.name}}
-                </option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col-md-6">
-            <button type="submit" class="btn btn-primary float-right">Lọc</button>
-        </div>
-    </form>
-</div>
-{% if classes|length != 0 %}
-<div class="container justify-content-center  mt-3">
+    {% if classes|length != 0 %}
+    <div class="container justify-content-center  mt-3">
         <table class="table">
             <thead>
             <tr>
@@ -47,7 +54,6 @@
             </tbody>
         </table>
     </div>
-{% else %}
-<h3 class="mt-2">Không tìm thấy danh sách</h3>
-{% endif %}
+    {% endif %}
+</div>
 {% endblock %}

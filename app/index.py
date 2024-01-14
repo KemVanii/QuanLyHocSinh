@@ -166,6 +166,7 @@ def dieuchinhdanhsachlop(idLop):
     studentsInClass = dao.getStudentListByClassId(idLop)
     prevSchoolYear = get_previous_school_year(currSchoolYear)
     studentsForChangeClass = dao.getStudentsHasClass(grade, currSchoolYear, cla.name)
+    studentNotHasClass = dao.getStudentsNotHasClass()
     prevSemesters = dao.getSemestersBySchoolYear(prevSchoolYear)
     currSemester = dao.getSemestersBySchoolYear(currSchoolYear)
     studentsRemoveClass = dao.getStudentsRemoveClass(grade, currSchoolYear)
@@ -176,7 +177,7 @@ def dieuchinhdanhsachlop(idLop):
                                                            False)
     maxSize = int(app.config['max_class_size'])
     if grade == 10:
-        studentNotHasClass = dao.getStudentsNotHasClass()
+
         students = (studentNotHasClass
                     + studentsRemoveClass
                     + studentsFailThisGradeInPrevSchoolYear)
@@ -187,7 +188,8 @@ def dieuchinhdanhsachlop(idLop):
                                                               prevSemesters,
                                                               currSemester,
                                                               True)
-        students = (studentsPassPreGradeInPrevSchoolYear
+        students = (studentNotHasClass
+                    + studentsPassPreGradeInPrevSchoolYear
                     + studentsRemoveClass
                     + studentsFailThisGradeInPrevSchoolYear)
     return render_template("dieuChinhDanhSachlop.html",
