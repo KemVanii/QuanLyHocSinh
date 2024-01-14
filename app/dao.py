@@ -85,7 +85,8 @@ def getStudentsNotHasClass(limit=None):
 
 
 def getStudentsTranferSchool():
-    return db.session.query(Student).filter(Student.isTransferSchool == True).all()
+    return db.session.query(Student).filter(Student.score_boards == None,
+                                            Student.isTransferSchool == True).all()
 
 
 def getStudentsRemoveClass(grade, schoolYear):
