@@ -3,13 +3,14 @@
 {% block title %}Chỉnh sửa điểm{% endblock %}
 
 {% block content %}
-<h1 class="text-center mt-2">Chỉnh sửa điểm môn {{inputTenMon}} lớp {{inputTenLop}} {{inputHocki}} {{inputNienHoc}}  </h1>
+<h1 class="text-center mt-2">Chỉnh sửa điểm môn {{inputTenMon}} lớp {{inputTenLop}} {{inputHocki}}
+    {{inputNienHoc}} </h1>
 {% if dataScores|length == 0 %}
 <div class="alert alert-danger d-flex align-items-center ">
-        <span><strong>Lỗi!</strong> Lớp {{inputTenLop}} {{inputHocki}} chưa được nhập điểm.</span>
-        <a href="/nhapdiem?inputTenLop={{inputTenLop}}&inputHocki={{inputHocki}}"
-           type="button" class="btn  btn-link p-1">Nhập điểm lớp này</a>
-    </div>
+    <span><strong>Lỗi!</strong> Lớp {{inputTenLop}} {{inputHocki}} chưa được nhập điểm.</span>
+    <a href="/nhapdiem?inputTenLop={{inputTenLop}}&inputHocki={{inputHocki}}"
+       type="button" class="btn  btn-link p-1">Nhập điểm lớp này</a>
+</div>
 {% endif %}
 <form action="/chinhsuadiem/{{idLop}}">
     <div class="row">

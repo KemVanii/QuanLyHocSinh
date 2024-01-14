@@ -27,10 +27,10 @@
             <tbody>
             {% for class in list_class %}
             <tr>
-                <th scope="row">{{ loop.index }}</th>
-                <td>{{ class.name }}</td>
-                <td>{{ class.size }}</td>
-                <td>
+                <th scope="row" class="align-middle">{{ loop.index }}</th>
+                <td class="align-middle">{{ class.name }}</td>
+                <td class="align-middle">{{ class.size }}</td>
+                <td class="align-middle">
                     <form action="/chinhsuadiem/{{class.id}}">
                         <button type="submit" class="btn btn-secondary">Sửa</button>
                     </form>
