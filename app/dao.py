@@ -196,9 +196,8 @@ def getClassesByTeacher(teacherId, schoolYear, kw=None):
                   .join(ScoreBoard)
                   .join(Semester)
                   .filter(TeacherClass.teacher_id == teacherId,
-                          Semester.name.contains(schoolYear),
-                          ScoreBoard.scores != None)
-                  )
+                          Semester.name.contains(schoolYear))
+                  .order_by(Class.name))
     if kw:
         list_class = list_class.filter(Class.name.contains(kw))
     return list_class.all()

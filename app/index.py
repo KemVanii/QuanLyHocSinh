@@ -338,7 +338,8 @@ def sendScoreViaEmail():
                 'dtb': round(calSemesterAverage(score_board[0].scores), 1)
             }
             dataScores.append(dataScore)
-    send_email(dataScores, 'Toán', hk)
+    subject = dao.getSubjectByUser(current_user.id).name
+    send_email(dataScores, subject, hk)
     return jsonify({'status': 'ok', 'message': 'Data sent successfully'})
 
 
@@ -433,10 +434,9 @@ def xemdiemlop(idLop, hk):
     semesters = dao.getSemesterByClassId(idLop)
     nienhoc = semesters[0].name.split('_')[1]
     score_boards = dao.getScoreBoardByClass(idLop, current_user.subject_id, f"HK{hk}")
-    print(score_boards)
 
     dataScores = []
-    if score_boards and score_boards[0][0].scores:
+    if score_boards:
         for score_board in score_boards:
             dataScore = {
                 'score_board_id': score_board.id,
