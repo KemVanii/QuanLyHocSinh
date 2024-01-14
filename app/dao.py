@@ -442,12 +442,13 @@ def grade_type_stats_by_class(classroom_name):
     classroom = get_class_by_name(classroom_name)
     students_in_class = getStudentListByClassId(classroom.id)
     grade = getGradeByClassId(classroom.id)
-    semester = "HK1_23-24"
+    semester = "HK2_24-25"
     classroom = getClass(classroom.id)
     result = {}
     if students_in_class:
         for s in students_in_class:
             score_boards = get_scoreboards_by_student_semester(s.id, semester)
+            print(score_boards)
             total_coefficient = 0
             avg_score = 0
             if score_boards is not None:

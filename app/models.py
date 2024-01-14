@@ -23,6 +23,7 @@ class Student(db.Model):
     phones = relationship('PhoneStudent', foreign_keys='PhoneStudent.student_id', backref='student', lazy=True)
     email = Column(String(50), nullable=False, unique=True)
     status = Column(Boolean, default=True, nullable=False)
+    isTransferSchool = Column(Boolean, default=False, nullable=False)
     score_boards = relationship('ScoreBoard', foreign_keys='ScoreBoard.student_id', backref='student', lazy=True)
 
 

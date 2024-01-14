@@ -26,13 +26,13 @@ def isPass(score_boards):
 
 def filter_student(students, previousSemesters, currentSemesters, filterBy):
     students_filter = []
+    print(students)
     for student in students:
         score_boards_filter = []  # filter score_boards in previous grade
         isInClass = False
         for score_board in student.score_boards:
             if (score_board.semester_id == currentSemesters[0].id
-                    or score_board.semester_id == currentSemesters[
-                        1].id):  # has Score_Board in currentSemesters mean is in class
+                    or score_board.semester_id == currentSemesters[1].id):  # has Score_Board in currentSemesters mean is in class
                 isInClass = True
                 break
             if (score_board.semester_id == previousSemesters[0].id
@@ -40,6 +40,7 @@ def filter_student(students, previousSemesters, currentSemesters, filterBy):
                 score_boards_filter.append(score_board)
         if isInClass:
             continue
+        print(isPass(score_boards_filter))
         if isPass(score_boards_filter) == filterBy:
             students_filter.append(student)
     return students_filter
