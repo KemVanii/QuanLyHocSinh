@@ -30,19 +30,25 @@ def index():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
+        err = None
+        next_url = request.args.get("next_url")
         user = User.query.filter_by(
             username=request.form.get("username")).first()
-        if (user and user.password == str(hashlib.md5(request.form.get("pswd").encode('utf-8')).hexdigest())
-                and user.status is True):
-            login_user(user)
-            loadPolicies(app)
-            next_url = request.args.get("next_url")
-            if next_url is not None:
-                return redirect(url_for(next_url))
-            return redirect(url_for("index"))
+        if not user or user.password != str(hashlib.md5(request.form.get("pswd").encode('utf-8')).hexdigest()):
+            err = "Sai tên đăng nhập hoặc mật khẩu."
+        if user and user.status is False:
+            err = "Tài khoản đã bị xóa."
+        if err:
+            return render_template("login.html", next_url=next_url, err=err)
+        login_user(user)
+        loadPolicies(app)
+        if next_url is not None:
+            return redirect(url_for(next_url))
+        return redirect(url_for("index"))
 
+    err = None
     next_url = request.args.get('next_url') or 'index'
-    return render_template("login.html", next_url=next_url)
+    return render_template("login.html", next_url=next_url, err=err)
 
 
 @app.route("/logout")
