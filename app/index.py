@@ -165,7 +165,7 @@ def dieuchinhdanhsachlop(idLop):
     cla = dao.getClass(idLop)
     studentsInClass = dao.getStudentListByClassId(idLop)
     prevSchoolYear = get_previous_school_year(currSchoolYear)
-    studentsForChangeClass = dao.getStudentsHasClass(grade, currSchoolYear)
+    studentsForChangeClass = dao.getStudentsHasClass(grade, currSchoolYear, cla.name)
     prevSemesters = dao.getSemestersBySchoolYear(prevSchoolYear)
     currSemester = dao.getSemestersBySchoolYear(currSchoolYear)
     studentsRemoveClass = dao.getStudentsRemoveClass(grade, currSchoolYear)

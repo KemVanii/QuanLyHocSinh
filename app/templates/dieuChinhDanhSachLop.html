@@ -43,9 +43,9 @@
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Tên</th>
-                                <th scope="col">Giới tính</th>
+                                <th scope="col">Phái</th>
                                 <th scope="col">Ngày sinh</th>
-                                <th scope="col">Action</th>
+                                <th scope="col">Hành động</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -54,9 +54,9 @@
                                 <th class="align-middle">{{loop.index}}</th>
                                 <td class="align-middle">{{student.name}}</td>
                                 {% if student.gender == True %}
-                                <td class="align-middle">Male</td>
+                                <td class="align-middle">Nam</td>
                                 {% else %}
-                                <td class="align-middle">Female</td>
+                                <td class="align-middle">Nữ</td>
                                 {% endif %}
                                 <td class="align-middle">{{ student.dob.strftime('%d-%m-%Y') }}</td>
                                 <td class="align-middle">
@@ -108,11 +108,11 @@
                             <thead>
                             <tr>
                                 <th scope="col">#</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Gender</th>
-                                <th scope="col">Date of Birth</th>
-                                <th scope="col">Current class</th>
-                                <th scope="col">Action</th>
+                                <th scope="col">Tên</th>
+                                <th scope="col">Phái</th>
+                                <th scope="col">Ngày sinh</th>
+                                <th scope="col">Lớp hiện tại</th>
+                                <th scope="col">Hành động</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -121,9 +121,9 @@
                                 <th class="align-middle">{{loop.index}}</th>
                                 <td class="align-middle">{{studentInfo[1].name}}</td>
                                 {% if studentInfo[1].gender == True %}
-                                <td class="align-middle">Male</td>
+                                <td class="align-middle">Nam</td>
                                 {% else %}
-                                <td class="align-middle">Female</td>
+                                <td class="align-middle">Nữ</td>
                                 {% endif %}
                                 <td class="align-middle">{{ studentInfo[1].dob.strftime('%d-%m-%Y') }}</td>
                                 <td class="align-middle">{{ studentInfo[2].name }}</td>

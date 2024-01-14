@@ -95,15 +95,18 @@ def getStudentsRemoveClass(grade, schoolYear):
             .all())
 
 
-def getStudentsHasClass(grade, schoolYear):
-    return (db.session.query(ScoreBoard, Student, Class)
+def getStudentsHasClass(grade, schoolYear, exceptClass):
+    return (db.session.query(ScoreBoard.student_id, Student, Class)
+            .distinct(ScoreBoard.student_id)
             .join(Class)
             .join(Grade)
             .join(Semester)
             .join(Student)
             .filter(Grade.name == grade,
-                    Semester.name == f"HK1_{schoolYear}",
-                    ScoreBoard.status == True)
+                    Semester.name.contains(schoolYear),
+                    ScoreBoard.status == True,
+                    Class.name != exceptClass)
+            .order_by(Class.name)
             .all())
 
 
