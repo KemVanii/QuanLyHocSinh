@@ -4,16 +4,9 @@
 
 {% block content %}
 
-<!--{% if current_user.is_authenticated %}-->
-<!--<h1>Bạn đã đăng nhập</h1>-->
-<!--<h2>Xin chào {{current_user.name}}</h2>-->
-<!--<h2>Vai trò của bạn: {{current_user.user_role}}</h2>-->
-<!--{% else %}-->
-<!--<h1>Vui long đăng nhập</h1>-->
-<!--{% endif %}-->
-
 {% if current_user.user_role == user_role.Teacher %}
 <div class="container" style="height: 60vh; overflow-y: auto;">
+    <h1 class="text-center">Danh sách lớp của bạn</h1>
     <div class="table-responsive">
         <table class="table">
             <thead>
