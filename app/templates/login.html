@@ -3,7 +3,7 @@
 {% block title %}Login{% endblock %}
 
 {% block link %}
-    <link rel="stylesheet" href="/static/css/login.css">
+<link rel="stylesheet" href="/static/css/login.css">
 {% endblock %}
 
 {% block content %}
@@ -29,7 +29,12 @@
 <!--</div>-->
 
 <div id="login" class="wrapper">
+
     <div class="container">
+<!--        <div class="alert alert-success alert-dismissible position-absolute top-0 start-0">-->
+<!--            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>-->
+<!--            <strong>Success!</strong> This alert box could indicate a successful or positive action.-->
+<!--        </div>-->
         <h1>Welcome</h1>
         <form action="/login?next_url={{next_url}}" class="was-validated" method="post">
             <input type="text" id="username" placeholder="Enter username" name="username" required>

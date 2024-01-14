@@ -21,21 +21,20 @@
   background: rgb(255,255,255);
   background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(0,0,0,1) 100%);
   position: absolute;
-  top: 21.6%;
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+  top: 0;
   left: 0;
   width: 100%;
   height: 100vh;
-  margin-top: -200px;
   overflow: hidden;
 }
 #login .wrapper.form-success .container h1 {
           transform: translateY(85px);
 }
 #login .container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 300px 0;
-  height: 400px;
+
   text-align: center;
 }
 #login .container h1 {
