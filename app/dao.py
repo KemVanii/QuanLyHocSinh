@@ -322,7 +322,6 @@ def createNewClassGrade(className, students, grade, currentSchoolYear):
     subjects = getAllSubject()
     semesters = db.session.query(Semester).filter(Semester.name.contains(currentSchoolYear)).all()
     for student in students:
-        print(student)
         score_boards = (db.session.query(ScoreBoard)
                         .join(Semester)
                         .filter(ScoreBoard.student_id == student.id,
