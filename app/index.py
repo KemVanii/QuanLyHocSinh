@@ -90,7 +90,7 @@ def lapdanhsach():
                         + studentsRemoveClass
                         + studentsFailThisGradeInPrevSchoolYear)
         students = students[:int(size)]
-        dao.createNewClassGrade(newNameClass, students, size, grade, currSchoolYear)
+        dao.createNewClassGrade(newNameClass, students, grade, currSchoolYear)
         return redirect(url_for('lapdanhsach'))
 
     funcs = dao.load_function(current_user.user_role)

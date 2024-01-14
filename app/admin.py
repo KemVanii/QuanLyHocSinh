@@ -97,6 +97,9 @@ class MySubject(AuthenticatedAdmin):
     column_list = ['id', 'name', 'status']
     form_excluded_columns = ['score_boards', 'classes']
 
+    def after_model_change(self, form, model, is_created):
+        if is_created:
+            flash('Hãy thêm giảng viên cho môn học vừa thêm', 'info')
     def delete_model(self, model):
         if hasattr(model, 'status'):
             if model.status:

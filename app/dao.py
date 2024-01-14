@@ -205,6 +205,7 @@ def getClassByGradeAndSchoolYear(grade, schoolYear):
                .join(ScoreBoard)
                .join(Semester)
                .filter(Grade.name == grade, Semester.name == f"HK1_{schoolYear}")
+               .order_by(Class.name)
                .all())
 
     return classes
@@ -297,18 +298,18 @@ def getSubjectByUser(teacherId):
 
 
 def getAllSubject():
-    return db.session.query(Subject).all()
+    return db.session.query(Subject).filter(Subject.status == True).all()
 
 
-def createNewClassGrade(className, students, size, grade, currentSchoolYear):
-    # Create new Class
+def createNewClassGrade(className, students, grade, currentSchoolYear):
+    # Tạo lớp mới
     grade_id = db.session.query(Grade).filter(Grade.name == grade).first().id
-    newClass = Class(name=className, size=size, grade_id=grade_id)
+    newClass = Class(name=className, size=len(students), grade_id=grade_id)
     db.session.add(newClass)
     db.session.commit()
     db.session.refresh(newClass)
 
-    # Create new Score_Boards
+    # Tạo danh sách bảng điểm cho lớp đó
     subjects = getAllSubject()
     semesters = db.session.query(Semester).filter(Semester.name.contains(currentSchoolYear)).all()
     for student in students:
@@ -330,8 +331,7 @@ def createNewClassGrade(className, students, size, grade, currentSchoolYear):
             for score_board in score_boards:
                 score_board.class_id = newClass.id
                 score_board.status = True
-
-    # Create new TeacherClass
+    # Tạo danh sách giáo viên bộ môn cho lớp đó
     teachers = db.session.query(User).filter(User.user_role == UserRoleEnum.Teacher).all()
     for subject in subjects:
         filterTeacherBySubject = [teacher for teacher in teachers if teacher.subject_id == subject.id]

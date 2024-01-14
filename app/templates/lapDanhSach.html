@@ -5,6 +5,11 @@
 {% block content %}
 
 <h1 class="text-center mt-2">Lập danh sách</h1>
+{% if size != "" and students|length == 0 %}
+<div class="alert alert-info">
+  <strong>Thông tin!</strong> Không tìm thấy danh sách học sinh phù hợp.
+</div>
+{% endif %}
 <form action="/lapdanhsach"  class="row row-cols-lg-auto g-3 align-items-center">
     <div class="col-3">
         <label class="visually-hidden" for="inputSize"></label>
@@ -18,9 +23,9 @@
     <div class="">
         <label class="visually-hidden" for="inputGrade">Preference</label>
         <select class="form-select" name="inputGrade" id="inputGrade">
-            <option value="10" {% if grade== 10 %}selected{% endif %}>Lớp 10</option>
-            <option value="11" {% if grade== 11 %}selected{% endif %}>Lớp 11</option>
-            <option value="12" {% if grade== 12 %}selected{% endif %}>Lớp 12</option>
+            <option value="10" {% if grade== 10 %}selected{% endif %}>Khối 10</option>
+            <option value="11" {% if grade== 11 %}selected{% endif %}>Khối 11</option>
+            <option value="12" {% if grade== 12 %}selected{% endif %}>Khối 12</option>
         </select>
     </div>
     <div class="">
@@ -28,7 +33,7 @@
     </div>
 </form>
 {% if students|length != 0 %}
-<div class="container" style="height: 60vh; overflow-y: auto;">
+<div class="container" style="max-height: 60vh; overflow-y: auto;">
     <div class="table-responsive">
         <table class="table">
             <thead>
@@ -66,8 +71,7 @@
     <h3 class="mt-2">Xác nhận lập danh sách lớp {{newNameClass}} niên học {{currentSchoolYear}}</h3>
     <button type="submit" class="btn btn-primary">Lập</button>
 </form>
-{% elif size != "" %}
-<h3 class="mt-2">Không tìm thấy danh sách học sinh phù hợp</h3>
+
 {% endif %}
 
 {% endblock %}

@@ -36,6 +36,7 @@
 
                 <!-- Modal body -->
                 <div class="modal-body">
+                    {% if studentsNotInClass|length != 0 %}
                     <div class="container mt-3">
                         <table class="table">
                             <thead>
@@ -73,6 +74,11 @@
                             </tbody>
                         </table>
                     </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <strong>Thông tin!</strong> Không tìm thấy danh sách học sinh phù hợp.
+                    </div>
+                    {% endif %}
                 </div>
 
                 <!-- Modal footer -->
@@ -95,6 +101,8 @@
 
                 <!-- Modal body -->
                 <div class="modal-body">
+                    {% if studentsForChangeClass|length != 0 %}
+
                     <div class="container mt-3">
                         <table class="table">
                             <thead>
@@ -133,6 +141,11 @@
                             </tbody>
                         </table>
                     </div>
+                    {%else%}
+                    <div class="alert alert-info">
+                        <strong>Thông tin!</strong> Không tìm thấy danh sách học sinh phù hợp.
+                    </div>
+                    {% endif %}
                 </div>
 
                 <!-- Modal footer -->

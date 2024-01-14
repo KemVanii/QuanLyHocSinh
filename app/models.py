@@ -21,7 +21,7 @@ class Student(db.Model):
     dob = Column(DateTime, nullable=False)
     address = Column(String(100), nullable=False)
     phones = relationship('PhoneStudent', foreign_keys='PhoneStudent.student_id', backref='student', lazy=True)
-    email = Column(String(50), nullable=False)
+    email = Column(String(50), nullable=False, unique=True)
     status = Column(Boolean, default=True, nullable=False)
     score_boards = relationship('ScoreBoard', foreign_keys='ScoreBoard.student_id', backref='student', lazy=True)
 
