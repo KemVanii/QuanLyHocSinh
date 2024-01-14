@@ -1,7 +1,6 @@
 {% block link %}
 <link rel="stylesheet" href="/static/css/menu.css">
 {% endblock %}
-
 <div class="sidebar" id="side_nav">
     <div class="container mt-3">
         <div class="row">
@@ -49,14 +48,25 @@
                 <a href="/logout" class="text-decoration-none px-3 py-2 d-block"><i
                         class="fa-solid fa-right-from-bracket"></i>
                     Logout</a>
-                <a href="" class="text-decoration-none px-3 py-2 d-block"><i class="fa-solid fa-address-card"></i>
+                <a data-bs-toggle="popover"
+                   title="Thông tin"
+                   data-bs-placement="bottom" data-bs-content="Some content insid">
+
+                </a>
+                <a href="#" class="text-decoration-none px-3 py-2 d-block" title="Thông tin"
+                   data-bs-toggle="popover" data-bs-placement="bottom" data-bs-trigger="focus"
+                   data-bs-content="Tên: {{current_user.name}}"> <i
+                        class="fa-solid fa-address-card"></i>
                     Profile</a>
             </div>
         </li>
-        <!--        <li class=""><a href="#" class="text-decoration-none px-3 py-2 d-block"><i class="fal fa-bell"></i>-->
-        <!--            Notifications</a></li>-->
 
     </ul>
-
-
 </div>
+
+<script>
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+      return new bootstrap.Popover(popoverTriggerEl)
+    })
+</script>
