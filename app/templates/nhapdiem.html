@@ -9,20 +9,20 @@
 {% block content %}
 <div id="nhapdiem">
     <h1 class="text-center mt-2">Nhập điểm môn {{inputTenMon}}</h1>
-    {% if inputTenLop != '' and score_boards|length == 0 %}
+    {% if tenLop != '' and score_boards|length == 0 %}
     <div class="alert alert-danger d-flex align-items-center ">
-        <span><strong>Lỗi!</strong> Lớp {{inputTenLop}} {{inputHocki}} đã được nhập.</span>
-        <a href="/chinhsuadiem/{{idLop}}?inputHocki={{inputHocki}}"
+        <span><strong>Lỗi!</strong> Lớp {{tenLop}} {{inputHocki}} đã được nhập.</span>
+        <a href="/chinhsuadiem/{{inputIdLop}}?inputHocki={{inputHocki}}"
            type="button" class="btn  btn-link p-1">Chỉnh sửa điểm lớp này</a>
     </div>
     {% endif %}
     <form action="/nhapdiem">
         <div class="row mb-3 mt-3">
             <div class="col-md-4">
-                <label for="inputTenLop" class="form-label">Tên lớp:</label>
-                <select id="inputTenLop" name="inputTenLop" class="form-select">
+                <label for="inputIdLop" class="form-label">Tên lớp:</label>
+                <select id="inputIdLop" name="inputIdLop" class="form-select">
                     {% for class in classes %}
-                    <option value="{{class.name}}" {% if inputTenLop== class.name %} selected {%endif%}>
+                    <option value="{{class.id}}" {% if inputIdLop== class.id %} selected {%endif%}>
                         {{class.name}}
                     </option>
                     {% endfor %}
@@ -132,8 +132,7 @@
 
                     <!-- Modal footer -->
                     <div class="modal-footer">
-                        <input type="hidden" name="inputTenLop" value="{{inputTenLop}}">
-                        <input type="hidden" name="inputTenMon" value="{{inputTenMon}}">
+                        <input type="hidden" name="inputIdLop" value="{{inputIdLop}}">
                         <input type="hidden" name="inputHocki" value="{{inputHocki}}">
                         <button type="submit" class="btn btn-primary">Lưu</button>
                     </div>

@@ -94,7 +94,7 @@ def getStudentsTranferSchool():
 def getStudentsRemoveClass(grade, schoolYear):
     return (db.session.query(Student)
             .join(ScoreBoard)
-            .join(Class) #for join grade
+            .join(Class)  # for join grade
             .join(Grade)
             .join(Semester)
             .filter(Grade.name == grade,
@@ -116,18 +116,6 @@ def getStudentsHasClass(grade, schoolYear, exceptClass):
                     Class.name != exceptClass)
             .order_by(Class.name)
             .all())
-
-
-def getScoreBoard(className, subjectName, semester, currentSchoolYear):
-    score_boards = (db.session.query(ScoreBoard, ScoreBoard.class_id, ScoreBoard.id, Student.name, Student.dob)
-                    .join(Class)
-                    .join(Subject)
-                    .join(Semester)
-                    .join(Student)
-                    .filter(Class.name == className, Subject.name == subjectName,
-                            ScoreBoard.status == True,
-                            Semester.name == f'{semester}_{currentSchoolYear}').all())
-    return score_boards
 
 
 def getScoreBoardByClass(classId, subjectId, semester):
@@ -159,18 +147,6 @@ def getStudentsPassOrFailInGradeInPreSchoolYear(grade, currSchoolYear, result):
     currSemester = getSemestersBySchoolYear(currSchoolYear)
     return filter_student(StudentsAlreadyStudy, prevSemesters,
                           currSemester, result)
-
-
-
-def getSubjectByClassAndYear(className, currentSchoolYear):
-    subjects = (db.session.query(Subject)
-                .join(ScoreBoard)
-                .join(Class)
-                .join(Semester)
-                .filter(Class.name == className,
-                        Semester.name.contains(currentSchoolYear))
-                .all())
-    return subjects
 
 
 def getClass(Class_ID):
@@ -205,10 +181,6 @@ def getClassesByTeacherAndSchoolYear(teacherId, schoolYear, kw=None):
     return list_class.all()
 
 
-def getSubjectByUser(teacherId):
-    return db.session.query(Subject).join(User).filter(User.id == teacherId).first()
-
-
 def getClassByGradeAndSchoolYear(grade, schoolYear):
     classes = (db.session.query(Class, Semester.name)
                .join(Grade)
@@ -226,6 +198,7 @@ def get_class_by_school_year(school_year):
     classes = getClassByGradeAndSchoolYear(grade=grade.name, schoolYear=school_year)
 
     return classes
+
 
 def getClassById(classId):
     return (db.session.query(Class, Grade.name)
@@ -292,12 +265,23 @@ def insertStudentToClass(studentId, classId, schoolYear):
     db.session.commit()
 
 
+def getAllSubject():
+    return db.session.query(Subject).filter(Subject.status == True).all()
+
+
 def getSubjectByUser(teacherId):
     return db.session.query(Subject).join(User).filter(User.id == teacherId).first()
 
 
-def getAllSubject():
-    return db.session.query(Subject).filter(Subject.status == True).all()
+def getSubjectByClassAndYear(className, currentSchoolYear):
+    subjects = (db.session.query(Subject)
+                .join(ScoreBoard)
+                .join(Class)
+                .join(Semester)
+                .filter(Class.name == className,
+                        Semester.name.contains(currentSchoolYear))
+                .all())
+    return subjects
 
 
 def createNewClassGrade(className, students, grade, currentSchoolYear):
@@ -515,6 +499,5 @@ def getSemesterTeacher(TeaderId):
             .filter(TeacherClass.teacher_id == TeaderId,
                     Semester.name.contains('HK1'))
             .all())
-
 
 # read json and write json
