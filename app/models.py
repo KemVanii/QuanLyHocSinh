@@ -116,18 +116,18 @@ if __name__ == '__main__':
 
         import hashlib
 
-        # u = User(name='Nguyễn Văn Admin', username='admin', gender=True, dob='1991-01-01', address='TPHCM',
-        #          password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
-        #          user_role=UserRoleEnum.Admin, status=True, subject_id=1)
-        # #
-        # db.session.add(u)
-        # db.session.commit()
-        # u = User(name='Nguyễn Văn NhanVien', username='nhanVien', gender=True, dob='1991-01-01', address='TPHCM',
-        #          password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
-        #          user_role=UserRoleEnum.Employee, status=True)
+        u = User(name='Nguyễn Văn Admin', username='admin', gender=True, dob='1991-01-01', address='TPHCM',
+                 password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+                 user_role=UserRoleEnum.Admin, status=True)
         #
-        # db.session.add(u)
-        # db.session.commit()
+        db.session.add(u)
+        db.session.commit()
+        u = User(name='Nguyễn Văn NhanVien', username='nhanVien', gender=True, dob='1991-01-01', address='TPHCM',
+                 password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+                 user_role=UserRoleEnum.Employee, status=True)
+
+        db.session.add(u)
+        db.session.commit()
         u = User(name='Nguyễn Văn GiaoVien', username='giaoVien', gender=True, dob='1991-01-01', address='TPHCM',
                  password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
                  user_role=UserRoleEnum.Teacher, status=True, subject_id=None)

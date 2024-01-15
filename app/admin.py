@@ -1,6 +1,6 @@
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from wtforms import SelectField, PasswordField, TextField
+from wtforms import SelectField, PasswordField, StringField
 from wtforms.fields import DateField
 from flask_login import current_user
 from flask import flash
@@ -25,7 +25,6 @@ class MyStudent(AuthenticatedEmployee):
     edit_modal = True
     form_excluded_columns = ['score_boards', 'phones', 'status']
     form_extra_fields = {
-        'name': TextField('Họ và tên:'),
         'gender': SelectField('Phái', choices=[(True, 'Nam'), (False, 'Nữ')], coerce=bool),
         'dob': DateField('Ngày sinh', format='%Y-%m-%d'),
         'isTransferSchool': SelectField('Loại tiếp nhận', choices=[(False, 'Chuyển cấp'), (True, 'Chuyển trường')], coerce=bool),

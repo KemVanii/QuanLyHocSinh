@@ -249,7 +249,7 @@ def getStudentListByClassId(classId):
     return (db.session.query(Student)
             .join(ScoreBoard)
             .filter(ScoreBoard.class_id == classId,
-                    ScoreBoard.status == True)
+                    ScoreBoard.status is True)
             .all())
 
 
@@ -358,52 +358,6 @@ def get_grade():
     return db.session.query(Grade).all()
 
 
-def types_stats(classroom, grade):
-    # viet phan loai tung hoc sinh trong khoi, xuat khoi, loai hs, so luong)
-    query = db.session.query(Grade.name, Student.name, Class.name, func.round(func.avg(Score.value), 2)) \
-        .join(Class) \
-        .join(ScoreBoard) \
-        .join(Student) \
-        .join(Subject) \
-        .join(Score) \
-        .group_by(Grade.name, Student.name, Class.name) \
-        .order_by(asc(Grade.name), desc(func.round(func.avg(Score.value), 2)))
-
-    # query = db.session.query(Grade.name, Student.name, Class.name, func.round(calSemesterAverage(Score.value), 2)) \
-    #     .join(Class) \
-    #     .join(ScoreBoard) \
-    #     .join(Student) \
-    #     .join(Subject) \
-    #     .join(Score) \
-    #     .group_by(Grade.name, Student.name, Class.name) \
-    #     .order_by(asc(Grade.name), desc(func.round(calSemesterAverage(Score.value), 2)))
-
-    if classroom:
-        query = query.filter(Class.name == classroom)
-    if grade:
-        query = query.filter(Grade.name == grade)
-
-    result = query.all()
-
-    result_info = defaultdict(lambda: defaultdict(int))
-
-    for grade_name, _, _, avg_score in result:
-        grade_type = type_sort_avg_score(avg_score)
-        result_info[grade_name][grade_type] += 1
-
-    result_summary = [
-        (grade_name, grade_type, count)
-        for grade_name, grade_data in result_info.items()
-        for grade_type, count in grade_data.items()
-    ]
-
-    return result_summary
-
-
-def types_stats_by_grade():
-    pass
-
-
 def scores_stats(score_min, score_max, semester, subject, classroom):
     query = db.session.query(func.round(Score.value, 0), func.count(func.round(Score.value, 0))) \
         .join(ScoreBoard) \
@@ -427,74 +381,85 @@ def scores_stats(score_min, score_max, semester, subject, classroom):
     return query.all()
 
 
-def get_scoreboards_by_student_semester(student, semester):
-    query = db.session.query(ScoreBoard).join(Student).join(Semester).filter(Student.id == student,
-                                                                             Semester.name == semester).all()
-
-    return query
-
-
 def get_class_by_name(name):
     return db.session.query(Class).filter(Class.name == name).first()
 
 
-def grade_type_stats_by_class(classroom_name):
+def get_students_by_class_semester(class_id, semester):
+    return db.session.query(Student).join(ScoreBoard).join(Semester).filter(ScoreBoard.class_id == class_id,
+                                                                            Semester.name == semester).all()
+
+
+def get_scoreboards_by_student(student_id, semester):
+    return db.session.query(ScoreBoard).join(Semester).filter(ScoreBoard.student_id == student_id,
+                                                              Semester.name == semester).all()
+
+
+def grade_type_stats_by_class(classroom_name, semester):
     classroom = get_class_by_name(classroom_name)
-    students_in_class = getStudentListByClassId(classroom.id)
-    grade = getGradeByClassId(classroom.id)
-    semester = "HK2_24-25"
-    classroom = getClass(classroom.id)
+    students_in_class = get_students_by_class_semester(classroom.id, semester)
+    total_coefficient = 0
+    avg_score = 0
     result = {}
     if students_in_class:
         for s in students_in_class:
-            score_boards = get_scoreboards_by_student_semester(s.id, semester)
+            score_boards = get_scoreboards_by_student(s.id, semester)
             print(score_boards)
-            total_coefficient = 0
-            avg_score = 0
-            if score_boards is not None:
+            if score_boards:
                 for score_board in score_boards:
+                    if len(score_board.scores) == 0:
+                        return {}
                     avg_score = avg_score + calSemesterAverage(score_board.scores)
                     total_coefficient = total_coefficient + 1
                 result_avg_score = avg_score / total_coefficient
                 grade_type = type_sort_avg_score(result_avg_score)
                 result[s.id] = {
                     "semester": semester,
-                    "grade": grade.name,
+                    "grade": classroom.grade_id,
                     "class": classroom.name,
                     "student_id": s.id,
                     "student_name": s.name,
                     "avg_score": round(result_avg_score, 2),
                     "grade_type": grade_type
                 }
+                total_coefficient = 0
+                avg_score = 0
 
     return result
 
 
-def get_students_in_grade(grade_name):
-    return db.session.query(Student).join(ScoreBoard).join(Class).join(Grade).filter(Grade.name == grade_name)
+def get_grade_by_name(grade_name):
+    return db.session.query(Grade).filter(Grade.name == grade_name).first()
 
 
-def get_classes_by_student_id(student_id):
-    return db.session.query(Class).join(ScoreBoard).join(Student).filter(Student.id == student_id).first()
+def get_students_by_grade_semester(grade_id, semester):
+    return db.session.query(Student).join(ScoreBoard).join(Class).join(Semester).filter(Class.grade_id == grade_id,
+                                                                                        Semester.name == semester).all()
 
 
-def grade_type_stats_by_grade(grade_name):
-    students_in_grade = get_students_in_grade(grade_name)
-    grade = db.session.query(Grade).filter(Grade.name == grade_name).first()
-    semester = "HK1_23-24"
+def get_class_by_student(student_id):
+    return db.session.query(Class).join(ScoreBoard).filter(ScoreBoard.student_id == student_id).first()
+
+
+def grade_type_stats_by_grade(grade_name, semester):
+    grade = get_grade_by_name(grade_name)
+    students_in_grade = get_students_by_grade_semester(grade.id, semester)
     result = {}
+    total_coefficient = 0
+    avg_score = 0
     if students_in_grade:
         for s in students_in_grade:
-            score_boards = get_scoreboards_by_student_semester(s.id, semester)
-            classroom = get_classes_by_student_id(s.id)
-            total_coefficient = 0
-            avg_score = 0
-            if score_boards is not None:
+            score_boards = get_scoreboards_by_student(s.id, semester)
+            print(score_boards)
+            if score_boards:
                 for score_board in score_boards:
+                    if len(score_board.scores) == 0:
+                        return {}
                     avg_score = avg_score + calSemesterAverage(score_board.scores)
                     total_coefficient = total_coefficient + 1
                 result_avg_score = avg_score / total_coefficient
                 grade_type = type_sort_avg_score(result_avg_score)
+                classroom = getClass(score_board.class_id)
                 result[s.id] = {
                     "semester": semester,
                     "grade": grade.name,
@@ -504,18 +469,19 @@ def grade_type_stats_by_grade(grade_name):
                     "avg_score": round(result_avg_score, 2),
                     "grade_type": grade_type
                 }
+                total_coefficient = 0
+                avg_score = 0
 
     return result
 
 
-def grade_type_stats(classroom_name, grade_name):
+def grade_type_stats(classroom_name, grade_name, semester_name):
     result = {}
-    if classroom_name:
-        result = grade_type_stats_by_class(classroom_name)
-    if grade_name:
-        result = grade_type_stats_by_grade(grade_name)
+    if classroom_name and semester_name:
+        result = grade_type_stats_by_class(classroom_name, semester_name)
+    if grade_name and semester_name:
+        result = grade_type_stats_by_grade(grade_name, semester_name)
 
-    print(result)
     return result
 
 
