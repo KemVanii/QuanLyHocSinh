@@ -236,13 +236,11 @@ def nhapdiem():
         inputHocki = request.form.get('inputHocki')
         score_boards = dao.getScoreBoardByClass(inputIdLop, current_user.subject_id, inputHocki)
         score_boards_filter = []
-        print(score_boards)
         for score_board in score_boards:
             if len(score_board[0].scores) == 0:
                 score_boards_filter.append(score_board)
         score_boards = score_boards_filter
         dataScores = createDataScoresfromReqForm(request, score_boards)
-        print(dataScores)
         dao.insert_score(dataScores)
         return redirect(url_for('nhapdiem'))
 

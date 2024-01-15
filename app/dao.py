@@ -218,7 +218,7 @@ def getStudentListByClassId(classId):
     return (db.session.query(Student)
             .join(ScoreBoard)
             .filter(ScoreBoard.class_id == classId,
-                    ScoreBoard.status is True)
+                    ScoreBoard.status == True)
             .all())
 
 
@@ -383,7 +383,6 @@ def grade_type_stats_by_class(classroom_name, semester):
     if students_in_class:
         for s in students_in_class:
             score_boards = get_scoreboards_by_student(s.id, semester)
-            print(score_boards)
             if score_boards:
                 for score_board in score_boards:
                     if len(score_board.scores) == 0:
@@ -429,7 +428,6 @@ def grade_type_stats_by_grade(grade_name, semester):
     if students_in_grade:
         for s in students_in_grade:
             score_boards = get_scoreboards_by_student(s.id, semester)
-            print(score_boards)
             if score_boards:
                 for score_board in score_boards:
                     if len(score_board.scores) == 0:
