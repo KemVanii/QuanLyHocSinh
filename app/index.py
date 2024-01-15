@@ -212,13 +212,14 @@ def thongke():
     classroom = request.args.get('classroom')
     classroom_pie = request.args.get('classroomPie')
     grade_pie = request.args.get('gradePie')
+    semester_pie = request.args.get('semesterPie')
     funcs = dao.load_function(current_user.user_role)
     return render_template("thongKe.html", funcs=funcs,
                            score_stats=dao.scores_stats(score_min=score_min, score_max=score_max,
                                                         semester=semester,
                                                         subject=subject,
                                                         classroom=classroom),
-                           grade_type_stats=dao.grade_type_stats(classroom_name=classroom_pie, grade_name=grade_pie),
+                           grade_type_stats=dao.grade_type_stats(classroom_name=classroom_pie, grade_name=grade_pie, semester_name=semester_pie),
                            semesters=dao.get_semester_by_school_year(school_year=semester),
                            subjects=dao.get_subject(),
                            classrooms=dao.get_class_by_school_year(school_year=app.config['school_year']),

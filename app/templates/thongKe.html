@@ -93,6 +93,16 @@
                 </datalist>
             </div>
 
+            <div class="dropdown col-md-6 col-xs-6">
+                <label for="semesterPie" class="form-label">Chọn học kì: </label>
+                <input class="form-control" list="semestersPie" name="semesterPie" id="semesterPie">
+                <datalist id="semestersPie">
+                    {% for s in semesters %}
+                    <option value="{{ s.name }}">
+                        {% endfor %}
+                </datalist>
+            </div>
+
             <table class="table">
                 <tr>
                     <th>Học kì</th>
