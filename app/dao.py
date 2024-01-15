@@ -4,6 +4,7 @@ from collections import defaultdict
 from app import db
 from app.util import *
 from app.models import ScoreBoard, Score
+from app.util import filter_student, get_previous_school_year
 import random
 
 
@@ -77,16 +78,23 @@ def load_function(user_role):
 
 
 def getStudentsNotHasClass(limit=None):
-    query = db.session.query(Student).filter(Student.score_boards == None)
+    query = (db.session.query(Student)
+             .filter(Student.score_boards is None,
+                     Student.isTransferSchool == False))
     if limit:
         query = query.limit(limit)
     return query.all()
 
 
+def getStudentsTranferSchool():
+    return db.session.query(Student).filter(Student.score_boards == None,
+                                            Student.isTransferSchool == True).all()
+
+
 def getStudentsRemoveClass(grade, schoolYear):
     return (db.session.query(Student)
             .join(ScoreBoard)
-            .join(Class)
+            .join(Class) #for join grade
             .join(Grade)
             .join(Semester)
             .filter(Grade.name == grade,
@@ -144,6 +152,15 @@ def getStudentsAlreadyStudyGradeInSchoolYear(grade, schoolYear):
             .all())
 
 
+def getStudentsPassOrFailInGradeInPreSchoolYear(grade, currSchoolYear, result):
+    prevSchoolYear = get_previous_school_year(currSchoolYear)
+    StudentsAlreadyStudy = getStudentsAlreadyStudyGradeInSchoolYear(grade, prevSchoolYear)
+    prevSemesters = getSemestersBySchoolYear(prevSchoolYear)
+    currSemester = getSemestersBySchoolYear(currSchoolYear)
+    return filter_student(StudentsAlreadyStudy, prevSemesters,
+                          currSemester, result)
+
+
 def getScoreBoardByClassStudentYear(className, studentId, currentSchoolYear):
     score_boards = (db.session.query(ScoreBoard)
                     .join(Class)
@@ -184,15 +201,14 @@ def getSemestersBySchoolYear(schoolYear):
             .all())
 
 
-def getClassesByTeacher(teacherId, schoolYear, kw=None):
+def getClassesByTeacherAndSchoolYear(teacherId, schoolYear, kw=None):
     list_class = (db.session.query(TeacherClass, Class.name, Class.size, Class.id)
                   .join(Class)
                   .join(ScoreBoard)
                   .join(Semester)
                   .filter(TeacherClass.teacher_id == teacherId,
-                          Semester.name.contains(schoolYear),
-                          ScoreBoard.scores != None)
-                  )
+                          Semester.name.contains(schoolYear))
+                  .order_by(Class.name))
     if kw:
         list_class = list_class.filter(Class.name.contains(kw))
     return list_class.all()
@@ -219,17 +235,6 @@ def get_class_by_school_year(school_year):
     classes = getClassByGradeAndSchoolYear(grade=grade.name, schoolYear=school_year)
 
     return classes
-
-
-def getClassesByTeacherAndCurrentSchoolYear(teacherId, currentSchoolYear="HK1_23-24"):
-    return (db.session.query(TeacherClass, Class.name, Class.size)
-            .join(Class)
-            .join(ScoreBoard)
-            .join(Semester)
-            .filter(TeacherClass.teacher_id == teacherId,
-                    Semester.name.contains(currentSchoolYear))
-            .all())
-
 
 def getClassById(classId):
     return (db.session.query(Class, Grade.name)
@@ -316,7 +321,6 @@ def createNewClassGrade(className, students, grade, currentSchoolYear):
     subjects = getAllSubject()
     semesters = db.session.query(Semester).filter(Semester.name.contains(currentSchoolYear)).all()
     for student in students:
-        print(student)
         score_boards = (db.session.query(ScoreBoard)
                         .join(Semester)
                         .filter(ScoreBoard.student_id == student.id,

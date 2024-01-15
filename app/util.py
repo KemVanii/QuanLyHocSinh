@@ -91,3 +91,15 @@ def type_sort_avg_score(avg_score):
         return "Trung bình"
     else:
         return "Yếu"
+
+def createDataScoresfromReqForm(request, score_boards):
+    dataScores = []
+    for score_board in score_boards:
+        dataScore = {
+            'score_board_id': score_board.id,
+            '15p': request.form.getlist(f'15p{score_board.id}[]'),
+            '45p': request.form.getlist(f'45p{score_board.id}[]'),
+            'ck': request.form.get(f'ck{score_board.id}')
+        }
+        dataScores.append(dataScore)
+    return dataScores

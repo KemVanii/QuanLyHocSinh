@@ -39,14 +39,14 @@
             {% for i in range(0, inputCot15p) %}
             <th class="text-center" scope="col">
                 <span>15p</span>
-                <button type="submit" class="ml-1 btn btn-secondary p-1" onclick="deleteColumn(this, '15p')">Xóa
+                <button type="button" class="ml-1 btn btn-secondary p-1" onclick="deleteColumn(this, '15p')">Xóa
                 </button>
             </th>
             {% endfor %}
             {% for i in range(0, inputCot45p) %}
             <th class="text-center" scope="col">
                 <span>45p</span>
-                <button type="submit" class="ml-1 btn btn-secondary p-1" onclick="deleteColumn(this, '45p')">Xóa
+                <button type="button" class="ml-1 btn btn-secondary p-1" onclick="deleteColumn(this, '45p')">Xóa
                 </button>
             </th>
             {% endfor %}
@@ -97,7 +97,7 @@
                 <input type="hidden" name="inputTenLop" value="{{inputTenLop}}">
                 <input type="hidden" name="inputTenMon" value="{{inputTenMon}}">
                 <input type="hidden" name="inputHocki" value="{{inputHocki}}">
-                <button type="submit" class="btn btn-primary">Lưu</button>
+                <button id=btnLuuBangDiem" type="submit" class="btn btn-primary">Lưu</button>
             </div>
         </div>
     </div>

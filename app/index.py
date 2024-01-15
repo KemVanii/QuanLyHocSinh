@@ -5,7 +5,8 @@ from flask_login import login_user, logout_user, current_user
 from app import app, login
 from app.models import *
 from app.auth import restrict_to_roles
-from app.util import isPass, calSemesterAverage, loadPolicies, filter_student, get_previous_school_year
+from app.util import isPass, calSemesterAverage, loadPolicies, filter_student, get_previous_school_year, \
+    createDataScoresfromReqForm
 from app.mailService import send_email
 import dao
 
@@ -22,7 +23,7 @@ def index():
     funcs = dao.load_function(current_user.user_role)
     classes = []
     if current_user.user_role == UserRoleEnum.Teacher:
-        classes = dao.getClassesByTeacherAndCurrentSchoolYear(current_user.id, app.config["school_year"])
+        classes = dao.getClassesByTeacherAndSchoolYear(current_user.id, app.config["school_year"])
     return render_template('index.html', funcs=funcs, classes=classes, school_year=app.config["school_year"],
                            user_role=UserRoleEnum.Employee)
 
@@ -54,12 +55,12 @@ def login():
 @app.route("/logout")
 def logout():
     logout_user()
-    return redirect(url_for("index"))
+    return redirect(url_for("login"))
 
 
 @app.route('/tiepnhanhocsinh')
-@restrict_to_roles([UserRoleEnum.Employee])
-def tiepNhanHocSinh():
+@restrict_to_roles([UserRoleEnum.Employee], next_url='tiepnhanhocsinh')
+def tiepnhanhocsinh():
     return redirect('/student')
 
 
@@ -71,15 +72,10 @@ def lapdanhsach():
         size = int(request.form.get("inputSize"))
         grade = int(request.form.get("inputGrade"))
         newNameClass = f'{grade}/{len(dao.getClassByGradeAndSchoolYear(grade, currSchoolYear)) + 1}'
-        prevSchoolYear = get_previous_school_year(currSchoolYear)
-        prevSemesters = dao.getSemestersBySchoolYear(prevSchoolYear)  # get semester of previous schoolYear
-        currSemester = dao.getSemestersBySchoolYear(currSchoolYear)
         studentsRemoveClass = dao.getStudentsRemoveClass(grade, currSchoolYear)
-        StudentsAlreadyStudy = dao.getStudentsAlreadyStudyGradeInSchoolYear(grade, prevSchoolYear)
-        studentsFailThisGradeInPrevSchoolYear = filter_student(StudentsAlreadyStudy,
-                                                               prevSemesters,
-                                                               currSemester,
-                                                               False)
+        studentsFailThisGradeInPrevSchoolYear = (
+            dao.getStudentsPassOrFailInGradeInPreSchoolYear(grade, currSchoolYear,
+                                                            False))
         if grade == 10:
             studentNotHasClass = dao.getStudentsNotHasClass()
             students = (studentNotHasClass
@@ -87,11 +83,11 @@ def lapdanhsach():
                         + studentsFailThisGradeInPrevSchoolYear)
 
         else:
-            StudentsAlreadyStudy = dao.getStudentsAlreadyStudyGradeInSchoolYear(grade - 1, prevSchoolYear)
-            studentsPassPreGradeInPrevSchoolYear = filter_student(StudentsAlreadyStudy,
-                                                                  prevSemesters,
-                                                                  currSemester,
-                                                                  True)
+
+            studentsPassPreGradeInPrevSchoolYear = (
+                dao.getStudentsPassOrFailInGradeInPreSchoolYear(grade - 1,
+                                                                currSchoolYear,
+                                                                True))
             students = (studentsPassPreGradeInPrevSchoolYear
                         + studentsRemoveClass
                         + studentsFailThisGradeInPrevSchoolYear)
@@ -107,15 +103,10 @@ def lapdanhsach():
     newNameClass = ''
     if size:
         newNameClass = f'{grade}/{len(dao.getClassByGradeAndSchoolYear(grade, currSchoolYear)) + 1}'
-        prevSchoolYear = get_previous_school_year(currSchoolYear)
-        prevSemesters = dao.getSemestersBySchoolYear(prevSchoolYear)  # get semester of previous schoolYear
-        currSemester = dao.getSemestersBySchoolYear(currSchoolYear)
         studentsRemoveClass = dao.getStudentsRemoveClass(grade, currSchoolYear)
-        StudentsAlreadyStudy = dao.getStudentsAlreadyStudyGradeInSchoolYear(grade, prevSchoolYear)
-        studentsFailThisGradeInPrevSchoolYear = filter_student(StudentsAlreadyStudy,
-                                                               prevSemesters,
-                                                               currSemester,
-                                                               False)
+        studentsFailThisGradeInPrevSchoolYear = (
+            dao.getStudentsPassOrFailInGradeInPreSchoolYear(grade, currSchoolYear,
+                                                            False))
         if grade == 10:
             studentNotHasClass = dao.getStudentsNotHasClass()
             students = (studentNotHasClass
@@ -123,11 +114,10 @@ def lapdanhsach():
                         + studentsFailThisGradeInPrevSchoolYear)
 
         else:
-            StudentsAlreadyStudy = dao.getStudentsAlreadyStudyGradeInSchoolYear(grade - 1, prevSchoolYear)
-            studentsPassPreGradeInPrevSchoolYear = filter_student(StudentsAlreadyStudy,
-                                                                  prevSemesters,
-                                                                  currSemester,
-                                                                  True)
+            studentsPassPreGradeInPrevSchoolYear = (
+                dao.getStudentsPassOrFailInGradeInPreSchoolYear(grade - 1,
+                                                                currSchoolYear,
+                                                                True))
             students = (studentsPassPreGradeInPrevSchoolYear
                         + studentsRemoveClass
                         + studentsFailThisGradeInPrevSchoolYear)
@@ -144,10 +134,10 @@ def lapdanhsach():
 @restrict_to_roles([UserRoleEnum.Employee], next_url='dieuchinhdanhsach')
 def dieuchinhdanhsach():
     funcs = dao.load_function(current_user.user_role)
-    currentSchoolYear = app.config['school_year']
+    currSchoolYear = app.config['school_year']
     grades = dao.get_grade()
     inputGrade = request.args.get('inputGrade') or 10
-    classes = dao.getClassByGradeAndSchoolYear(inputGrade, currentSchoolYear)
+    classes = dao.getClassByGradeAndSchoolYear(inputGrade, currSchoolYear)
     return render_template("dieuChinhDanhSach.html",
                            funcs=funcs, grades=grades,
                            inputGrade=inputGrade, classes=classes)
@@ -169,39 +159,39 @@ def dieuchinhdanhsachlop(idLop):
     funcs = dao.load_function(current_user.user_role)
     grade = int(dao.getGradeByClassId(idLop).name)
     cla = dao.getClass(idLop)
+    # Lấy danh sách học sinh thuộc lớp đó
     studentsInClass = dao.getStudentListByClassId(idLop)
-    prevSchoolYear = get_previous_school_year(currSchoolYear)
+    # Lấy học danh sách hoc sinh chuyển lớp
     studentsForChangeClass = dao.getStudentsHasClass(grade, currSchoolYear, cla.name)
+    # Lấy học danh sách học sinh chuyển trường
+    studentsTransferSchool = dao.getStudentsTranferSchool()
+    # Lấy học sinh chuyển cấp
     studentNotHasClass = dao.getStudentsNotHasClass()
-    prevSemesters = dao.getSemestersBySchoolYear(prevSchoolYear)
-    currSemester = dao.getSemestersBySchoolYear(currSchoolYear)
+    # Lấy hoc sinh bị xóa khỏi lớp
     studentsRemoveClass = dao.getStudentsRemoveClass(grade, currSchoolYear)
-    StudentsAlreadyStudy = dao.getStudentsAlreadyStudyGradeInSchoolYear(grade, prevSchoolYear)
-    studentsFailThisGradeInPrevSchoolYear = filter_student(StudentsAlreadyStudy,
-                                                           prevSemesters,
-                                                           currSemester,
-                                                           False)
+    # Lấy học sinh đã học khối này ở kì trước nhưng bị rớt
+    studentsFailThisGradeInPrevSchoolYear = (
+        dao.getStudentsPassOrFailInGradeInPreSchoolYear(grade, currSchoolYear,
+                                                        False))
     maxSize = int(app.config['max_class_size'])
     if grade == 10:
-
         students = (studentNotHasClass
                     + studentsRemoveClass
                     + studentsFailThisGradeInPrevSchoolYear)
 
     else:
-        StudentsAlreadyStudy = dao.getStudentsAlreadyStudyGradeInSchoolYear(grade - 1, prevSchoolYear)
-        studentsPassPreGradeInPrevSchoolYear = filter_student(StudentsAlreadyStudy,
-                                                              prevSemesters,
-                                                              currSemester,
-                                                              True)
-        students = (studentNotHasClass
-                    + studentsPassPreGradeInPrevSchoolYear
+        studentsPassPreGradeInPrevSchoolYear = (
+            dao.getStudentsPassOrFailInGradeInPreSchoolYear(grade - 1,
+                                                            currSchoolYear,
+                                                            True))
+        students = (studentsPassPreGradeInPrevSchoolYear
                     + studentsRemoveClass
                     + studentsFailThisGradeInPrevSchoolYear)
     return render_template("dieuChinhDanhSachlop.html",
                            funcs=funcs, studentsInClass=studentsInClass,
                            studentsNotInClass=students,
                            studentsForChangeClass=studentsForChangeClass,
+                           studentsTransferSchool=studentsTransferSchool,
                            cla=cla, idLop=idLop, maxSize=maxSize)
 
 
@@ -255,15 +245,7 @@ def nhapdiem():
             if len(score_board[0].scores) == 0:
                 score_boards_filter.append(score_board)
         score_boards = score_boards_filter
-        dataScores = []
-        for score_board in score_boards:
-            dataScore = {
-                'score_board_id': score_board.id,
-                '15p': request.form.getlist(f'15p{score_board.id}[]'),
-                '45p': request.form.getlist(f'45p{score_board.id}[]'),
-                'ck': request.form.get(f'ck{score_board.id}')
-            }
-            dataScores.append(dataScore)
+        dataScores = createDataScoresfromReqForm(request, score_boards)
         dao.insert_score(dataScores)
         return redirect(url_for('nhapdiem'))
 
@@ -273,7 +255,7 @@ def nhapdiem():
     inputCot15p = int(request.args.get('inputCot15p') or '1')
     inputCot45p = int(request.args.get('inputCot45p') or '1')
     inputHocki = request.args.get('inputHocki')
-    classes = dao.getClassesByTeacherAndCurrentSchoolYear(current_user.id, currentSchoolYear)
+    classes = dao.getClassesByTeacherAndSchoolYear(current_user.id, currentSchoolYear)
     score_boards = []
     idLop = None
     if inputTenLop and inputHocki:
@@ -331,7 +313,8 @@ def sendScoreViaEmail():
                 'dtb': round(calSemesterAverage(score_board[0].scores), 1)
             }
             dataScores.append(dataScore)
-    send_email(dataScores, 'Toán', hk)
+    subject = dao.getSubjectByUser(current_user.id).name
+    send_email(dataScores, subject, hk)
     return jsonify({'status': 'ok', 'message': 'Data sent successfully'})
 
 
@@ -341,7 +324,7 @@ def chinhsuadiem():
     funcs = dao.load_function(current_user.user_role)
     currentSchoolYear = app.config['school_year']
     kw = request.args.get('kw') or ''
-    list_class = dao.getClassesByTeacher(current_user.id, currentSchoolYear, kw)
+    list_class = dao.getClassesByTeacherAndSchoolYear(current_user.id, currentSchoolYear, kw)
     subject = dao.getSubjectByUser(current_user.id)
     return render_template("chinhsuadiem.html",
                            subject=subject, kw=kw,
@@ -359,15 +342,7 @@ def chinhsuadiemLop(idLop):
         inputTenMon = request.form.get('inputTenMon')
         inputHocki = request.form.get('inputHocki')
         score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, inputHocki, currentSchoolYear)
-        dataScores = []
-        for score_board in score_boards:
-            dataScore = {
-                'score_board_id': score_board.id,
-                '15p': request.form.getlist(f'15p{score_board.id}[]'),
-                '45p': request.form.getlist(f'45p{score_board.id}[]'),
-                'ck': request.form.get(f'ck{score_board.id}')
-            }
-            dataScores.append(dataScore)
+        dataScores = createDataScoresfromReqForm(request, score_boards)
         dao.update_score(dataScores)
         return redirect(url_for('chinhsuadiem'))
 
@@ -403,15 +378,11 @@ def chinhsuadiemLop(idLop):
 @restrict_to_roles([UserRoleEnum.Teacher], next_url='xemdiem')
 def xemdiem():
     funcs = dao.load_function(current_user.user_role)
-    currentSchoolYear = app.config['school_year']
-    inputTenMon = dao.getSubjectByUser(current_user.id).name
     semesters = dao.getSemesterTeacher(current_user.id)  # Lấy các học kì 1 ra
-
     schoolYears = [semester.name.split('_')[1] for semester in semesters]  # lọc lấy niên học
     schoolYears = sorted(schoolYears, key=lambda x: int(x.split('-')[0]), reverse=True)  # sắp xếp niên học giảm dần
     inputNienHoc = request.args.get('inputNienHoc') or schoolYears[0]
-    kw = ''
-    list_class = dao.getClassesByTeacher(current_user.id, inputNienHoc, kw)
+    list_class = dao.getClassesByTeacherAndSchoolYear(current_user.id, inputNienHoc)
     return render_template("xemdiem.html", funcs=funcs,
                            inputNienHoc=inputNienHoc, schoolYears=schoolYears,
                            list_class=list_class)
@@ -426,21 +397,22 @@ def xemdiemlop(idLop, hk):
     semesters = dao.getSemesterByClassId(idLop)
     nienhoc = semesters[0].name.split('_')[1]
     score_boards = dao.getScoreBoardByClass(idLop, current_user.subject_id, f"HK{hk}")
-    print(score_boards)
 
     dataScores = []
-    if score_boards and score_boards[0][0].scores:
-        for score_board in score_boards:
-            dataScore = {
-                'score_board_id': score_board.id,
-                'student_name': score_board.name,
-                'student_dob': score_board.dob,
-                '15p': [score.value for score in score_board[0].scores if score.type == '15p'],
-                '45p': [score.value for score in score_board[0].scores if score.type == '45p'],
-                'ck': [score.value for score in score_board[0].scores if score.type == 'ck'][0],
-                'dtb': round(calSemesterAverage(score_board[0].scores), 1)
-            }
-            dataScores.append(dataScore)
+    for score_board in score_boards:
+        if len(score_board[0].scores) == 0:
+            dataScores = []
+            break
+        dataScore = {
+            'score_board_id': score_board.id,
+            'student_name': score_board.name,
+            'student_dob': score_board.dob,
+            '15p': [score.value for score in score_board[0].scores if score.type == '15p'],
+            '45p': [score.value for score in score_board[0].scores if score.type == '45p'],
+            'ck': [score.value for score in score_board[0].scores if score.type == 'ck'][0],
+            'dtb': round(calSemesterAverage(score_board[0].scores), 1)
+        }
+        dataScores.append(dataScore)
     cot15p = len(dataScores[0]['15p']) if len(dataScores) else 0
     cot45p = len(dataScores[0]['45p']) if len(dataScores) else 0
     return render_template("xemdiemlop.html", funcs=funcs,
