@@ -14,7 +14,7 @@ def isPass(score_boards):
         if subject_id not in grouped_subjects:
             grouped_subjects[subject_id] = []
         grouped_subjects[subject_id].append(score_board)
-    for subject, sb in grouped_subjects.items():
+    for subject, sb in gouped_subjects.items():
         if len(sb[0].scores) == 0 or len(sb[1].scores) == 0:
             return False
         average1 = calSemesterAverage(sb[0].scores)

@@ -79,7 +79,7 @@ def load_function(user_role):
 
 def getStudentsNotHasClass(limit=None):
     query = (db.session.query(Student)
-             .filter(Student.score_boards is None,
+             .filter(Student.score_boards == None,
                      Student.isTransferSchool == False))
     if limit:
         query = query.limit(limit)
@@ -313,10 +313,14 @@ def createNewClassGrade(className, students, grade, currentSchoolYear):
             for score_board in score_boards:
                 score_board.class_id = newClass.id
                 score_board.status = True
+
     # Tạo danh sách giáo viên bộ môn cho lớp đó
     teachers = db.session.query(User).filter(User.user_role == UserRoleEnum.Teacher).all()
     for subject in subjects:
-        filterTeacherBySubject = [teacher for teacher in teachers if teacher.subject_id == subject.id]
+        filterTeacherBySubject = []
+        for teacher in teachers:
+            if teacher.subject_id == subject.id:
+                filterTeacherBySubject.append(teacher)
         newTeacherClass = TeacherClass(teacher_id=random.choice(filterTeacherBySubject).id, class_id=newClass.id)
         db.session.add(newTeacherClass)
     db.session.commit()
