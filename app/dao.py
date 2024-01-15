@@ -161,15 +161,6 @@ def getStudentsPassOrFailInGradeInPreSchoolYear(grade, currSchoolYear, result):
                           currSemester, result)
 
 
-def getScoreBoardByClassStudentYear(className, studentId, currentSchoolYear):
-    score_boards = (db.session.query(ScoreBoard)
-                    .join(Class)
-                    .join(Student)
-                    .join(Semester)
-                    .filter(Class.name == className, Student.id == studentId,
-                            Semester.name.contains(currentSchoolYear)).all())
-    return score_boards
-
 
 def getSubjectByClassAndYear(className, currentSchoolYear):
     subjects = (db.session.query(Subject)
@@ -558,12 +549,6 @@ def getSemesterTeacher(TeaderId):
             .filter(TeacherClass.teacher_id == TeaderId,
                     Semester.name.contains('HK1'))
             .all())
-
-# def getScore(ScoreBoard_id):
-#     list_Score=db.session.query(ScoreBoard).join(Score).filter(Score.id==ScoreBoard_id).all()
-#     return list_Score
-# def getScoreBoardByClassID(ClassID):
-#     ScoreBoardID=db.session.query(ScoreBoard).join(Class).filter(Class.id==ClassID).first()
 
 
 # read json and write json

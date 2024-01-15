@@ -212,11 +212,7 @@ def thongke():
     classroom = request.args.get('classroom')
     classroom_pie = request.args.get('classroomPie')
     grade_pie = request.args.get('gradePie')
-
-    funcs = []
-
-    if current_user.is_authenticated:
-        funcs = dao.load_function(current_user.user_role)
+    funcs = dao.load_function(current_user.user_role)
     return render_template("thongKe.html", funcs=funcs,
                            score_stats=dao.scores_stats(score_min=score_min, score_max=score_max,
                                                         semester=semester,
@@ -261,6 +257,7 @@ def nhapdiem():
         score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, inputHocki, currentSchoolYear)
         if len(score_boards) != 0:
             idLop = score_boards[0].class_id
+        # Lọc các học sinh chưa có điểm
         score_boards_filter = []
         for score_board in score_boards:
             if len(score_board[0].scores) == 0:
