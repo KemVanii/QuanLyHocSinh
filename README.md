@@ -1,34 +1,9 @@
-aiohttp==3.9.1
-aiohttp-retry==2.8.3
-aiosignal==1.3.1
-annotated-types==0.6.0
-attrs==23.2.0
-blinker==1.7.0
-certifi==2023.11.17
-cffi==1.16.0
-charset-normalizer==3.3.2
-click==8.1.7
-colorama==0.4.6
-cryptography==41.0.7
-Deprecated==1.2.14
-Flask==3.0.0
-Flask-Login==0.6.3
-frozenlist==1.4.1
-idna==3.6
-itsdangerous==2.1.2
-Jinja2==3.1.3
-MarkupSafe==2.1.3
-multidict==6.0.4
-pycparser==2.21
-pydantic==2.5.3
-pydantic_core==2.14.6
-PyJWT==2.8.0
-pyotp==2.9.0
-pytz==2023.3.post1
-requests==2.31.0
-typing_extensions==4.9.0
-urllib3==2.1.0
-vonage-jwt==1.1.0
-Werkzeug==3.0.1
-wrapt==1.16.0
-yarl==1.9.4
+QuanLyHocSinh
+Bài tập lớn công nghệ phần mềm. Đề tài là quản lý học sinh
+
+Cách setup:
+
+Cài môi trường ảo.
+Sử dụng lẹnh pip install -r requirements.txt
+Chạy models
+Chạy index -> Click vào dòng địa chỉ local
