@@ -9,6 +9,7 @@ from app.util import isPass, calSemesterAverage, loadPolicies, filter_student, g
     createDataScoresfromReqForm
 from app.mailService import send_email
 import dao
+from datetime import timedelta
 
 
 @login.user_loader
@@ -40,7 +41,7 @@ def login():
             err = "Tài khoản đã bị xóa."
         if err:
             return render_template("login.html", next_url=next_url, err=err)
-        login_user(user)
+        login_user(user, duration=timedelta(minutes=5))
         loadPolicies(app)
         if next_url is not None:
             return redirect(url_for(next_url))
@@ -218,7 +219,8 @@ def thongke():
                                                         semester=semester,
                                                         subject=subject,
                                                         classroom=classroom),
-                           grade_type_stats=dao.grade_type_stats(classroom_name=classroom_pie, grade_name=grade_pie, semester_name=semester_pie),
+                           grade_type_stats=dao.grade_type_stats(classroom_name=classroom_pie, grade_name=grade_pie,
+                                                                 semester_name=semester_pie),
                            semesters=dao.get_semester(),
                            subjects=dao.get_subject(),
                            classrooms=dao.get_class_by_school_year(school_year=app.config['school_year']),
