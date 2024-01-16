@@ -1,25 +1,5 @@
 import pyotp
-from app import mailService
-from vonage import Client, Sms
 
-# Thông tin tài khoản Nexmo
-client = Client(key="7e5dddec", secret="YETOQbF0365stjCm")
-sms = Sms(client)
-
-
-def send_sms_nexmo(phone_number, otp):
-    responseData = sms.send_message(
-        {
-            "from": "Vonage APIs",
-            "to": phone_number,
-            "text": f'Ma otp cua ban la: {otp}. Vui long khong chia se cho nguoi khac',
-        }
-    )
-
-    if responseData["messages"][0]["status"] == "0":
-        print("Message sent successfully.")
-    else:
-        print(f"Message failed with error: {responseData['messages'][0]['error-text']}")
 
 
 def generate_otp():
