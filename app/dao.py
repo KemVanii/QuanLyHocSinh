@@ -468,15 +468,15 @@ def grade_type_stats(classroom_name, grade_name, semester_name):
 
 def insert_score(dataScores):
     for dataScore in dataScores:
-        for i in range(len(dataScore['15p'])):
-            s = Score(value=dataScore['15p'][i], type='15p', score_board_id=dataScore['score_board_id'])
+        for value in dataScore['15p']:
+            s = Score(value=value, type='15p', score_board_id=dataScore['score_board_id'])
             db.session.add(s)
-        for i in range(len(dataScore['45p'])):
-            s = Score(value=dataScore['45p'][i], type='45p', score_board_id=dataScore['score_board_id'])
+        for value in dataScore['45p']:
+            s = Score(value=value, type='45p', score_board_id=dataScore['score_board_id'])
             db.session.add(s)
         s = Score(value=dataScore['ck'], type='ck', score_board_id=dataScore['score_board_id'])
         db.session.add(s)
-    db.session.commit()
+        db.session.commit()
 
 
 def update_score(dataScores):

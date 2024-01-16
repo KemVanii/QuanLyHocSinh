@@ -252,7 +252,7 @@ def nhapdiem():
     inputHocki = request.args.get('inputHocki')
     classes = dao.getClassesByTeacherAndSchoolYear(current_user.id, currentSchoolYear)
     score_boards = []
-    if inputIdLop and inputHocki:
+    if inputIdLop:
         inputIdLop = int(inputIdLop)
         tenLop = dao.getClass(inputIdLop).name
         score_boards = dao.getScoreBoardByClass(inputIdLop, current_user.subject_id, inputHocki)
