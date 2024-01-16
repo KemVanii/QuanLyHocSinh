@@ -8,8 +8,8 @@ def send_email(students_data, subjectName, semester):
     # Mailtrap credentials
     smtp_host = 'smtp.mailtrap.io'
     smtp_port = 2525
-    smtp_username = '6ec9b93cc05cf9'
-    smtp_password = 'd1b842c7290687'
+    smtp_username = '1e937619c8e010'
+    smtp_password = '1661971bb0b588'
     sender_email = 'quanlyhocsinh@uni.com'
 
     # Connect to Mailtrap's SMTP server
