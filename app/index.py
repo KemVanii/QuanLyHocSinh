@@ -10,6 +10,7 @@ from app.util import isPass, calSemesterAverage, loadPolicies, filter_student, g
 from app.mailService import send_email
 import dao
 import pandas as pd
+from datetime import timedelta
 
 
 @login.user_loader
@@ -41,7 +42,7 @@ def login():
             err = "Tài khoản đã bị xóa."
         if err:
             return render_template("login.html", next_url=next_url, err=err)
-        login_user(user)
+        login_user(user, duration=timedelta(minutes=5))
         loadPolicies(app)
         if next_url is not None:
             return redirect(url_for(next_url))

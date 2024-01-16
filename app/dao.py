@@ -94,7 +94,7 @@ def getStudentsTranferSchool():
 def getStudentsRemoveClass(grade, schoolYear):
     return (db.session.query(Student)
             .join(ScoreBoard)
-            .join(Class)  # for join grade
+            .join(Class)
             .join(Grade)
             .join(Semester)
             .filter(Grade.name == grade,
@@ -321,9 +321,15 @@ def createNewClassGrade(className, students, grade, currentSchoolYear):
         for teacher in teachers:
             if teacher.subject_id == subject.id:
                 filterTeacherBySubject.append(teacher)
-        newTeacherClass = TeacherClass(teacher_id=random.choice(filterTeacherBySubject).id, class_id=newClass.id)
-        db.session.add(newTeacherClass)
-    db.session.commit()
+                subjects.remove(subject)
+        if len(filterTeacherBySubject) != 0:
+            newTeacherClass = TeacherClass(teacher_id=random.choice(filterTeacherBySubject).id, class_id=newClass.id)
+            db.session.add(newTeacherClass)
+
+    if len(subjects) == 0:
+        db.session.commit()
+    else:
+        db.session.delete(newClass)
 
 def get_semester():
     return db.session.query(Semester).all()

@@ -76,7 +76,6 @@ class MyUser(AuthenticatedAdmin):
     def on_model_change(self, form, model, is_created):
         # Hash the password before saving to the database
         password = form.password.data
-        password_form_hashed = hashlib.md5(password.encode('utf-8')).hexdigest()
         if model.password != password:
             model.password = hashlib.md5(password.encode('utf-8')).hexdigest()
 
