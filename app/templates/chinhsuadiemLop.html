@@ -8,7 +8,7 @@
 {% if dataScores|length == 0 %}
 <div class="alert alert-danger d-flex align-items-center ">
     <span><strong>Lỗi!</strong> Lớp {{inputTenLop}} {{inputHocki}} chưa được nhập điểm.</span>
-    <a href="/nhapdiem?inputTenLop={{inputTenLop}}&inputHocki={{inputHocki}}"
+    <a href="/nhapdiem?inputIdLop={{idLop}}&inputHocki={{inputHocki}}"
        type="button" class="btn  btn-link p-1">Nhập điểm lớp này</a>
 </div>
 {% endif %}

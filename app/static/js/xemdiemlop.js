@@ -1,5 +1,5 @@
 const btnSendMail = document.querySelector('#btnSendMail');
-const  btnLoadSendMail = document.querySelector('#btnLoadSendMail');
+const btnLoadSendMail = document.querySelector('#btnLoadSendMail');
 btnSendMail.addEventListener('click', async function () {
   const userConfirmed = confirm('Xác nhận gửi?');
   if (userConfirmed) {
@@ -11,15 +11,11 @@ btnSendMail.addEventListener('click', async function () {
     formData.append('idLop', idLop);
     formData.append('hk', hk);
     try {
-      const response = await fetch('/api/sendMail', {
+      await fetch('/api/sendMail', {
         method: 'POST',
         body: formData,
       });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      console.log(data);
+
       btnSendMail.classList.toggle('d-none');
       btnLoadSendMail.classList.toggle('d-none');
       alert('Gửi email thành công!');

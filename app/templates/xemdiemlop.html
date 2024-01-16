@@ -41,7 +41,7 @@
         {% endfor %}
         </tbody>
     </table>
-    <div class="d-flex justify-content-end">
+    <div class="d-flex justify-content-end gap-2">
         <form>
             <input id="inputIdLop" type="hidden" value="{{idLop}}" name="idLop">
             <input id="inputIdHocKy" type="hidden" value="{{hocKi}}" name="hk">
@@ -51,11 +51,14 @@
                 Đang gửi email..
             </button>
         </form>
+        <form action="/export_excel/{{idLop}}/{{hocKi}}" method="get">
+            <button type="submit" class="btn btn-primary float-end">Export to Excel</button>
+        </form>
     </div>
     {% else %}
     <div class="alert alert-danger d-flex align-items-center ">
         <span><strong>Lỗi!</strong> Lớp {{inputTenLop}} {{inputHocki}} chưa được nhập điểm.</span>
-        <a href="/nhapdiem?inputTenLop={{tenLop}}&inputHocki=HK{{hocKi}}"
+        <a href="/nhapdiem?inputIdLop={{idLop}}&inputHocki=HK{{hocKi}}"
            type="button" class="btn  btn-link p-1">Nhập điểm lớp này</a>
     </div>
 </div>
