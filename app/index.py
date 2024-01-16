@@ -8,7 +8,7 @@ from app.auth import restrict_to_roles
 from app.util import isPass, calSemesterAverage, loadPolicies, filter_student, get_previous_school_year, \
     createDataScoresfromReqForm
 from app.mailService import send_email
-import dao
+from app import dao
 import pandas as pd
 from datetime import timedelta
 import os
