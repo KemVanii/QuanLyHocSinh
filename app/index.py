@@ -437,12 +437,13 @@ def export_excel(idLop, hk):
     subject = dao.getSubjectByUser(current_user.id).name
     score_boards = dao.getScoreBoardByClass(idLop, current_user.subject_id, f"HK{hk}")
     dataScores = []
-    for score_board in score_boards:
+    for i, score_board in enumerate(score_boards):
         scores_15p = [score.value for score in score_board[0].scores if score.type == '15p']
         scores_45p = [score.value for score in score_board[0].scores if score.type == '45p']
         dataScore = {
-            'student_name': score_board.name,
-            'student_dob': score_board.dob.strftime("%Y-%m-%d")
+            '#': i + 1,
+            'Họ và tên': score_board.name,
+            'Ngày sinh': score_board.dob.strftime("%Y-%m-%d")
         }
         for i, s in enumerate(scores_15p):
             dataScore[f'15p({i + 1})'] = s
@@ -453,7 +454,7 @@ def export_excel(idLop, hk):
         dataScores.append(dataScore)
 
     df = pd.DataFrame(dataScores)
-    cl.name =  cl.name.replace("/","-")
+    cl.name = cl.name.replace("/", "-")
     excel_file = f"{cl.name}_{subject}_HK{hk}_{currSchoolYear}.xlsx"
     df.to_excel(excel_file, index=False)
     return send_file(excel_file, as_attachment=True)
