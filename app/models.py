@@ -128,7 +128,7 @@ if __name__ == '__main__':
 
         db.session.add(u)
         db.session.commit()
-        u = User(name='Nguyễn Văn GiaoVien', username='giaoVien', gender=True, dob='1991-01-01', address='TPHCM',
+        u = User(name='GV Toan', username='giaoVien', gender=True, dob='1991-01-01', address='TPHCM',
                  password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
                  user_role=UserRoleEnum.Teacher, status=True, subject_id=None)
 
