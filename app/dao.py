@@ -337,6 +337,9 @@ def createNewClassGrade(className, students, grade, currentSchoolYear):
         db.session.add(newTeacherClass)
     db.session.commit()
 
+def get_semester():
+    return db.session.query(Semester).all()
+
 
 def get_semester_by_school_year(school_year):
     if school_year is None:
