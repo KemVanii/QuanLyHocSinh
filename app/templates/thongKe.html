@@ -12,6 +12,7 @@
 <form action="/thongke" method="get">
     <div class="row">
         <div class="col-md-5 col-xs-12 row">
+
             <div class="form-floating mb-3 mt-3 col-md-6 col-xs-6">
                 <input type="text" class="form-control" id="filterScoreMin" placeholder="Nhập điểm để lọc: "
                        name="filterScoreMin">
@@ -73,34 +74,55 @@
 
             <hr class="mt-3">
 
+
             <div class="dropdown col-md-6 col-xs-6">
+                <label for="semesterPie" class="form-label">Chọn học kì: </label>
+                <select id="semesterPie" name="semesterPie" class="form-select">
+                    {% for s in semesters %}
+                    <option value="{{s.name}}" {% if semesterPie== s.name %} selected {%endif%}>
+                        {{ s.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+                <label for="filterType" class="form-label">Chọn loại:</label>
+                <select id="filterType" class="form-select" onchange="filterTable()">
+                    <option value="all">--Thống kê--</option>
+                    <option value="lop">Theo lớp</option>
+                    <option value="khoi">Theo khối</option>
+                </select>
+            </div>
+
+            <div class="dropdown col-md-6 col-xs-6" style="display: none;" id="classroomPie">
                 <label for="classroomPie" class="form-label">Chọn lớp: </label>
-                <input class="form-control" list="classroomsPie" name="classroomPie" id="classroomPie">
+                <input class="form-control" list="classroomsPie" name="classroomPie">
                 <datalist id="classroomsPie">
                     {% for c in classrooms %}
                     <option value="{{ c.Class.name }}">
                         {% endfor %}
                 </datalist>
+
+                <div class="col-md-3 col-xs-6 mt-3 mb-3">
+                    <button type="submit" class="btn btn-primary">Lọc</button>
+                </div>
+
             </div>
 
-            <div class="dropdown col-md-6 col-xs-6">
+            <div class="dropdown col-md-6 col-xs-6" style="display: none;" id="gradePie">
                 <label for="gradePie" class="form-label">Chọn khối: </label>
-                <input class="form-control" list="gradesPie" name="gradePie" id="gradePie">
+                <input class="form-control" list="gradesPie" name="gradePie">
                 <datalist id="gradesPie">
                     {% for c in grades %}
                     <option value="{{ c.name }}">
                         {% endfor %}
                 </datalist>
-            </div>
 
-            <div class="dropdown col-md-6 col-xs-6">
-                <label for="semesterPie" class="form-label">Chọn học kì: </label>
-                <input class="form-control" list="semestersPie" name="semesterPie" id="semesterPie">
-                <datalist id="semestersPie">
-                    {% for s in semesters %}
-                    <option value="{{ s.name }}">
-                        {% endfor %}
-                </datalist>
+                <div class="col-md-3 col-xs-6 mt-3 mb-3">
+                    <button type="submit" class="btn btn-primary">Lọc</button>
+                </div>
+
             </div>
 
             <table class="table">

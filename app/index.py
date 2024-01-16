@@ -219,7 +219,7 @@ def thongke():
                                                         subject=subject,
                                                         classroom=classroom),
                            grade_type_stats=dao.grade_type_stats(classroom_name=classroom_pie, grade_name=grade_pie, semester_name=semester_pie),
-                           semesters=dao.get_semester_by_school_year(school_year=semester),
+                           semesters=dao.get_semester(),
                            subjects=dao.get_subject(),
                            classrooms=dao.get_class_by_school_year(school_year=app.config['school_year']),
                            grades=dao.get_grade())
@@ -372,8 +372,13 @@ def xemdiem():
     semesters = dao.getSemesterTeacher(current_user.id)  # Lấy các học kì 1 ra
     schoolYears = [semester.name.split('_')[1] for semester in semesters]  # lọc lấy niên học
     schoolYears = sorted(schoolYears, key=lambda x: int(x.split('-')[0]), reverse=True)  # sắp xếp niên học giảm dần
-    inputNienHoc = request.args.get('inputNienHoc') or schoolYears[0]
-    list_class = dao.getClassesByTeacherAndSchoolYear(current_user.id, inputNienHoc)
+    inputNienHoc = ""
+    list_class = []
+
+    if len(schoolYears):
+        inputNienHoc = request.args.get('inputNienHoc') or schoolYears[0]
+
+        list_class = dao.getClassesByTeacherAndSchoolYear(current_user.id, inputNienHoc)
     return render_template("xemdiem.html", funcs=funcs,
                            inputNienHoc=inputNienHoc, schoolYears=schoolYears,
                            list_class=list_class)

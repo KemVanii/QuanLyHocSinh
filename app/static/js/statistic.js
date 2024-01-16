@@ -46,6 +46,12 @@ window.onload = function() {
             y: {
               beginAtZero: true
             }
+          },
+          plugins: {
+            title: {
+                display: true,
+                text: 'Biểu đồ biểu thị số lượng con điểm'
+            }
           }
         }
       });
@@ -72,7 +78,32 @@ window.onload = function() {
             y: {
               beginAtZero: true
             }
+          },
+          plugins: {
+            title: {
+                display: true,
+                text: 'Biểu đồ biểu thị tỉ lệ xếp loại'
+            }
           }
         }
       });
+    }
+
+function filterTable() {
+        var selectedOption = document.getElementById('filterType').value;
+        var secondDropdownContainer = document.getElementById('classroomPie');
+        var thirdDropdownContainer = document.getElementById('gradePie');
+
+        secondDropdownContainer.style.display = 'none';
+        thirdDropdownContainer.style.display = 'none';
+
+        // Hiển thị hoặc ẩn dropdown thứ hai dựa trên giá trị được chọn
+        if (selectedOption === 'lop') {
+            secondDropdownContainer.style.display = 'block';
+        } else if (selectedOption === 'khoi') {
+            thirdDropdownContainer.style.display = 'block';
+        }
+
+        // Thực hiện các thay đổi khác tương ứng với việc chọn giá trị
+        // Ví dụ: Có thể thực hiện logic khác tùy thuộc vào giá trị được chọn
     }

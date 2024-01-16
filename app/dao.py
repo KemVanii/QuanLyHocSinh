@@ -325,6 +325,9 @@ def createNewClassGrade(className, students, grade, currentSchoolYear):
         db.session.add(newTeacherClass)
     db.session.commit()
 
+def get_semester():
+    return db.session.query(Semester).all()
+
 
 def get_semester_by_school_year(school_year):
     if school_year is None:
@@ -482,11 +485,11 @@ def insert_score(dataScores):
 def update_score(dataScores):
     for dataScore in dataScores:
         Score.query.filter(Score.score_board_id == dataScore['score_board_id']).delete()
-        for i in range(len(dataScore['15p'])):
-            s = Score(value=dataScore['15p'][i], type='15p', score_board_id=dataScore['score_board_id'])
+        for value in dataScore['15p']:
+            s = Score(value=value, type='15p', score_board_id=dataScore['score_board_id'])
             db.session.add(s)
-        for i in range(len(dataScore['45p'])):
-            s = Score(value=dataScore['45p'][i], type='45p', score_board_id=dataScore['score_board_id'])
+        for value in dataScore['45']:
+            s = Score(value=value, type='45p', score_board_id=dataScore['score_board_id'])
             db.session.add(s)
         s = Score(value=dataScore['ck'], type='ck', score_board_id=dataScore['score_board_id'])
         db.session.add(s)
