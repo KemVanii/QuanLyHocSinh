@@ -31,8 +31,8 @@
             <div class="col-md-4">
                 <label for="semester" class="form-label">Chọn học kì:</label>
                 <select id="semester" name="inputHocki" class="form-select">
-                    <option value="HK1" {% if inputHocKi =="HK1" %} selected {%endif%}>HK1</option>
-                    <option value="HK2" {% if inputHocki =="HK2" %} selected {%endif%}>HK2</option>
+                    <option value="HK1" {% if inputHocKi=="HK1" %} selected {%endif%}>HK1</option>
+                    <option value="HK2" {% if inputHocki=="HK2" %} selected {%endif%}>HK2</option>
                 </select>
             </div>
         </div>
@@ -40,20 +40,20 @@
             <div class="col-md-4">
                 <label for="inputCot15p" class="form-label">Số lượng cột 15p:</label>
                 <select id="inputCot15p" name="inputCot15p" class="form-select">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
+                    <option value="1" {% if inputCot15p==1 %} selected {%endif%}>1</option>
+                    <option value="2" {% if inputCot15p==2 %} selected {%endif%}>2</option>
+                    <option value="3" {% if inputCot15p==3 %} selected {%endif%}>3</option>
+                    <option value="4" {% if inputCot15p==4 %} selected {%endif%}>4</option>
+                    <option value="5" {% if inputCot15p==5 %} selected {%endif%}>5</option>
                 </select>
             </div>
 
             <div class="col-md-4">
                 <label for="inputCot45p" class="form-label">Số lượng cột 45p:</label>
                 <select id="inputCot45p" name="inputCot45p" class="form-select">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
+                    <option value="1" {% if inputCot45p==1 %} selected {%endif%}>1</option>
+                    <option value="2" {% if inputCot45p==2 %} selected {%endif%}>2</option>
+                    <option value="3" {% if inputCot45p==3 %} selected {%endif%}>3</option>
                 </select>
             </div>
         </div>
