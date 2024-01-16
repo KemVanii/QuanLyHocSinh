@@ -11,6 +11,7 @@ from app.mailService import send_email
 import dao
 import pandas as pd
 from datetime import timedelta
+import os
 
 
 @login.user_loader
@@ -428,34 +429,6 @@ data = {
     'City': ['New York', 'San Francisco', 'Los Angeles']
 }
 
-dataScores = [
-    {
-        'student_name': 'John Doe',
-        'email': 'john@example.com',
-        '15p': [85, 90, 78],
-        '45p': [70, 80, 75],
-        'ck': 95,
-        'dtb': 82.3
-    },
-    {
-        'student_name': 'Alice Smith',
-        'email': 'alice@example.com',
-        '15p': [92, 88, 90],
-        '45p': [85, 78, 92],
-        'ck': 88,
-        'dtb': 90.2
-    },
-    {
-        'student_name': 'Bob Johnson',
-        'email': 'bob@example.com',
-        '15p': [78, 82, 75],
-        '45p': [68, 70, 80],
-        'ck': 75,
-        'dtb': 76.5
-    },
-    # Add more student data dictionaries as needed
-]
-
 
 @app.route('/export_excel/<int:idLop>/<int:hk>')
 def export_excel(idLop, hk):
@@ -465,23 +438,24 @@ def export_excel(idLop, hk):
     score_boards = dao.getScoreBoardByClass(idLop, current_user.subject_id, f"HK{hk}")
     dataScores = []
     for score_board in score_boards:
+        scores_15p = [score.value for score in score_board[0].scores if score.type == '15p']
+        scores_45p = [score.value for score in score_board[0].scores if score.type == '45p']
         dataScore = {
             'student_name': score_board.name,
-            'student_dob': score_board.dob,
-            '15p': [score.value for score in score_board[0].scores if score.type == '15p'],
-            '45p': [score.value for score in score_board[0].scores if score.type == '45p'],
-            'ck': [score.value for score in score_board[0].scores if score.type == 'ck'][0],
-            'dtb': round(calSemesterAverage(score_board[0].scores), 1)
+            'student_dob': score_board.dob.strftime("%Y-%m-%d")
         }
+        for i, s in enumerate(scores_15p):
+            dataScore[f'15p({i + 1})'] = s
+        for i, s in enumerate(scores_45p):
+            dataScore[f'45p({i + 1})'] = s
+        dataScore['ck'] = [score.value for score in score_board[0].scores if score.type == 'ck'][0]
+        dataScore['dtb'] = round(calSemesterAverage(score_board[0].scores), 1)
         dataScores.append(dataScore)
 
     df = pd.DataFrame(dataScores)
-
-    # Save the DataFrame to an Excel file
+    cl.name =  cl.name.replace("/","-")
     excel_file = f"{cl.name}_{subject}_HK{hk}_{currSchoolYear}.xlsx"
     df.to_excel(excel_file, index=False)
-
-    # Send the file as a response for download
     return send_file(excel_file, as_attachment=True)
 
 
