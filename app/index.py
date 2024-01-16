@@ -74,26 +74,7 @@ def lapdanhsach():
         size = int(request.form.get("inputSize"))
         grade = int(request.form.get("inputGrade"))
         newNameClass = f'{grade}/{len(dao.getClassByGradeAndSchoolYear(grade, currSchoolYear)) + 1}'
-        studentsRemoveClass = dao.getStudentsRemoveClass(grade, currSchoolYear)
-        studentsFailThisGradeInPrevSchoolYear = (
-            dao.getStudentsPassOrFailInGradeInPreSchoolYear(grade, currSchoolYear,
-                                                            False))
-        if grade == 10:
-            studentNotHasClass = dao.getStudentsNotHasClass()
-            students = (studentNotHasClass
-                        + studentsRemoveClass
-                        + studentsFailThisGradeInPrevSchoolYear)
-
-        else:
-
-            studentsPassPreGradeInPrevSchoolYear = (
-                dao.getStudentsPassOrFailInGradeInPreSchoolYear(grade - 1,
-                                                                currSchoolYear,
-                                                                True))
-            students = (studentsPassPreGradeInPrevSchoolYear
-                        + studentsRemoveClass
-                        + studentsFailThisGradeInPrevSchoolYear)
-        students = students[:int(size)]
+        students = dao.getStudentsForCreateNewClass(grade, currSchoolYear, size)
         dao.createNewClassGrade(newNameClass, students, grade, currSchoolYear)
         return redirect(url_for('lapdanhsach'))
 
@@ -105,25 +86,7 @@ def lapdanhsach():
     newNameClass = ''
     if size:
         newNameClass = f'{grade}/{len(dao.getClassByGradeAndSchoolYear(grade, currSchoolYear)) + 1}'
-        studentsRemoveClass = dao.getStudentsRemoveClass(grade, currSchoolYear)
-        studentsFailThisGradeInPrevSchoolYear = (
-            dao.getStudentsPassOrFailInGradeInPreSchoolYear(grade, currSchoolYear,
-                                                            False))
-        if grade == 10:
-            studentNotHasClass = dao.getStudentsNotHasClass()
-            students = (studentNotHasClass
-                        + studentsRemoveClass
-                        + studentsFailThisGradeInPrevSchoolYear)
-
-        else:
-            studentsPassPreGradeInPrevSchoolYear = (
-                dao.getStudentsPassOrFailInGradeInPreSchoolYear(grade - 1,
-                                                                currSchoolYear,
-                                                                True))
-            students = (studentsPassPreGradeInPrevSchoolYear
-                        + studentsRemoveClass
-                        + studentsFailThisGradeInPrevSchoolYear)
-        students = students[:int(size)]
+        students = dao.getStudentsForCreateNewClass(grade, currSchoolYear, size)
 
     return render_template("lapDanhSach.html",
                            funcs=funcs, students=students,

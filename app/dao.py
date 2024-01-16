@@ -129,24 +129,27 @@ def getScoreBoardByClass(classId, subjectId, semester):
                     Semester.name.contains(semester)).all())
 
 
-def getStudentsAlreadyStudyGradeInSchoolYear(grade, schoolYear):
+def getStudentsAlreadyStudyButNotInCurrSchoolYear(grade, prevSchoolYear, currSchoolYear):
     return (db.session.query(Student)
             .join(ScoreBoard)
             .join(Class)
             .join(Grade)
             .join(Semester)
             .filter(Grade.name == grade,
-                    Semester.name.contains(schoolYear))
+                    Semester.name.contains(prevSchoolYear),
+                    ~Semester.name.contains(currSchoolYear))
             .all())
 
 
 def getStudentsPassOrFailInGradeInPreSchoolYear(grade, currSchoolYear, result):
+    # lấy niên học trước
     prevSchoolYear = get_previous_school_year(currSchoolYear)
-    StudentsAlreadyStudy = getStudentsAlreadyStudyGradeInSchoolYear(grade, prevSchoolYear)
+    # lấy sách học sinh đã ở niên học trước của khối đó
+    StudentsAlreadyStudyButNotInCurrSchoolYear = (
+        getStudentsAlreadyStudyButNotInCurrSchoolYear(grade, prevSchoolYear, currSchoolYear))
     prevSemesters = getSemestersBySchoolYear(prevSchoolYear)
-    currSemester = getSemestersBySchoolYear(currSchoolYear)
-    return filter_student(StudentsAlreadyStudy, prevSemesters,
-                          currSemester, result)
+    return filter_student(StudentsAlreadyStudyButNotInCurrSchoolYear, prevSemesters,
+                          result)
 
 
 def getClass(Class_ID):
@@ -196,7 +199,6 @@ def getClassByGradeAndSchoolYear(grade, schoolYear):
 def get_class_by_school_year(school_year):
     grade = db.session.query(Grade).join(Class).filter(Class.grade_id == Grade.id).first()
     classes = getClassByGradeAndSchoolYear(grade=grade.name, schoolYear=school_year)
-
     return classes
 
 
@@ -284,7 +286,34 @@ def getSubjectByClassAndYear(className, currentSchoolYear):
     return subjects
 
 
+def getStudentsForCreateNewClass(grade, currSchoolYear, size):
+    students = []
+    studentsRemoveClass = getStudentsRemoveClass(grade, currSchoolYear)
+    studentsFailThisGradeInPrevSchoolYear = (
+        getStudentsPassOrFailInGradeInPreSchoolYear(grade, currSchoolYear,
+                                                        False))
+    if grade == 10:
+        studentNotHasClass = getStudentsNotHasClass()
+        students = (studentNotHasClass
+                    + studentsRemoveClass
+                    + studentsFailThisGradeInPrevSchoolYear)
+
+    else:
+        studentsPassPreGradeInPrevSchoolYear = (
+            getStudentsPassOrFailInGradeInPreSchoolYear(grade - 1,
+                                                            currSchoolYear,
+                                                            True))
+        students = (studentsPassPreGradeInPrevSchoolYear
+                    + studentsRemoveClass
+                    + studentsFailThisGradeInPrevSchoolYear)
+    students = students[:int(size)]
+    return students
+
+
 def createNewClassGrade(className, students, grade, currentSchoolYear):
+    subjectNotHasTeacher = db.session.query(Subject).filter(Subject.teachers == None).all()
+    if subjectNotHasTeacher:
+        return
     # Tạo lớp mới
     grade_id = db.session.query(Grade).filter(Grade.name == grade).first().id
     newClass = Class(name=className, size=len(students), grade_id=grade_id)
@@ -321,15 +350,12 @@ def createNewClassGrade(className, students, grade, currentSchoolYear):
         for teacher in teachers:
             if teacher.subject_id == subject.id:
                 filterTeacherBySubject.append(teacher)
-                subjects.remove(subject)
         if len(filterTeacherBySubject) != 0:
             newTeacherClass = TeacherClass(teacher_id=random.choice(filterTeacherBySubject).id, class_id=newClass.id)
             db.session.add(newTeacherClass)
 
-    if len(subjects) == 0:
-        db.session.commit()
-    else:
-        db.session.delete(newClass)
+    db.session.commit()
+
 
 def get_semester():
     return db.session.query(Semester).all()

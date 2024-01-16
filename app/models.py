@@ -32,7 +32,7 @@ class Subject(db.Model):
     name = Column(String(50), nullable=False)
     status = Column(Boolean, default=True, nullable=False)
     score_boards = relationship('ScoreBoard', backref='subject', lazy=True)
-    classes = relationship('User', foreign_keys='User.subject_id', backref='subject', lazy=True)
+    teachers = relationship('User', foreign_keys='User.subject_id', backref='subject', lazy=True)
 
     def __str__(self):
         return self.name
