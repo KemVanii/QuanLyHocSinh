@@ -8,8 +8,8 @@ def send_email(students_data, subjectName, semester):
     # Mailtrap credentials
     smtp_host = 'smtp.mailtrap.io'
     smtp_port = 2525
-    smtp_username = '6ec9b93cc05cf9'
-    smtp_password = 'd1b842c7290687'
+    smtp_username = '1e937619c8e010'
+    smtp_password = '1661971bb0b588'
     sender_email = 'quanlyhocsinh@uni.com'
 
     for student in students_data:
@@ -50,3 +50,30 @@ def send_email(students_data, subjectName, semester):
 
             # Send email
             server.sendmail(sender_email, recipient_email, message.as_string())
+
+
+# def send_otp(receiver_email, otp):
+#     smtp_host = 'smtp.mailtrap.io'
+#     smtp_port = 2525
+#     smtp_username = '1e937619c8e010'
+#     smtp_password = '1661971bb0b588'
+#     sender_email = 'quanlyhocsinh@uni.com'
+#     recipient_email = receiver_email
+#
+#     subject = "Mã otp"
+#     body = f'Xin chao sau day la ma otp dang nhap \n' \
+#            f'Ma otp la: {otp} \n' \
+#            f'Vui long khong chia se voi nguoi khac.'
+#
+#     message = MIMEMultipart()
+#     message['From'] = sender_email
+#     message['To'] = recipient_email
+#     message['Subject'] = subject
+#     message.attach(MIMEText(body, 'plain'))
+#
+#     with smtplib.SMTP(smtp_host, smtp_port) as server:
+#         server.starttls()
+#         server.login(smtp_username, smtp_password)
+#
+#         # Send email
+#         server.sendmail(sender_email, recipient_email, message.as_string())

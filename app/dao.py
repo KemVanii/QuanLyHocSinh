@@ -494,7 +494,7 @@ def update_score(dataScores):
         for value in dataScore['15p']:
             s = Score(value=value, type='15p', score_board_id=dataScore['score_board_id'])
             db.session.add(s)
-        for value in dataScore['45']:
+        for value in dataScore['45p']:
             s = Score(value=value, type='45p', score_board_id=dataScore['score_board_id'])
             db.session.add(s)
         s = Score(value=dataScore['ck'], type='ck', score_board_id=dataScore['score_board_id'])
