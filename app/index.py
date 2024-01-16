@@ -33,8 +33,7 @@ def login():
     if request.method == "POST":
         err = None
         next_url = request.args.get("next_url")
-        user = User.query.filter_by(
-            username=request.form.get("username")).first()
+        user = User.query.filter_by(username=request.form.get("username")).first()
         if not user or user.password != str(hashlib.md5(request.form.get("pswd").encode('utf-8')).hexdigest()):
             err = "Sai tên đăng nhập hoặc mật khẩu."
         if user and user.status is False:
@@ -232,10 +231,9 @@ def nhapdiem():
     currentSchoolYear = app.config['school_year']
     if request.method == 'POST':
         # get all scores
-        inputTenLop = request.form.get('inputTenLop')
-        inputTenMon = request.form.get('inputTenMon')
+        inputIdLop = request.form.get('inputIdLop')
         inputHocki = request.form.get('inputHocki')
-        score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, inputHocki, currentSchoolYear)
+        score_boards = dao.getScoreBoardByClass(inputIdLop, current_user.subject_id, inputHocki)
         score_boards_filter = []
         for score_board in score_boards:
             if len(score_board[0].scores) == 0:
@@ -246,32 +244,30 @@ def nhapdiem():
         return redirect(url_for('nhapdiem'))
 
     funcs = dao.load_function(current_user.user_role)
-    inputTenLop = request.args.get('inputTenLop') or ''
+    inputIdLop = request.args.get('inputIdLop') or ''
+    tenLop = ''
     inputTenMon = dao.getSubjectByUser(current_user.id).name
     inputCot15p = int(request.args.get('inputCot15p') or '1')
     inputCot45p = int(request.args.get('inputCot45p') or '1')
     inputHocki = request.args.get('inputHocki')
     classes = dao.getClassesByTeacherAndSchoolYear(current_user.id, currentSchoolYear)
     score_boards = []
-    idLop = None
-    if inputTenLop and inputHocki:
-        score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, inputHocki, currentSchoolYear)
-        if len(score_boards) != 0:
-            idLop = score_boards[0].class_id
+    if inputIdLop and inputHocki:
+        inputIdLop = int(inputIdLop)
+        tenLop = dao.getClass(inputIdLop).name
+        score_boards = dao.getScoreBoardByClass(inputIdLop, current_user.subject_id, inputHocki)
         # Lọc các học sinh chưa có điểm
         score_boards_filter = []
         for score_board in score_boards:
             if len(score_board[0].scores) == 0:
                 score_boards_filter.append(score_board)
         score_boards = score_boards_filter
-
-    print(inputTenLop, inputHocki)
     return render_template("nhapdiem.html",
-                           funcs=funcs, inputTenLop=inputTenLop, classes=classes,
+                           funcs=funcs, tenLop=tenLop, classes=classes,
+                           inputIdLop=inputIdLop,
                            inputCot15p=inputCot15p, inputCot45p=inputCot45p,
                            score_boards=score_boards, inputHocki=inputHocki,
-                           inputTenMon=inputTenMon, currentSchoolYear=currentSchoolYear,
-                           idLop=idLop)
+                           inputTenMon=inputTenMon, currentSchoolYear=currentSchoolYear)
 
 
 @app.route('/api/policy', methods=['post'])
@@ -335,10 +331,8 @@ def chinhsuadiemLop(idLop):
     currentSchoolYear = app.config['school_year']
     if request.method == 'POST':
         # get all scores
-        inputTenLop = request.form.get('inputTenLop')
-        inputTenMon = request.form.get('inputTenMon')
         inputHocki = request.form.get('inputHocki')
-        score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, inputHocki, currentSchoolYear)
+        score_boards = dao.getScoreBoardByClass(idLop, current_user.subject_id, inputHocki)
         dataScores = createDataScoresfromReqForm(request, score_boards)
         dao.update_score(dataScores)
         return redirect(url_for('chinhsuadiem'))
@@ -347,7 +341,7 @@ def chinhsuadiemLop(idLop):
     inputTenLop = dao.getClass(idLop).name
     inputHocki = request.args.get('inputHocki') or 'HK1'
     inputTenMon = dao.getSubjectByUser(current_user.id).name
-    score_boards = dao.getScoreBoard(inputTenLop, inputTenMon, inputHocki, currentSchoolYear)
+    score_boards = dao.getScoreBoardByClass(idLop, current_user.subject_id, inputHocki)
     dataScores = []
     for score_board in score_boards:
         if len(score_board[0].scores) == 0:
@@ -378,8 +372,13 @@ def xemdiem():
     semesters = dao.getSemesterTeacher(current_user.id)  # Lấy các học kì 1 ra
     schoolYears = [semester.name.split('_')[1] for semester in semesters]  # lọc lấy niên học
     schoolYears = sorted(schoolYears, key=lambda x: int(x.split('-')[0]), reverse=True)  # sắp xếp niên học giảm dần
-    inputNienHoc = request.args.get('inputNienHoc') or schoolYears[0]
-    list_class = dao.getClassesByTeacherAndSchoolYear(current_user.id, inputNienHoc)
+    inputNienHoc = ""
+    list_class = []
+
+    if len(schoolYears):
+        inputNienHoc = request.args.get('inputNienHoc') or schoolYears[0]
+
+        list_class = dao.getClassesByTeacherAndSchoolYear(current_user.id, inputNienHoc)
     return render_template("xemdiem.html", funcs=funcs,
                            inputNienHoc=inputNienHoc, schoolYears=schoolYears,
                            list_class=list_class)

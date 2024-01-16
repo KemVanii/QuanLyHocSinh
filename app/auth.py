@@ -3,7 +3,6 @@ from flask_login import current_user
 from functools import wraps
 from flask import request, redirect, url_for
 
-
 def restrict_to_roles(allowed_roles, next_url='index'):
     def decorator(f):
         @wraps(f)
