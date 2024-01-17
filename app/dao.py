@@ -1,5 +1,5 @@
 from app.models import *
-from sqlalchemy import func, desc, asc, text, or_, and_
+from sqlalchemy import func, desc, asc, text, or_, and_, not_
 from collections import defaultdict
 from app import db
 from app.util import *
@@ -130,6 +130,7 @@ def getScoreBoardByClass(classId, subjectId, semester):
 
 
 def getStudentsAlreadyStudyButNotInCurrSchoolYear(grade, prevSchoolYear, currSchoolYear):
+    print(grade, prevSchoolYear, currSchoolYear)
     return (db.session.query(Student)
             .join(ScoreBoard)
             .join(Class)
@@ -137,7 +138,7 @@ def getStudentsAlreadyStudyButNotInCurrSchoolYear(grade, prevSchoolYear, currSch
             .join(Semester)
             .filter(Grade.name == grade,
                     Semester.name.contains(prevSchoolYear),
-                    ~Semester.name.contains(currSchoolYear))
+                    not_(Semester.name.contains(currSchoolYear)))
             .all())
 
 
@@ -148,7 +149,8 @@ def getStudentsPassOrFailInGradeInPreSchoolYear(grade, currSchoolYear, result):
     StudentsAlreadyStudyButNotInCurrSchoolYear = (
         getStudentsAlreadyStudyButNotInCurrSchoolYear(grade, prevSchoolYear, currSchoolYear))
     prevSemesters = getSemestersBySchoolYear(prevSchoolYear)
-    return filter_student(StudentsAlreadyStudyButNotInCurrSchoolYear, prevSemesters,
+    currSemesters = getSemestersBySchoolYear(currSchoolYear)
+    return filter_student(StudentsAlreadyStudyButNotInCurrSchoolYear, prevSemesters, currSemesters,
                           result)
 
 
@@ -291,7 +293,7 @@ def getStudentsForCreateNewClass(grade, currSchoolYear, size):
     studentsRemoveClass = getStudentsRemoveClass(grade, currSchoolYear)
     studentsFailThisGradeInPrevSchoolYear = (
         getStudentsPassOrFailInGradeInPreSchoolYear(grade, currSchoolYear,
-                                                        False))
+                                                    False))
     if grade == 10:
         studentNotHasClass = getStudentsNotHasClass()
         students = (studentNotHasClass
@@ -301,8 +303,8 @@ def getStudentsForCreateNewClass(grade, currSchoolYear, size):
     else:
         studentsPassPreGradeInPrevSchoolYear = (
             getStudentsPassOrFailInGradeInPreSchoolYear(grade - 1,
-                                                            currSchoolYear,
-                                                            True))
+                                                        currSchoolYear,
+                                                        True))
         students = (studentsPassPreGradeInPrevSchoolYear
                     + studentsRemoveClass
                     + studentsFailThisGradeInPrevSchoolYear)

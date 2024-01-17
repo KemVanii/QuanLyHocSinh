@@ -24,14 +24,21 @@ def isPass(score_boards):
     return True
 
 
-def filter_student(students, previousSemesters, filterBy):
+def filter_student(students, previousSemesters, currSemesters, filterBy):
     students_filter = []
     for student in students:
         score_boards_filter = []  # filter score_boards in previous grade
+        isInClass = False
         for score_board in student.score_boards:
+            if (score_board.semester_id == currSemesters[0].id
+                    or score_board.semester_id == currSemesters[1].id):
+                isInClass = True
+                break
             if (score_board.semester_id == previousSemesters[0].id
                     or score_board.semester_id == previousSemesters[1].id):
                 score_boards_filter.append(score_board)
+        if isInClass:
+            continue
         if isPass(score_boards_filter) == filterBy:
             students_filter.append(student)
     return students_filter
@@ -82,6 +89,7 @@ def type_sort_avg_score(avg_score):
         return "Trung bình"
     else:
         return "Yếu"
+
 
 def createDataScoresfromReqForm(request, score_boards):
     dataScores = []
