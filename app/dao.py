@@ -1,5 +1,5 @@
 from app.models import *
-from sqlalchemy import func, desc, asc, text, or_, and_
+from sqlalchemy import func, desc, asc, text, or_, and_, not_
 from collections import defaultdict
 from app import db
 from app.util import *
@@ -130,6 +130,16 @@ def getScoreBoardByClass(classId, subjectId, semester):
 
 
 def getStudentsAlreadyStudyButNotInCurrSchoolYear(grade, prevSchoolYear, currSchoolYear):
+    print(grade, prevSchoolYear, currSchoolYear)
+    print((db.session.query(Student)
+           .join(ScoreBoard)
+           .join(Class)
+           .join(Grade)
+           .join(Semester)
+           .filter(Grade.name == grade,
+                   Semester.name.contains(prevSchoolYear),
+                   ~Semester.name.contains(currSchoolYear))
+           .all()))
     return (db.session.query(Student)
             .join(ScoreBoard)
             .join(Class)
@@ -148,6 +158,7 @@ def getStudentsPassOrFailInGradeInPreSchoolYear(grade, currSchoolYear, result):
     StudentsAlreadyStudyButNotInCurrSchoolYear = (
         getStudentsAlreadyStudyButNotInCurrSchoolYear(grade, prevSchoolYear, currSchoolYear))
     prevSemesters = getSemestersBySchoolYear(prevSchoolYear)
+    print(grade)
     return filter_student(StudentsAlreadyStudyButNotInCurrSchoolYear, prevSemesters,
                           result)
 
@@ -309,6 +320,10 @@ def getStudentsForCreateNewClass(grade, currSchoolYear, size):
     students = students[:int(size)]
     return students
 
+
+# def filterStudentsHasClass(students):
+#     for student in students:
+#
 
 def createNewClassGrade(className, students, grade, currentSchoolYear):
     subjectNotHasTeacher = db.session.query(Subject).filter(Subject.teachers == None).all()
